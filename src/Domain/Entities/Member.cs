@@ -2,13 +2,19 @@
 
 namespace Domain.Entities
 {
-    public class Member
+    public class Member : Person
     {
-        public int Id { get; set; }
+        [Display(Name = "Fecha de admisión")]
+        public DateTime AdmissionDate { get; set; }
 
-        [Display(Name = "Nombre")]
-        public string Name { get; set; } = null!;
+        public int MembershipPlanId { get; set; }
+        [Required]
+        [Display(Name = "Tipo de membresía")]
+        public virtual MembershipPlan MembershipPlan { get; set; } = null!;
 
-        public string? Email { get; set; }
+        public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+
+        public int OrganizationId { get; set; }
+        public virtual Organization Organization { get; set; } = null!;
     }
 }
