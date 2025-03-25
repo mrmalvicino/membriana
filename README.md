@@ -5,6 +5,7 @@
   - [Setup Instructions](#setup-instructions)
     - [Configuration Parameters](#configuration-parameters)
     - [NuGet Packages](#nuget-packages)
+    - [SQL Scripts](#sql-scripts)
   - [License and Contributions](#license-and-contributions)
 
 ## Features
@@ -76,6 +77,41 @@ Install each of the following **NuGet Packages** for the respective projects acc
 >[!TIP]
 &nbsp;
 In order to install the packages using Visual Studio interface, open the [solution](./src/Membriana.sln), right click the project, select `Manage NuGet Packages...` and install each package.
+
+### SQL Scripts
+
+&nbsp;
+The database is seeded by running the provided [SQL scripts](./SQL/). There are several ways of doing so:
+
+- If you are using a **localhost**, you may run [sql_runner.bat](./SQL/sql_runner.bat) to automate the correct excecution of the scripts.
+
+- If you are using a **local server with a custom path** or an **external server**, you can still use the [sql_runner.bat](./SQL/sql_runner.bat) script but will have to set the path and credentials manually.
+
+> [!IMPORTANT]
+&nbsp;
+The fastest way is by executing [run_default.bat](./SQL/run_default.bat) to run the scripts with **one click**, provided a file named `sql_input.txt` is created in the [SQL directory](./SQL/) using the following templates:
+
+- Local server with custom path:
+    ```txt
+    pause
+    2
+    CUSTOM_PATH
+    3
+    ```
+
+- External server:
+    ```txt
+    pause
+    3
+    SERVER_ADDRESS_OR_IP
+    USERNAME
+    PASSWORD
+    3
+    ```
+
+> [!WARNING]
+&nbsp;
+If you want to use **SQL Server Management Studio** or **Azure Data Studio** to seed the database, you will have to run all the SQL scripts one by one in the correct order.
 
 ## License and Contributions
 

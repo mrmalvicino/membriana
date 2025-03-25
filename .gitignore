@@ -1,3 +1,7 @@
+#SQL scripts
+sql_input.txt
+sql_output.txt
+
 # Sensitive Data
 appsettings.json
 

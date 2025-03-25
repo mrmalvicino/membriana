@@ -1,0 +1,1 @@
+sql_runner.bat < sql_input.txt > sql_output.txt 2>&1
