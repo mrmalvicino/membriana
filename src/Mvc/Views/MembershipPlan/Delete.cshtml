@@ -1,11 +1,11 @@
-﻿@model Domain.Entities.Member
+﻿@model Domain.Entities.MembershipPlan
 
 @{
     Layout = "_LayoutAdmin";
 }
 
 @{
-    ViewData["Title"] = "Eliminar socio";
+    ViewData["Title"] = "Eliminar plan";
 }
 
 <h1 class="text-center">¿Estás seguro?</h1>
@@ -14,16 +14,10 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header text-center">
-                    <h4 class="card-title mb-0">Eliminar socio</h4>
+                    <h4 class="card-title mb-0">Eliminar plan de membresía</h4>
                 </div>
                 <div class="card-body">
                     <dl class="row">
-                        <dt class="col-sm-4">
-                            @Html.DisplayNameFor(model => model.AdmissionDate)
-                        </dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.AdmissionDate)
-                        </dd>
                         <dt class="col-sm-4">
                             @Html.DisplayNameFor(model => model.Name)
                         </dt>
@@ -31,10 +25,10 @@
                             @Html.DisplayFor(model => model.Name)
                         </dd>
                         <dt class="col-sm-4">
-                            @Html.DisplayNameFor(model => model.Email)
+                            @Html.DisplayNameFor(model => model.Amount)
                         </dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.Email)
+                            @Html.DisplayFor(model => model.Amount)
                         </dd>
                     </dl>
                     <div class="form-group mt-4">

@@ -1,0 +1,42 @@
+﻿@model Domain.Entities.MembershipPlan
+
+@{
+    Layout = "_LayoutAdmin";
+}
+
+@{
+    ViewData["Title"] = "Detalles del plan";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h2>Detalles del plan de membresía</h2>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">
+                            @Html.DisplayNameFor(model => model.Name)
+                        </dt>
+                        <dd class="col-sm-9">
+                            @Html.DisplayFor(model => model.Name)
+                        </dd>
+
+                        <dt class="col-sm-3">
+                            @Html.DisplayNameFor(model => model.Amount)
+                        </dt>
+                        <dd class="col-sm-9">
+                            @Html.DisplayFor(model => model.Amount)
+                        </dd>
+                    </dl>
+                </div>
+                <div class="card-footer text-center">
+                    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning btn-sm">Editar</a>
+                    <a asp-action="Index" class="btn btn-secondary btn-sm">Volver al listado</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
