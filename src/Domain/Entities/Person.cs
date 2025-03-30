@@ -1,13 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Domain.Interfaces;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entities
 {
-    public class Person
+    public class Person : IIdentifiable
     {
         public int Id { get; set; }
 
         [Display(Name = "Estado")]
-        public bool Active { get; set; }
+        [Required]
+        public bool Active { get; set; } = true;
 
         [Required]
         [Display(Name = "Nombre")]
@@ -26,6 +29,7 @@ namespace Domain.Entities
         public DateTime BirthDate { get; set; }
 
         public int? ProfileImageId { get; set; }
+        [ValidateNever]
         public virtual Image? ProfileImage { get; set; }
     }
 }

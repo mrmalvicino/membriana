@@ -1,8 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Domain.Interfaces;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entities
 {
-    public class MembershipPlan
+    public class MembershipPlan : IIdentifiable
     {
         public int Id { get; set; }
 
@@ -11,12 +13,15 @@ namespace Domain.Entities
         public string Name { get; set; } = null!;
 
         [Required]
-        [Display(Name = "Cuota")]
-        public decimal Fee { get; set; }
+        [Display(Name = "Monto de cuota")]
+        public decimal Amount { get; set; }
 
+        [ValidateNever]
         public virtual ICollection<Member> Members { get; set; } = new List<Member>();
 
+        [Required]
         public int OrganizationId { get; set; }
+        [ValidateNever]
         public virtual Organization Organization { get; set; } = null!;
     }
 }

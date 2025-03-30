@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Domain.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entities
 {
-    public class Image
+    public class Image : IIdentifiable
     {
         public int Id { get; set; }
 

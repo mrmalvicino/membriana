@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entities
 {
@@ -11,9 +12,10 @@ namespace Domain.Entities
         public string Name { get; set; } = null!;
 
         [Required]
-        [Display(Name = "Cuota")]
-        public decimal Fee { get; set; }
+        [Display(Name = "Monto")]
+        public decimal Amount { get; set; }
 
+        [ValidateNever]
         public virtual ICollection<Organization> Organizations { get; set; } = new List<Organization>();
     }
 }

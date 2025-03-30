@@ -1,15 +1,11 @@
-﻿using Domain.Interfaces;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entities
 {
-    public class Employee : Person, IIdentifiable
+    public class AppUser : IdentityUser
     {
-        [Display(Name = "Fecha de admisión")]
-        [Required]
-        public DateTime AdmissionDate { get; set; }
-
         [Required]
         public int OrganizationId { get; set; }
         [ValidateNever]
