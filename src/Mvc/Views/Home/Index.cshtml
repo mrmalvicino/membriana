@@ -1,4 +1,8 @@
 ﻿@{
+    Layout = "_LayoutLanding";
+}
+
+@{
     ViewData["Title"] = "Inicio";
 }
 
@@ -17,7 +21,6 @@
 <section class="bg-light py-5">
     <div class="container">
         <h2 class="text-center mb-4">Funcionalidades</h2>
-        
         <div class="row">
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm">
@@ -74,6 +77,6 @@
     <div class="container">
         <h2 class="display-4 mb-4">Gestión de socios en la nube</h2>
         <p class="lead mb-4">Transformá la manera en que gestionás tu organización.</p>
-        <a href="#" class="btn btn-primary btn-lg">Comenzá ahora</a>
+        <a class="btn btn-primary btn-lg" asp-area="" asp-controller="Authentication" asp-action="Register">Comenzá ahora</a>
     </div>
 </section>

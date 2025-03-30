@@ -1,0 +1,58 @@
+﻿@model Mvc.Models.RegisterViewModel
+
+@{
+    Layout = "_LayoutLanding";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2 class="text-center mb-4">Crear nueva organización</h2>
+            <form asp-action="Register" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label asp-for="OrganizationName" class="form-label">Nombre de la organización</label>
+                    <input asp-for="OrganizationName" class="form-control" placeholder="Tu Empresa S.A." required />
+                    <span asp-validation-for="OrganizationName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="OrganizationEmail" class="form-label">Correo de la organización</label>
+                    <input asp-for="OrganizationEmail" type="email" class="form-control" placeholder="empresa@mail.com" required />
+                    <span asp-validation-for="OrganizationEmail" class="text-danger"></span>
+                </div>
+
+                <h4 class="text-center mt-4">Datos del administrador</h4>
+
+                <div class="mb-3">
+                    <label asp-for="UserName" class="form-label">Nombre y apellido</label>
+                    <input asp-for="UserName" class="form-control" placeholder="Berlinguieri, Carlos" required />
+                    <span asp-validation-for="UserName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="UserEmail" class="form-label">Correo electrónico</label>
+                    <input asp-for="UserEmail" type="email" class="form-control" placeholder="usuario@mail.com" required />
+                    <span asp-validation-for="UserEmail" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label">Contraseña</label>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="Creá una contraseña" required />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ConfirmPassword" class="form-label">Confirmar contraseña</label>
+                    <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Repetí la contraseña" required />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Registrar organización</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
