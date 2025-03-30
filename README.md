@@ -2,6 +2,7 @@
 
 - [Membriana](#membriana)
   - [Features](#features)
+  - [Screenshots](#screenshots)
   - [Setup Instructions](#setup-instructions)
     - [Configuration Parameters](#configuration-parameters)
     - [NuGet Packages](#nuget-packages)
@@ -19,6 +20,10 @@ Membriana offers the following functionalities:
 - **Pricing Management**: Configure different membership types with custom pricing.
 - **Multi-User Access**: Role-based access for admins, operators, and other users.
 - **Payment Gateway Integration**: Connect with online payment platforms.
+
+## Screenshots
+
+![ERD](https://i.imgur.com/fAL0oJb.png)
 
 ## Setup Instructions
 
@@ -73,6 +78,8 @@ Install each of the following **NuGet Packages** for the respective projects acc
 | [Domain](./src/Domain/) | [Microsoft.EntityFrameworkCore.SqlServer](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.SqlServer/) | Enables Microsoft SQL Server. |
 | [Domain](./src/Domain/) | [Microsoft.EntityFrameworkCore.Tools](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Tools/) | Enables migrations. |
 | [Mvc](./src/Mvc/) | [Microsoft.EntityFrameworkCore.Design](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Design/) | Enables migrations. |
+| [Domain](./src/Domain/), [Infrastructure](./src/Infrastructure/) | [Microsoft.AspNetCore.Identity.EntityFrameworkCore](https://www.nuget.org/packages/Microsoft.AspNetCore.Identity.EntityFrameworkCore/) | User authentication. |
+| [Domain](./src/Domain/) | [Microsoft.AspNetCore.Mvc.Core](https://www.nuget.org/packages/Microsoft.AspNetCore.Mvc.Core/) | ValidateNever annotation. |
 
 >[!TIP]
 &nbsp;
