@@ -1,5 +1,8 @@
 use membriana_db;
 
+SET
+    QUOTED_IDENTIFIER ON;
+
 go
 ------------
 -- IMAGES --
@@ -83,12 +86,6 @@ print 'Inserting dummy data into Employees table...';
 
 go
 insert into
-    Employees (
-        AdmissionDate,
-        OrganizationId
-    )
+    Employees (Id, AdmissionDate, OrganizationId)
 values
-    (
-        '2025-03-25',
-        1
-    );
+    (1, '2025-03-25', 1);
