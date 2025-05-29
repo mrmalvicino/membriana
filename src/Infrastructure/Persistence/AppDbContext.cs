@@ -43,13 +43,13 @@ namespace Infrastructure.Persistence
                 .HasOne(o => o.LogoImage)
                 .WithOne()
                 .HasForeignKey<Organization>(o => o.LogoImageId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Person>()
                 .HasOne(p => p.ProfileImage)
                 .WithOne()
                 .HasForeignKey<Person>(p => p.ProfileImageId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Restrict);
 
             // 1-to-many relationships
 
@@ -57,25 +57,31 @@ namespace Infrastructure.Persistence
                 .HasMany(o => o.Employees)
                 .WithOne(e => e.Organization)
                 .HasForeignKey(e => e.OrganizationId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Organization>()
                 .HasMany(o => o.Members)
                 .WithOne(m => m.Organization)
                 .HasForeignKey(m => m.OrganizationId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Organization>()
                 .HasMany(o => o.MembershipPlans)
                 .WithOne(p => p.Organization)
                 .HasForeignKey(p => p.OrganizationId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Member>()
                 .HasMany(p => p.Payments)
                 .WithOne(m => m.Member)
                 .HasForeignKey(m => m.MemberId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Member>()
+                .HasOne(m => m.MembershipPlan)
+                .WithMany(p => p.Members)
+                .HasForeignKey(m => m.MembershipPlanId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // SQL data types
 
