@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Domain.Entities;
 using Application.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Application.Services;
 using Mvc.Filters;
-using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Mvc.Controllers

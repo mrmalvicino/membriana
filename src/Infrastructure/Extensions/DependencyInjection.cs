@@ -1,6 +1,5 @@
 ﻿using Application.Repositories;
 using Application.Services;
-using Domain.Entities;
 using Infrastructure.Persistence;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
