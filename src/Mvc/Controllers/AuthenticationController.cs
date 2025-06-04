@@ -1,106 +1,82 @@
-﻿using Application.Repositories;
-using Domain.Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Mvc.Dtos.Authentication;
 using Mvc.Models;
+using System.Text;
+using System.Text.Json;
 
 namespace Mvc.Controllers
 {
     public class AuthenticationController : Controller
     {
-        private readonly UserManager<AppUser> _userManager;
-        private readonly SignInManager<AppUser> _signInManager;
-        private readonly IOrganizationRepository _organizationRepository;
+        private readonly HttpClient _httpClient;
 
-        public AuthenticationController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IOrganizationRepository organizationRepository)
+        public AuthenticationController(HttpClient httpClient)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _organizationRepository = organizationRepository;
+            _httpClient = httpClient;
         }
 
+        [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
-
-                if (user != null)
-                {
-                    var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
-
-                    if (result.Succeeded)
-                    {
-                        return RedirectToAction("Dashboard", "Home");
-                    }
-                }
-
-                ModelState.AddModelError(string.Empty, "Datos inválidos");
+                return View(model);
             }
 
-            return View(model);
-        }
+            var content = new StringContent(
+                JsonSerializer.Serialize(model),
+                Encoding.UTF8, "application/json"
+            );
 
-        public IActionResult Register()
-        {
-            return View();
+            var response = await _httpClient.PostAsync(
+                "https://localhost:7076/api/authentication/login",
+                content
+            );
+
+            if (!response.IsSuccessStatusCode)
+            {
+                ModelState.AddModelError("", "Credenciales inválidas");
+                return View(model);
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            var tokenResponse = JsonSerializer.Deserialize<TokenResponseDto>(json,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }
+            );
+
+            if (tokenResponse is null || string.IsNullOrWhiteSpace(tokenResponse.Token))
+            {
+                ModelState.AddModelError("", "No se recibió un token válido");
+                return View(model);
+            }
+
+            Response.Cookies.Append("jwt", tokenResponse.Token,
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTimeOffset.UtcNow.AddHours(1)
+                }
+            );
+
+            return RedirectToAction("Dashboard", "Home");
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public IActionResult Logout()
         {
-            if (ModelState.IsValid)
-            {
-                var organization = new Organization
-                {
-                    Active = true,
-                    Name = model.OrganizationName,
-                    Email = model.OrganizationEmail,
-                    PricingPlanId = 1
-                };
-
-                organization = await _organizationRepository.AddAsync(organization);
-
-                var user = new AppUser
-                {
-                    UserName = model.UserEmail,
-                    Email = model.UserEmail,
-                    NormalizedEmail = model.UserEmail,
-                    EmailConfirmed = true,
-                    OrganizationId = organization.Id
-                };
-
-                var result = await _userManager.CreateAsync(user, model.Password);
-
-                if (result.Succeeded)
-                {
-                    await _userManager.AddToRoleAsync(user, "Admin");
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Dashboard", "Home");
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
-                }
-            }
-
-            return View(model);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
-        {
-            await _signInManager.SignOutAsync();
+            Response.Cookies.Delete("jwt");
             return RedirectToAction("Login", "Authentication");
         }
     }
