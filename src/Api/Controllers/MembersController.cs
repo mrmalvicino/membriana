@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Domain.Entities;
+﻿using Application.Dtos.Member;
 using Application.Repositories;
+using AutoMapper;
+using Domain.Entities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
@@ -9,21 +11,40 @@ namespace Api.Controllers
     public class MembersController : ControllerBase
     {
         private readonly IMemberRepository _memberRepository;
+        private readonly IMapper _mapper;
 
-        public MembersController(IMemberRepository memberRepository)
+        public MembersController(
+            IMemberRepository memberRepository,
+            IMapper mapper
+        )
         {
             _memberRepository = memberRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int organizationId)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<ActionResult<IEnumerable<MemberReadDto>>> GetAll(
+            [FromQuery] int organizationId
+        )
         {
             var members = await _memberRepository.GetAllAsync(organizationId);
-            return Ok(members);
+
+            if (!members.Any())
+            {
+                return NoContent();
+            }
+
+            var readDtos = _mapper.Map<IEnumerable<MemberReadDto>>(members);
+
+            return Ok(readDtos);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<MemberReadDto>> Get(int id)
         {
             var member = await _memberRepository.GetByIdAsync(id);
 
@@ -32,32 +53,50 @@ namespace Api.Controllers
                 return NotFound();
             }
 
-            return Ok(member);
+            var readDto = _mapper.Map<MemberReadDto>(member);
+
+            return Ok(readDto);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Member member)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        public async Task<ActionResult<MemberReadDto>> Create(
+            [FromBody] MemberCreateDto createDto
+        )
         {
+            var member = _mapper.Map<Member>(createDto);
             var created = await _memberRepository.AddAsync(member);
-            return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
+            var readDto = _mapper.Map<MemberReadDto>(created);
+
+            return CreatedAtAction(nameof(Get), new { id = readDto.Id }, readDto);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Member member)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<MemberReadDto>> Update(
+            int id,
+            [FromBody] MemberUpdateDto updateDto
+        )
         {
-            if (id != member.Id)
+            if (id != updateDto.Id)
             {
                 return BadRequest();
             }
 
+            var member = _mapper.Map<Member>(updateDto);
             var updated = await _memberRepository.UpdateAsync(member);
-            return Ok(updated);
+            var readDto = _mapper.Map<MemberReadDto>(updated);
+
+            return Ok(readDto);
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Delete(int id)
         {
             await _memberRepository.DeleteAsync(id);
+
             return NoContent();
         }
     }

@@ -21,16 +21,21 @@ namespace Infrastructure.Repositories
             return await _dbSet.ToListAsync();
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync(int organizationId)
+        public virtual async Task<IEnumerable<T>> GetAllAsync(int organizationId)
         {
-            return await _dbSet
-                .Where(e => EF.Property<int>(e, "OrganizationId") == organizationId)
-                .ToListAsync();
+            var query = _dbSet
+                .Where(e => EF.Property<int>(e, "OrganizationId") == organizationId);
+
+            query = IncludeRelations(query);
+
+            return await query.ToListAsync();
         }
 
-        public async Task<T?> GetByIdAsync(int id)
+        public virtual async Task<T?> GetByIdAsync(int id)
         {
-            return await _dbSet.FindAsync(id);
+            var query = _dbSet.AsQueryable();
+            query = IncludeRelations(query);
+            return await query.FirstOrDefaultAsync(e => e.Id == id);
         }
 
         public async Task<T> AddAsync(T entity)
@@ -68,6 +73,11 @@ namespace Infrastructure.Repositories
                 _dbSet.Remove(entity);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        protected virtual IQueryable<T> IncludeRelations(IQueryable<T> query)
+        {
+            return query;
         }
     }
 }
