@@ -16,7 +16,7 @@ namespace Infrastructure.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<int> GetOrganizationId()
+        public async Task<int> GetOrganizationIdAsync()
         {
             var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
 

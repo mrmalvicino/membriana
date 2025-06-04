@@ -2,6 +2,6 @@
 {
     public interface IUserService
     {
-        Task<int> GetOrganizationId();
+        Task<int> GetOrganizationIdAsync();
     }
 }
