@@ -1,7 +1,7 @@
-using System.Diagnostics;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Mvc.Filters;
 using Mvc.Models;
+using System.Diagnostics;
 
 namespace Mvc.Controllers
 {
@@ -30,7 +30,7 @@ namespace Mvc.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        [Authorize]
+        [JwtAuthorizationFilter]
         public IActionResult Dashboard()
         {
             return View();

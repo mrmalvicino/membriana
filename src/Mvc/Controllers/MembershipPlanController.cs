@@ -1,31 +1,31 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Domain.Entities;
-using Application.Repositories;
-using Application.Services;
-using Microsoft.AspNetCore.Authorization;
 using Mvc.Filters;
+using Mvc.Models;
+using Mvc.Services.Interfaces;
 
 namespace Mvc.Controllers
 {
-    [Authorize]
+    //[JwtAuthorizationFilter]
     public class MembershipPlanController : Controller
     {
-        private readonly IMembershipPlanRepository _membershipPlanRepository;
-        private readonly IUserService _userService;
+        private readonly IMembershipPlanApiService _membershipPlanApi;
+        private readonly IUserApiService _userApi;
 
-        public MembershipPlanController(IMembershipPlanRepository membershipPlanRepository, IUserService userService)
+        public MembershipPlanController(IMembershipPlanApiService membershipPlanService, IUserApiService userService)
         {
-            _membershipPlanRepository = membershipPlanRepository;
-            _userService = userService;
+            _membershipPlanApi = membershipPlanService;
+            _userApi = userService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            int organizationId = await _userService.GetOrganizationId();
-            var membershipPlans = await _membershipPlanRepository.GetAllAsync(organizationId);
+            int organizationId = await _userApi.GetOrganizationIdAsync();
+            var membershipPlans = await _membershipPlanApi.GetAllAsync(organizationId);
             return View(membershipPlans);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,14 +33,14 @@ namespace Mvc.Controllers
                 return NotFound();
             }
 
-            var membershipPlan = await _membershipPlanRepository.GetByIdAsync(id.Value);
+            var membershipPlan = await _membershipPlanApi.GetByIdAsync(id.Value);
 
             if (membershipPlan == null)
             {
                 return NotFound();
             }
 
-            if (await _userService.GetOrganizationId() != membershipPlan.OrganizationId)
+            if (membershipPlan.OrganizationId != await _userApi.GetOrganizationIdAsync())
             {
                 return NotFound();
             }
@@ -55,12 +55,12 @@ namespace Mvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(MembershipPlan membershipPlan)
+        public async Task<IActionResult> Create(MembershipPlanViewModel membershipPlan)
         {
             if (ModelState.IsValid)
             {
-                membershipPlan.OrganizationId = await _userService.GetOrganizationId();
-                membershipPlan = await _membershipPlanRepository.AddAsync(membershipPlan);
+                membershipPlan.OrganizationId = await _userApi.GetOrganizationIdAsync();
+                await _membershipPlanApi.CreateAsync(membershipPlan);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -68,7 +68,6 @@ namespace Mvc.Controllers
         }
 
         [HttpGet]
-        [Route("planes/editar/{id}")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -76,14 +75,14 @@ namespace Mvc.Controllers
                 return NotFound();
             }
 
-            var membershipPlan = await _membershipPlanRepository.GetByIdAsync(id.Value);
+            var membershipPlan = await _membershipPlanApi.GetByIdAsync(id.Value);
 
             if (membershipPlan == null)
             {
                 return NotFound();
             }
 
-            if (await _userService.GetOrganizationId() != membershipPlan.OrganizationId)
+            if (membershipPlan.OrganizationId != await _userApi.GetOrganizationIdAsync())
             {
                 return NotFound();
             }
@@ -92,21 +91,20 @@ namespace Mvc.Controllers
         }
 
         [HttpPost]
-        [Route("planes/editar/{id}")]
         [ValidateAntiForgeryToken]
-        [ServiceFilter(typeof(TenancyWriteFilter<MembershipPlan, IMembershipPlanRepository>))]
-        public async Task<IActionResult> Edit(MembershipPlan membershipPlan)
+        public async Task<IActionResult> Edit(MembershipPlanViewModel membershipPlan)
         {
             if (ModelState.IsValid)
             {
-                membershipPlan.OrganizationId = await _userService.GetOrganizationId();
-                membershipPlan = await _membershipPlanRepository.UpdateAsync(membershipPlan);
+                membershipPlan.OrganizationId = await _userApi.GetOrganizationIdAsync();
+                await _membershipPlanApi.UpdateAsync(membershipPlan);
                 return RedirectToAction(nameof(Index));
             }
 
             return View(membershipPlan);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -114,14 +112,14 @@ namespace Mvc.Controllers
                 return NotFound();
             }
 
-            var membershipPlan = await _membershipPlanRepository.GetByIdAsync(id.Value);
+            var membershipPlan = await _membershipPlanApi.GetByIdAsync(id.Value);
 
             if (membershipPlan == null)
             {
                 return NotFound();
             }
 
-            if (await _userService.GetOrganizationId() != membershipPlan.OrganizationId)
+            if (membershipPlan.OrganizationId != await _userApi.GetOrganizationIdAsync())
             {
                 return NotFound();
             }
@@ -133,7 +131,7 @@ namespace Mvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _membershipPlanRepository.DeleteAsync(id);
+            await _membershipPlanApi.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
     }

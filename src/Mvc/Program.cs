@@ -1,8 +1,6 @@
-using Domain.Entities;
-using Infrastructure.Extensions;
-using Infrastructure.Persistence;
-using Microsoft.AspNetCore.Identity;
-using Mvc.Filters;
+using Mvc.Services;
+using Mvc.Services.Handlers;
+using Mvc.Services.Interfaces;
 
 namespace Mvc
 {
@@ -12,12 +10,20 @@ namespace Mvc
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-            builder.Services.AddInfrastructure(connectionString);
+            builder.Services.AddHttpClient<IMemberApiService, MemberApiService>(client =>
+            {
+                client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
+            });
 
-            builder.Services.AddIdentity<AppUser, IdentityRole>()
-                .AddEntityFrameworkStores<AppDbContext>()
-                .AddDefaultTokenProviders();
+            builder.Services.AddHttpClient<IMembershipPlanApiService, MembershipPlanApiService>(client =>
+            {
+                client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
+            });
+
+            builder.Services.AddHttpClient<IUserApiService, UserApiService>(client =>
+            {
+                client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
+            });
 
             builder.Services.ConfigureApplicationCookie(
                 options =>
@@ -27,8 +33,23 @@ namespace Mvc
                 }
             );
 
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddTransient<JwtCookieHandler>();
+
+            builder.Services.AddHttpClient<IUserApiService, UserApiService>()
+                .AddHttpMessageHandler<JwtCookieHandler>();
+
+            builder.Services.AddHttpClient<IMemberApiService, MemberApiService>()
+                .AddHttpMessageHandler<JwtCookieHandler>();
+
+            builder.Services.AddHttpClient<IMembershipPlanApiService, MembershipPlanApiService>()
+                .AddHttpMessageHandler<JwtCookieHandler>();
+
             builder.Services.AddControllersWithViews();
-            builder.Services.AddScoped(typeof(TenancyWriteFilter<,>));
+            builder.Services.AddSession();
 
             var app = builder.Build();
 
@@ -41,6 +62,7 @@ namespace Mvc
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+            app.UseSession();
             app.UseAuthentication();
             app.UseAuthorization();
 
