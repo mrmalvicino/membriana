@@ -4,16 +4,16 @@ using Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Mvc.Filters
+namespace Api.Filters
 {
-    public class TenancyWriteFilter<T, R> : IAsyncActionFilter
+    public class TenancyFilter<T, R> : IAsyncActionFilter
         where T : class, IIdentifiable
         where R : IBaseRepository<T>
     {
         private readonly IUserService _userService;
         private readonly R _repository;
 
-        public TenancyWriteFilter(IUserService userService, R repository)
+        public TenancyFilter(IUserService userService, R repository)
         {
             _userService = userService;
             _repository = repository;
@@ -41,7 +41,7 @@ namespace Mvc.Filters
                 return;
             }
 
-            int organizationId = await _userService.GetOrganizationId();
+            int organizationId = await _userService.GetOrganizationIdAsync();
             var entityOrganizationId = (int)organizationIdProperty.GetValue(entity);
 
             if (entityOrganizationId != organizationId)
