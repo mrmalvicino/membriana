@@ -1,4 +1,4 @@
-﻿@model Domain.Entities.Member
+﻿@model MemberViewModel
 
 @{
     Layout = "_LayoutAdmin";
@@ -30,7 +30,7 @@
                         </div>
                         <div class="form-group mb-3">
                             <label asp-for="MembershipPlanId" class="control-label"></label>
-                            <select asp-for="MembershipPlanId" class="form-control" asp-items="ViewBag.MembershipPlanId">
+                            <select asp-for="MembershipPlanId" class="form-control" asp-items="ViewBag.MembershipPlans">
                                 <option selected="selected" value="">Elegir plan de pago</option>
                             </select>
                         </div>
