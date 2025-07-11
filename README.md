@@ -4,7 +4,8 @@
   - [Features](#features)
   - [Screenshots](#screenshots)
   - [Setup Instructions](#setup-instructions)
-    - [Configuration Parameters](#configuration-parameters)
+    - [Configuration Parameters: Frontend](#configuration-parameters-frontend)
+    - [Configuration Parameters: Backend](#configuration-parameters-backend)
     - [NuGet Packages](#nuget-packages)
   - [License and Contributions](#license-and-contributions)
 
@@ -26,7 +27,7 @@ Membriana offers the following functionalities:
 
 ## Setup Instructions
 
-### Configuration Parameters
+### Configuration Parameters: Frontend
 
 > [!IMPORTANT]
 &nbsp;
@@ -41,10 +42,42 @@ Create a file named `appsettings.json` in the [Mvc](./src/Mvc/) project director
     }
   },
   "AllowedHosts": "*",
+  "ApiBaseUrl": "API_BASE_URL"
+}
+```
+
+&nbsp;
+The following table details the parameters which need to be modified:
+
+| Parameter | Key | Details | Example |
+|-|-|-|-|
+| `API_BASE_URL` | `ApiBaseUrl` | URL where the API is running. | https://localhost:7076 |
+
+### Configuration Parameters: Backend
+
+> [!IMPORTANT]
+&nbsp;
+Create a file named `appsettings.json` in the [Api](./src/Api/) project directory, modifying the following template code:
+
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
   "ConnectionStrings": {
     "DefaultConnection": "Data Source=.\\SQLEXPRESS; Initial Catalog=membriana_db; Integrated Security=True",
     "LOCAL_SERVER_NAME": "Data Source=CUSTOM_PATH\\SQLEXPRESS; Initial Catalog=membriana_db; Integrated Security=True",
     "EXTERNAL_SERVER_NAME": "Data Source=SERVER_ADDRESS_OR_IP; Initial Catalog=membriana_db; User ID=USERNAME; Password=PASSWORD; Connect Timeout=30; TrustServerCertificate=True;"
+  },
+  "Jwt": {
+    "Key": "SECRET_KEY",
+    "Issuer": "Membriana.Api",
+    "Audience": "Membriana.Mvc",
+    "ExpireMinutes": 60
   }
 }
 ```
@@ -52,14 +85,15 @@ Create a file named `appsettings.json` in the [Mvc](./src/Mvc/) project director
 &nbsp;
 The following table details the parameters which need to be modified:
 
-| Parameter | Section | Details |
+| Parameter | Key | Details |
 |-|-|-|
-| `LOCAL_SERVER_NAME` | connectionStrings | Name of the local server string. |
-| `CUSTOM_PATH` | connectionStrings | Path where SQL Express was installed. |
-| `EXTERNAL_SERVER_NAME` | connectionStrings | Name of the external server string. |
-| `SERVER_ADDRESS_OR_IP` | connectionStrings | URL address or IP of the external server. |
-| `USERNAME` | connectionStrings | Username to access the external server. |
-| `PASSWORD` | connectionStrings | Password to access the external server. |
+| `LOCAL_SERVER_NAME` | `ConnectionStrings` | Name of the local server string. |
+| `CUSTOM_PATH` | `ConnectionStrings` | Path where SQL Express was installed. |
+| `EXTERNAL_SERVER_NAME` | `ConnectionStrings` | Name of the external server string. |
+| `SERVER_ADDRESS_OR_IP` | `ConnectionStrings` | URL address or IP of the external server. |
+| `USERNAME` | `ConnectionStrings` | Username to access the external server. |
+| `PASSWORD` | `ConnectionStrings` | Password to access the external server. |
+| `SECRET_KEY` | `Jwt` | Random string for signing JWTs. |
 
 > [!TIP]
 &nbsp;
@@ -71,14 +105,17 @@ You can replace `DefaultConnection` in [Program.cs](./src/Mvc/Program.cs) by the
 &nbsp;
 Install each of the following **NuGet Packages** for the respective projects according to the following table:
 
-| Projects | NuGet Package | Purpose |
-|-|-|-|
-| [Domain](./src/Domain/) | [Microsoft.EntityFrameworkCore](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore/) | ORM for database generation. |
-| [Domain](./src/Domain/) | [Microsoft.EntityFrameworkCore.SqlServer](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.SqlServer/) | Enables Microsoft SQL Server. |
-| [Domain](./src/Domain/) | [Microsoft.EntityFrameworkCore.Tools](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Tools/) | Enables migrations. |
-| [Mvc](./src/Mvc/) | [Microsoft.EntityFrameworkCore.Design](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Design/) | Enables migrations. |
-| [Domain](./src/Domain/), [Infrastructure](./src/Infrastructure/) | [Microsoft.AspNetCore.Identity.EntityFrameworkCore](https://www.nuget.org/packages/Microsoft.AspNetCore.Identity.EntityFrameworkCore/) | User authentication. |
-| [Domain](./src/Domain/) | [Microsoft.AspNetCore.Mvc.Core](https://www.nuget.org/packages/Microsoft.AspNetCore.Mvc.Core/) | ValidateNever annotation. |
+| Projects | NuGet Package | Version | Purpose |
+|-|-|-|-|
+| [Domain](./src/Domain/) | [EntityFrameworkCore](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore/) | Latest | ORM for database generation. |
+| [Domain](./src/Domain/) | [EntityFrameworkCore.SqlServer](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.SqlServer/) | Latest | Enables Microsoft SQL Server. |
+| [Domain](./src/Domain/) | [EntityFrameworkCore.Tools](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Tools/) | Latest | Enables migrations. |
+| [Domain](./src/Domain/) | [AspNetCore.Mvc.Core](https://www.nuget.org/packages/Microsoft.AspNetCore.Mvc.Core/) | Latest | ValidateNever annotation. |
+| [Domain](./src/Domain/), [Infrastructure](./src/Infrastructure/) | [Identity.EntityFrameworkCore](https://www.nuget.org/packages/Microsoft.AspNetCore.Identity.EntityFrameworkCore/) | Latest | User authentication. |
+| [Api](./src/Api/) | [JwtBearer](https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.JwtBearer/) | 8.0.16 | JWT Authentication. |
+| [Api](./src/Api/) | [Tokens.Jwt](https://www.nuget.org/packages/System.IdentityModel.Tokens.Jwt) | 8.11.0 | JWT Authentication. |
+| [Mvc](./src/Mvc/) | [EntityFrameworkCore.Design](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Design/) | 9.0.5 | Enables migrations. |
+| [Application](./src/Application/), [Mvc](./src/Mvc/) | [AutoMapper](https://www.nuget.org/packages/AutoMapper.Extensions.Microsoft.DependencyInjection/) | 12.0.1 | DTOs and Views mapping. |
 
 >[!TIP]
 &nbsp;
