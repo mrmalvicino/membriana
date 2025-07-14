@@ -1,3 +1,4 @@
+using Api.Filters;
 using Domain.Entities;
 using Infrastructure.Extensions;
 using Infrastructure.Persistence;
@@ -18,7 +19,8 @@ namespace Api
 
             builder.Services.AddInfrastructure(connectionString);
 
-            //builder.Services.AddScoped(typeof(TenancyWriteFilter<,>));
+            builder.Services.AddScoped<TenancyQueryFilter>();
+            builder.Services.AddScoped(typeof(TenancyRouteFilter<,>));
 
             builder.Services.AddIdentity<AppUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()

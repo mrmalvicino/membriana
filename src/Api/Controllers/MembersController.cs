@@ -1,5 +1,7 @@
-﻿using Application.Dtos.Member;
+﻿using Api.Filters;
+using Application.Dtos.Member;
 using Application.Repositories;
+using Application.Services;
 using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -11,20 +13,24 @@ namespace Api.Controllers
     public class MembersController : ControllerBase
     {
         private readonly IMemberRepository _memberRepository;
+        private readonly IUserService _userService;
         private readonly IMapper _mapper;
 
         public MembersController(
             IMemberRepository memberRepository,
+            IUserService userService,
             IMapper mapper
         )
         {
             _memberRepository = memberRepository;
+            _userService = userService;
             _mapper = mapper;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ServiceFilter(typeof(TenancyQueryFilter))]
         public async Task<ActionResult<IEnumerable<MemberReadDto>>> GetAll(
             [FromQuery] int organizationId
         )
@@ -44,6 +50,7 @@ namespace Api.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ServiceFilter(typeof(TenancyRouteFilter<Member, IMemberRepository>))]
         public async Task<ActionResult<MemberReadDto>> Get(int id)
         {
             var member = await _memberRepository.GetByIdAsync(id);
@@ -64,6 +71,13 @@ namespace Api.Controllers
             [FromBody] MemberCreateDto createDto
         )
         {
+            int userOrgId = await _userService.GetOrganizationIdAsync();
+
+            if (createDto.OrganizationId != userOrgId)
+            {
+                return Forbid();
+            }
+
             var member = _mapper.Map<Member>(createDto);
             var created = await _memberRepository.AddAsync(member);
             var readDto = _mapper.Map<MemberReadDto>(created);
@@ -74,6 +88,7 @@ namespace Api.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ServiceFilter(typeof(TenancyRouteFilter<Member, IMemberRepository>))]
         public async Task<ActionResult<MemberReadDto>> Update(
             int id,
             [FromBody] MemberUpdateDto updateDto
@@ -93,6 +108,7 @@ namespace Api.Controllers
 
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ServiceFilter(typeof(TenancyRouteFilter<Member, IMemberRepository>))]
         public async Task<IActionResult> Delete(int id)
         {
             await _memberRepository.DeleteAsync(id);

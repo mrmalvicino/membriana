@@ -1,5 +1,7 @@
-﻿using Application.Dtos.MembershipPlan;
+﻿using Api.Filters;
+using Application.Dtos.MembershipPlan;
 using Application.Repositories;
+using Application.Services;
 using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -11,20 +13,24 @@ namespace Api.Controllers
     public class MembershipPlansController : ControllerBase
     {
         private readonly IMembershipPlanRepository _membershipPlanRepository;
+        private readonly IUserService _userService;
         private readonly IMapper _mapper;
 
         public MembershipPlansController(
             IMembershipPlanRepository membershipPlanRepository,
+            IUserService userService,
             IMapper mapper
         )
         {
             _membershipPlanRepository = membershipPlanRepository;
+            _userService = userService;
             _mapper = mapper;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ServiceFilter(typeof(TenancyQueryFilter))]
         public async Task<ActionResult<IEnumerable<MembershipPlanReadDto>>> GetAll(
             [FromQuery] int organizationId
         )
@@ -44,6 +50,7 @@ namespace Api.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ServiceFilter(typeof(TenancyRouteFilter<MembershipPlan, IMembershipPlanRepository>))]
         public async Task<ActionResult<MembershipPlanReadDto>> Get(int id)
         {
             var membershipPlan = await _membershipPlanRepository.GetByIdAsync(id);
@@ -64,6 +71,13 @@ namespace Api.Controllers
             [FromBody] MembershipPlanCreateDto createDto
         )
         {
+            int userOrgId = await _userService.GetOrganizationIdAsync();
+
+            if (createDto.OrganizationId != userOrgId)
+            {
+                return Forbid();
+            }
+
             var membershipPlan = _mapper.Map<MembershipPlan>(createDto);
             var created = await _membershipPlanRepository.AddAsync(membershipPlan);
             var readDto = _mapper.Map<MembershipPlanReadDto>(created);
@@ -74,6 +88,7 @@ namespace Api.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ServiceFilter(typeof(TenancyRouteFilter<MembershipPlan, IMembershipPlanRepository>))]
         public async Task<ActionResult<MembershipPlanReadDto>> Update(
             int id,
             [FromBody] MembershipPlanUpdateDto updateDto
@@ -93,6 +108,7 @@ namespace Api.Controllers
 
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ServiceFilter(typeof(TenancyRouteFilter<MembershipPlan, IMembershipPlanRepository>))]
         public async Task<IActionResult> Delete(int id)
         {
             await _membershipPlanRepository.DeleteAsync(id);
