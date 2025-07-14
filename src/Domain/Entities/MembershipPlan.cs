@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entities
 {
-    public class MembershipPlan : IIdentifiable
+    public class MembershipPlan : IIdentifiable, ITenantable
     {
         public int Id { get; set; }
 

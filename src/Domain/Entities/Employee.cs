@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entities
 {
-    public class Employee : Person, IIdentifiable
+    public class Employee : Person, IIdentifiable, ITenantable
     {
         [Display(Name = "Fecha de admisión")]
         [Required]
