@@ -6,14 +6,14 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Api.Filters
 {
-    public class TenancyFilter<T, R> : IAsyncActionFilter
-        where T : class, IIdentifiable
+    public class TenancyRouteFilter<T, R> : IAsyncActionFilter
+        where T : class, IIdentifiable, ITenantable
         where R : IBaseRepository<T>
     {
         private readonly IUserService _userService;
         private readonly R _repository;
 
-        public TenancyFilter(IUserService userService, R repository)
+        public TenancyRouteFilter(IUserService userService, R repository)
         {
             _userService = userService;
             _repository = repository;
@@ -21,11 +21,11 @@ namespace Api.Filters
 
         public async Task OnActionExecutionAsync(ActionExecutingContext filterContext, ActionExecutionDelegate next)
         {
-            int id;
             var urlId = filterContext.RouteData.Values["id"] as string;
+            int id;
             int.TryParse(urlId, out id);
 
-            var entity = await _repository.GetByIdAsync(id);
+            T? entity = await _repository.GetByIdAsync(id);
 
             if (entity == null)
             {
@@ -33,18 +33,9 @@ namespace Api.Filters
                 return;
             }
 
-            var organizationIdProperty = typeof(T).GetProperty("OrganizationId");
+            int userOrgId = await _userService.GetOrganizationIdAsync();
 
-            if (organizationIdProperty == null)
-            {
-                filterContext.Result = new BadRequestResult();
-                return;
-            }
-
-            int organizationId = await _userService.GetOrganizationIdAsync();
-            var entityOrganizationId = (int)organizationIdProperty.GetValue(entity);
-
-            if (entityOrganizationId != organizationId)
+            if (entity.OrganizationId != userOrgId)
             {
                 filterContext.Result = new NotFoundResult();
                 return;
