@@ -2,8 +2,8 @@
 {
     public enum PricingPlan
     {
-        Free,
-        Professional,
-        Enterprise
+        Free = 1,
+        Professional = 2,
+        Enterprise = 3
     }
 }

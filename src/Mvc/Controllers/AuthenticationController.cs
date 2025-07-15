@@ -9,10 +9,12 @@ namespace Mvc.Controllers
     public class AuthenticationController : Controller
     {
         private readonly HttpClient _httpClient;
+        private readonly string _apiBaseUrl;
 
-        public AuthenticationController(HttpClient httpClient)
+        public AuthenticationController(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _apiBaseUrl = configuration.GetValue<string>("ApiBaseUrl");
         }
 
         [HttpGet]
@@ -34,10 +36,8 @@ namespace Mvc.Controllers
                 Encoding.UTF8, "application/json"
             );
 
-            var response = await _httpClient.PostAsync(
-                "https://localhost:7076/api/authentication/login",
-                content
-            );
+            var url = $"{_apiBaseUrl}api/authentication/login";
+            var response = await _httpClient.PostAsync(url, content);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -69,6 +69,38 @@ namespace Mvc.Controllers
                     Expires = DateTimeOffset.UtcNow.AddHours(1)
                 }
             );
+
+            return RedirectToAction("Dashboard", "Home");
+        }
+
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var content = new StringContent(
+                JsonSerializer.Serialize(model),
+                Encoding.UTF8, "application/json"
+            );
+
+            var url = $"{_apiBaseUrl}api/authentication/register";
+            var response = await _httpClient.PostAsync(url, content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                ModelState.AddModelError("", "Datos inválidos");
+                return View(model);
+            }
 
             return RedirectToAction("Dashboard", "Home");
         }
