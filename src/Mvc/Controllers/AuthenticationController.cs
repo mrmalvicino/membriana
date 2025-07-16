@@ -98,7 +98,35 @@ namespace Mvc.Controllers
 
             if (!response.IsSuccessStatusCode)
             {
-                ModelState.AddModelError("", "Datos inválidos");
+                var errorContent = await response.Content.ReadAsStringAsync();
+
+                try
+                {
+                    var errorResponse = JsonSerializer.Deserialize<ErrorResponseDto>(
+                        errorContent,
+                        new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        }
+                    );
+
+                    if (errorResponse != null && errorResponse.Errors != null)
+                    {
+                        foreach (var error in errorResponse.Errors)
+                        {
+                            ModelState.AddModelError("", error);
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Datos inválidos");
+                    }
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError("", "Error al procesar la respuesta del servidor.");
+                }
+
                 return View(model);
             }
 
