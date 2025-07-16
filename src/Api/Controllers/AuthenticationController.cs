@@ -39,7 +39,7 @@ namespace Api.Controllers
                 return Unauthorized("Mail inválido.");
             }
 
-            if (await _userManager.CheckPasswordAsync(user, dto.Password))
+            if (!await _userManager.CheckPasswordAsync(user, dto.Password))
             {
                 return Unauthorized("Contraseña inválida.");
             }
