@@ -16,17 +16,17 @@ namespace Api.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IConfiguration _configuration;
-        private readonly IOrganizationRepository _organizationRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
         public AuthenticationController(
             UserManager<AppUser> userManager,
             IConfiguration configuration,
-            IOrganizationRepository organizationRepository
+            IUnitOfWork unitOfWork
         )
         {
             _userManager = userManager;
             _configuration = configuration;
-            _organizationRepository = organizationRepository;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpPost("login")]
@@ -86,72 +86,85 @@ namespace Api.Controllers
                 return Unauthorized("Mail de usuario en uso.");
             }
 
-            var organization = new Organization
+            await _unitOfWork.BeginTransactionAsync();
+
+            try
             {
-                Active = true,
-                Name = dto.OrganizationName,
-                Email = dto.OrganizationEmail,
-                PricingPlanId = (int)Domain.Enums.PricingPlan.Free
-            };
-
-            organization = await _organizationRepository.AddAsync(organization);
-
-            var user = new AppUser
-            {
-                UserName = dto.UserEmail,
-                Email = dto.UserEmail,
-                NormalizedEmail = dto.UserEmail,
-                EmailConfirmed = true,
-                OrganizationId = organization.Id
-            };
-
-            var result = await _userManager.CreateAsync(user, dto.Password);
-
-            if (!result.Succeeded)
-            {
-                var errors = result.Errors.Select(e => e.Description);
-                return BadRequest(new { errors });
-            }
-
-            await _userManager.AddToRoleAsync(user, "Admin");
-
-            var roles = await _userManager.GetRolesAsync(user);
-
-            var authClaims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Email, user.Email ?? ""),
-                new Claim("OrganizationId", user.OrganizationId.ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            foreach (var role in roles)
-            {
-                authClaims.Add(new Claim(ClaimTypes.Role, role));
-            }
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
-
-            var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
-                expires: DateTime.UtcNow.AddMinutes(double.Parse(_configuration["Jwt:ExpireMinutes"]!)),
-                claims: authClaims,
-                signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
-            );
-
-            return Ok(
-                new RegisterResponseDto
+                var organization = new Organization
                 {
-                    Token = new JwtSecurityTokenHandler().WriteToken(token),
-                    Expiration = token.ValidTo,
-                    OrganizationId = organization.Id,
-                    OrganizationName = organization.Name,
-                    OrganizationEmail = organization.Email,
-                    UserId = user.Id,
-                    UserEmail = user.Email
+                    Active = true,
+                    Name = dto.OrganizationName,
+                    Email = dto.OrganizationEmail,
+                    PricingPlanId = (int)Domain.Enums.PricingPlan.Free
+                };
+
+                organization = await _unitOfWork.OrganizationRepository.AddAsync(organization);
+
+                var user = new AppUser
+                {
+                    UserName = dto.UserEmail,
+                    Email = dto.UserEmail,
+                    NormalizedEmail = dto.UserEmail,
+                    EmailConfirmed = true,
+                    OrganizationId = organization.Id
+                };
+
+                var result = await _userManager.CreateAsync(user, dto.Password);
+
+                if (!result.Succeeded)
+                {
+                    var errors = result.Errors.Select(e => e.Description);
+                    await _unitOfWork.RollbackAsync();
+                    return BadRequest(new { errors });
                 }
-            );
+
+                await _userManager.AddToRoleAsync(user, "Admin");
+
+                await _unitOfWork.CommitAsync();
+
+                var roles = await _userManager.GetRolesAsync(user);
+
+                var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id),
+                    new Claim(ClaimTypes.Email, user.Email ?? ""),
+                    new Claim("OrganizationId", user.OrganizationId.ToString()),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                };
+
+                foreach (var role in roles)
+                {
+                    authClaims.Add(new Claim(ClaimTypes.Role, role));
+                }
+
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+
+                var token = new JwtSecurityToken(
+                    issuer: _configuration["Jwt:Issuer"],
+                    audience: _configuration["Jwt:Audience"],
+                    expires: DateTime.UtcNow.AddMinutes(double.Parse(_configuration["Jwt:ExpireMinutes"]!)),
+                    claims: authClaims,
+                    signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
+                );
+
+                return Ok(
+                    new RegisterResponseDto
+                    {
+                        Token = new JwtSecurityTokenHandler().WriteToken(token),
+                        Expiration = token.ValidTo,
+                        OrganizationId = organization.Id,
+                        OrganizationName = organization.Name,
+                        OrganizationEmail = organization.Email,
+                        UserId = user.Id,
+                        UserEmail = user.Email
+                    }
+                );
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }
