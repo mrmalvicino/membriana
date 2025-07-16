@@ -7,7 +7,7 @@ namespace Infrastructure.Repositories
 {
     public class MemberRepository : BaseRepository<Member>, IMemberRepository
     {
-        public MemberRepository(AppDbContext context) : base(context)
+        public MemberRepository(AppDbContext dbContext) : base(dbContext)
         {
 
         }

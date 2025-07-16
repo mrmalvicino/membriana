@@ -6,7 +6,7 @@ namespace Infrastructure.Repositories
 {
     public class OrganizationRepository : BaseRepository<Organization>, IOrganizationRepository
     {
-        public OrganizationRepository(AppDbContext context) : base(context)
+        public OrganizationRepository(AppDbContext dbContext) : base(dbContext)
         {
 
         }

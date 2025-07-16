@@ -7,13 +7,13 @@ namespace Infrastructure.Repositories
 {
     public abstract class BaseRepository<T> : IBaseRepository<T> where T : class, IIdentifiable
     {
-        protected readonly AppDbContext _context;
+        protected readonly AppDbContext _dbContext;
         protected readonly DbSet<T> _dbSet;
 
-        public BaseRepository(AppDbContext context)
+        public BaseRepository(AppDbContext dbContext)
         {
-            _context = context;
-            _dbSet = context.Set<T>();
+            _dbContext = dbContext;
+            _dbSet = dbContext.Set<T>();
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
@@ -41,7 +41,7 @@ namespace Infrastructure.Repositories
         public async Task<T> AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
-            await _context.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
             return entity;
         }
 
@@ -59,8 +59,8 @@ namespace Infrastructure.Repositories
                 throw new KeyNotFoundException("Categoria no encontrada.");
             }
 
-            _context.Entry(existingEntity).CurrentValues.SetValues(entity);
-            await _context.SaveChangesAsync();
+            _dbContext.Entry(existingEntity).CurrentValues.SetValues(entity);
+            await _dbContext.SaveChangesAsync();
             return entity;
         }
 
@@ -71,7 +71,7 @@ namespace Infrastructure.Repositories
             if (entity != null)
             {
                 _dbSet.Remove(entity);
-                await _context.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
             }
         }
 
