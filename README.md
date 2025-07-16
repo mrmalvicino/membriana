@@ -107,14 +107,14 @@ Install each of the following **NuGet Packages** for the respective projects acc
 
 | Projects | NuGet Package | Version | Purpose |
 |-|-|-|-|
+| [Domain](./src/Domain/) | [AspNetCore.Mvc.Core](https://www.nuget.org/packages/Microsoft.AspNetCore.Mvc.Core/) | Latest | ValidateNever annotation. |
 | [Domain](./src/Domain/) | [EntityFrameworkCore](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore/) | Latest | ORM for database generation. |
 | [Domain](./src/Domain/) | [EntityFrameworkCore.SqlServer](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.SqlServer/) | Latest | Enables Microsoft SQL Server. |
 | [Domain](./src/Domain/) | [EntityFrameworkCore.Tools](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Tools/) | Latest | Enables migrations. |
-| [Domain](./src/Domain/) | [AspNetCore.Mvc.Core](https://www.nuget.org/packages/Microsoft.AspNetCore.Mvc.Core/) | Latest | ValidateNever annotation. |
 | [Domain](./src/Domain/), [Infrastructure](./src/Infrastructure/) | [Identity.EntityFrameworkCore](https://www.nuget.org/packages/Microsoft.AspNetCore.Identity.EntityFrameworkCore/) | Latest | User authentication. |
+| [Infrastructure](./src/Infrastructure/) | [EntityFrameworkCore.Design](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Design/) | 9.0.5 | Enables migrations. |
 | [Api](./src/Api/) | [JwtBearer](https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.JwtBearer/) | 8.0.16 | JWT Authentication. |
 | [Api](./src/Api/) | [Tokens.Jwt](https://www.nuget.org/packages/System.IdentityModel.Tokens.Jwt) | 8.11.0 | JWT Authentication. |
-| [Mvc](./src/Mvc/) | [EntityFrameworkCore.Design](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Design/) | 9.0.5 | Enables migrations. |
 | [Application](./src/Application/), [Mvc](./src/Mvc/) | [AutoMapper](https://www.nuget.org/packages/AutoMapper.Extensions.Microsoft.DependencyInjection/) | 12.0.1 | DTOs and Views mapping. |
 
 >[!TIP]

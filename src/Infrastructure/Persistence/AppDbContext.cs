@@ -146,7 +146,7 @@ namespace Infrastructure.Persistence
             };
 
             var hasher = new PasswordHasher<AppUser>();
-            adminUser.PasswordHash = hasher.HashPassword(adminUser, "admin");
+            adminUser.PasswordHash = hasher.HashPassword(adminUser, "Password123-");
             builder.Entity<AppUser>().HasData(adminUser);
         }
     }
