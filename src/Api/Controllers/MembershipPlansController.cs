@@ -29,21 +29,13 @@ namespace Api.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ServiceFilter(typeof(TenancyQueryFilter))]
         public async Task<ActionResult<IEnumerable<MembershipPlanReadDto>>> GetAll(
             [FromQuery] int organizationId
         )
         {
             var membershipPlans = await _membershipPlanRepository.GetAllAsync(organizationId);
-
-            if (!membershipPlans.Any())
-            {
-                return NoContent();
-            }
-
             var readDtos = _mapper.Map<IEnumerable<MembershipPlanReadDto>>(membershipPlans);
-
             return Ok(readDtos);
         }
 
