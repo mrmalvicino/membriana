@@ -3,6 +3,8 @@
 - [Membriana](#membriana)
   - [Features](#features)
   - [Screenshots](#screenshots)
+    - [ERD: Organizations and people](#erd-organizations-and-people)
+    - [ERD: Organizations and users](#erd-organizations-and-users)
   - [Setup Instructions](#setup-instructions)
     - [Configuration Parameters: Frontend](#configuration-parameters-frontend)
     - [Configuration Parameters: Backend](#configuration-parameters-backend)
@@ -23,7 +25,13 @@ Membriana offers the following functionalities:
 
 ## Screenshots
 
+### ERD: Organizations and people
+
 ![ERD](https://i.imgur.com/fAL0oJb.png)
+
+### ERD: Organizations and users
+
+![ERD](https://i.imgur.com/bG4gXEL.png)
 
 ## Setup Instructions
 
@@ -111,7 +119,7 @@ Install each of the following **NuGet Packages** for the respective projects acc
 | [Domain](./src/Domain/) | [EntityFrameworkCore](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore/) | Latest | ORM for database generation. |
 | [Domain](./src/Domain/) | [EntityFrameworkCore.SqlServer](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.SqlServer/) | Latest | Enables Microsoft SQL Server. |
 | [Domain](./src/Domain/) | [EntityFrameworkCore.Tools](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Tools/) | Latest | Enables migrations. |
-| [Domain](./src/Domain/), [Infrastructure](./src/Infrastructure/) | [Identity.EntityFrameworkCore](https://www.nuget.org/packages/Microsoft.AspNetCore.Identity.EntityFrameworkCore/) | Latest | User authentication. |
+| [Domain](./src/Domain/), [Infrastructure](./src/Infrastructure/) | [Identity.EntityFrameworkCore](https://www.nuget.org/packages/Microsoft.AspNetCore.Identity.EntityFrameworkCore/) | 8.0.14 | User authentication. |
 | [Infrastructure](./src/Infrastructure/) | [EntityFrameworkCore.Design](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Design/) | 9.0.5 | Enables migrations. |
 | [Api](./src/Api/) | [JwtBearer](https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.JwtBearer/) | 8.0.16 | JWT Authentication. |
 | [Api](./src/Api/) | [Tokens.Jwt](https://www.nuget.org/packages/System.IdentityModel.Tokens.Jwt) | 8.11.0 | JWT Authentication. |
