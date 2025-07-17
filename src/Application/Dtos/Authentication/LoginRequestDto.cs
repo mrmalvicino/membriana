@@ -1,8 +1,17 @@
-﻿namespace Application.Dtos.Authentication
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+
+namespace Application.Dtos.Authentication
 {
     public class LoginRequestDto
     {
-        public string Email { get; set; } = null!;
-        public string Password { get; set; } = null!;
+        [Required]
+        [EmailAddress]
+        [DefaultValue("admin@mail.com")]
+        public string Email { get; set; } = "admin@mail.com";
+
+        [Required]
+        [DefaultValue("Password123-")]
+        public string Password { get; set; } = "Password123-";
     }
 }
