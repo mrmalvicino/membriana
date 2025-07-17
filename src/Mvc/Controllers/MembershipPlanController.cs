@@ -5,7 +5,7 @@ using Mvc.Services.Interfaces;
 
 namespace Mvc.Controllers
 {
-    //[JwtAuthorizationFilter]
+    [JwtAuthorizationFilter]
     public class MembershipPlanController : Controller
     {
         private readonly IMembershipPlanApiService _membershipPlanApi;

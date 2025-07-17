@@ -6,7 +6,7 @@ using Mvc.Services.Interfaces;
 
 namespace Mvc.Controllers
 {
-    //[JwtAuthorizationFilter]
+    [JwtAuthorizationFilter]
     public class MemberController : Controller
     {
         private readonly IMemberApiService _memberApi;
