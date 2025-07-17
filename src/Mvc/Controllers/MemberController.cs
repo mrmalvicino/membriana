@@ -55,9 +55,8 @@ namespace Mvc.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var organizationId = await _userApi.GetOrganizationIdAsync();
-            var membershipPlans = await _membershipPlanApi.GetAllAsync(organizationId);
-            ViewBag.MembershipPlans = new SelectList(membershipPlans, "Id", "Name");
+            var userOrgId = await _userApi.GetOrganizationIdAsync();
+            await SetViewBagMembershipPlans(userOrgId);
             return View();
         }
 
@@ -71,6 +70,9 @@ namespace Mvc.Controllers
                 await _memberApi.CreateAsync(member);
                 return RedirectToAction(nameof(Index));
             }
+
+            var userOrgId = await _userApi.GetOrganizationIdAsync();
+            await SetViewBagMembershipPlans(userOrgId);
 
             return View(member);
         }
@@ -90,8 +92,7 @@ namespace Mvc.Controllers
                 return NotFound();
             }
 
-            var membershipPlans = await _membershipPlanApi.GetAllAsync(member.OrganizationId);
-            ViewBag.MembershipPlans = new SelectList(membershipPlans, "Id", "Name", member.MembershipPlan.Id);
+            await SetViewBagMembershipPlans(member.OrganizationId, member.MembershipPlan?.Id);
 
             return View(member);
         }
@@ -108,8 +109,7 @@ namespace Mvc.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var membershipPlans = await _membershipPlanApi.GetAllAsync(member.OrganizationId);
-            ViewBag.MembershipPlans = new SelectList(membershipPlans, "Id", "Name", member.MembershipPlanId);
+            await SetViewBagMembershipPlans(member.OrganizationId, member.MembershipPlan?.Id);
 
             return View(member);
         }
@@ -139,5 +139,12 @@ namespace Mvc.Controllers
             await _memberApi.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
+
+        private async Task SetViewBagMembershipPlans(int organizationId, int? selectedPlanId = null)
+        {
+            var membershipPlans = await _membershipPlanApi.GetAllAsync(organizationId);
+            ViewBag.MembershipPlans = new SelectList(membershipPlans, "Id", "Name", selectedPlanId);
+        }
+
     }
 }
