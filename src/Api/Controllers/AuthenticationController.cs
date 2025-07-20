@@ -1,5 +1,6 @@
 ﻿using Application.Dtos.Authentication;
 using Application.Repositories;
+using Application.Services;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,16 +18,20 @@ namespace Api.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly IConfiguration _configuration;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IUserService _userService;
 
         public AuthenticationController(
             UserManager<AppUser> userManager,
             IConfiguration configuration,
-            IUnitOfWork unitOfWork
+            IUnitOfWork unitOfWork,
+            IUserService userService
+
         )
         {
             _userManager = userManager;
             _configuration = configuration;
             _unitOfWork = unitOfWork;
+            _userService = userService;
         }
 
         [HttpPost("login")]
@@ -44,30 +49,7 @@ namespace Api.Controllers
                 return Unauthorized("Contraseña inválida.");
             }
 
-            var roles = await _userManager.GetRolesAsync(user);
-
-            var authClaims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Email, user.Email ?? ""),
-                new Claim("OrganizationId", user.OrganizationId.ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            foreach (var role in roles)
-            {
-                authClaims.Add(new Claim(ClaimTypes.Role, role));
-            }
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
-
-            var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
-                expires: DateTime.UtcNow.AddMinutes(double.Parse(_configuration["Jwt:ExpireMinutes"]!)),
-                claims: authClaims,
-                signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
-            );
+            var token = await _userService.GenerateTokenAsync(user);
 
             return Ok(
                 new LoginResponseDto
@@ -119,33 +101,8 @@ namespace Api.Controllers
                 }
 
                 await _userManager.AddToRoleAsync(user, "Admin");
-
                 await _unitOfWork.CommitAsync();
-
-                var roles = await _userManager.GetRolesAsync(user);
-
-                var authClaims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id),
-                    new Claim(ClaimTypes.Email, user.Email ?? ""),
-                    new Claim("OrganizationId", user.OrganizationId.ToString()),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                };
-
-                foreach (var role in roles)
-                {
-                    authClaims.Add(new Claim(ClaimTypes.Role, role));
-                }
-
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
-
-                var token = new JwtSecurityToken(
-                    issuer: _configuration["Jwt:Issuer"],
-                    audience: _configuration["Jwt:Audience"],
-                    expires: DateTime.UtcNow.AddMinutes(double.Parse(_configuration["Jwt:ExpireMinutes"]!)),
-                    claims: authClaims,
-                    signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
-                );
+                var token = await _userService.GenerateTokenAsync(user);
 
                 return Ok(
                     new RegisterResponseDto
