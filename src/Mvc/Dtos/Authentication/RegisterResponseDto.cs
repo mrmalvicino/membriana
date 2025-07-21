@@ -1,4 +1,4 @@
-﻿namespace Application.Dtos.Authentication
+﻿namespace Mvc.Dtos.Authentication
 {
     public class RegisterResponseDto
     {
