@@ -1,4 +1,4 @@
-﻿using Mvc.Services.Interfaces;
+﻿using Mvc.Services.Api.Interfaces;
 using System.Net.Http.Headers;
 
 public class UserApiService : IUserApiService

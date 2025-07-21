@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using Mvc.Dtos.Member;
 using Mvc.Models;
-using Mvc.Services.Interfaces;
+using Mvc.Services.Api.Interfaces;
 
-namespace Mvc.Services
+namespace Mvc.Services.Api
 {
     public class MemberApiService : IMemberApiService
     {

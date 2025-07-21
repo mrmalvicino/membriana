@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Mvc.Filters;
 using Mvc.Models;
-using Mvc.Services.Interfaces;
+using Mvc.Services.Api.Interfaces;
 
 namespace Mvc.Controllers
 {

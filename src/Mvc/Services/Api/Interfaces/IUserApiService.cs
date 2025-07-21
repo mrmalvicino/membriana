@@ -1,4 +1,4 @@
-﻿namespace Mvc.Services.Interfaces
+﻿namespace Mvc.Services.Api.Interfaces
 {
     public interface IUserApiService
     {
