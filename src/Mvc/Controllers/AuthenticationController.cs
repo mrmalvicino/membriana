@@ -1,20 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Mvc.Dtos.Authentication;
 using Mvc.Models;
-using System.Text;
-using System.Text.Json;
+using Mvc.Services.Api;
+using Mvc.Services.Api.Interfaces;
+using Mvc.Services.Utilities.Interfaces;
+using System.Reflection;
 
 namespace Mvc.Controllers
 {
     public class AuthenticationController : Controller
     {
-        private readonly HttpClient _httpClient;
-        private readonly string _apiBaseUrl;
+        private readonly IAuthenticationApiService _authenticationApi;
+        private readonly ICookieService _cookieService;
 
-        public AuthenticationController(HttpClient httpClient, IConfiguration configuration)
+        public AuthenticationController(
+            IAuthenticationApiService authenticationApi,
+            ICookieService cookieService
+        )
         {
-            _httpClient = httpClient;
-            _apiBaseUrl = configuration.GetValue<string>("ApiBaseUrl");
+            _authenticationApi = authenticationApi;
+            _cookieService = cookieService;
         }
 
         [HttpGet]
@@ -24,51 +28,22 @@ namespace Mvc.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel loginViewModel)
         {
             if (!ModelState.IsValid)
             {
-                return View(model);
+                return View(loginViewModel);
             }
 
-            var content = new StringContent(
-                JsonSerializer.Serialize(model),
-                Encoding.UTF8, "application/json"
-            );
+            var loginResponse = await _authenticationApi.LoginAsync(loginViewModel);
 
-            var url = $"{_apiBaseUrl}api/authentication/login";
-            var response = await _httpClient.PostAsync(url, content);
-
-            if (!response.IsSuccessStatusCode)
+            if (loginResponse is null || string.IsNullOrWhiteSpace(loginResponse.Token))
             {
-                ModelState.AddModelError("", "Credenciales inválidas");
-                return View(model);
+                ModelState.AddModelError("", "Credenciales inválidas.");
+                return View(loginViewModel);
             }
 
-            var json = await response.Content.ReadAsStringAsync();
-
-            var tokenResponse = JsonSerializer.Deserialize<TokenResponseDto>(json,
-                new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                }
-            );
-
-            if (tokenResponse is null || string.IsNullOrWhiteSpace(tokenResponse.Token))
-            {
-                ModelState.AddModelError("", "No se recibió un token válido");
-                return View(model);
-            }
-
-            Response.Cookies.Append("jwt", tokenResponse.Token,
-                new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.Strict,
-                    Expires = DateTimeOffset.UtcNow.AddHours(1)
-                }
-            );
+            _cookieService.SetJwtCookie(loginResponse.Token);
 
             return RedirectToAction("Dashboard", "Home");
         }
@@ -81,62 +56,38 @@ namespace Mvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel registerViewModel)
         {
             if (!ModelState.IsValid)
             {
-                return View(model);
+                return View(registerViewModel);
             }
 
-            var content = new StringContent(
-                JsonSerializer.Serialize(model),
-                Encoding.UTF8, "application/json"
-            );
-
-            var url = $"{_apiBaseUrl}api/authentication/register";
-            var response = await _httpClient.PostAsync(url, content);
-
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                var errorContent = await response.Content.ReadAsStringAsync();
+                var registerResponseDto = await _authenticationApi.RegisterAsync(registerViewModel);
 
-                try
+                if (registerResponseDto is null || string.IsNullOrWhiteSpace(registerResponseDto.Token))
                 {
-                    var errorResponse = JsonSerializer.Deserialize<ErrorResponseDto>(
-                        errorContent,
-                        new JsonSerializerOptions
-                        {
-                            PropertyNameCaseInsensitive = true
-                        }
-                    );
-
-                    if (errorResponse != null && errorResponse.Errors != null)
-                    {
-                        foreach (var error in errorResponse.Errors)
-                        {
-                            ModelState.AddModelError("", error);
-                        }
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "Datos inválidos");
-                    }
-                }
-                catch (Exception)
-                {
-                    ModelState.AddModelError("", "Error al procesar la respuesta del servidor.");
+                    ModelState.AddModelError("", "No se recibió un token válido.");
+                    return View(registerViewModel);
                 }
 
-                return View(model);
+                _cookieService.SetJwtCookie(registerResponseDto.Token);
+
+                return RedirectToAction("Dashboard", "Home");
             }
-
-            return RedirectToAction("Dashboard", "Home");
+            catch (ApplicationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(registerViewModel);
+            }
         }
 
         [HttpPost]
         public IActionResult Logout()
         {
-            Response.Cookies.Delete("jwt");
+            _cookieService.DeleteJwtCookie();
             return RedirectToAction("Login", "Authentication");
         }
     }

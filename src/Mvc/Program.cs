@@ -1,6 +1,8 @@
-using Mvc.Services;
+using Mvc.Services.Api;
+using Mvc.Services.Api.Interfaces;
 using Mvc.Services.Handlers;
-using Mvc.Services.Interfaces;
+using Mvc.Services.Utilities;
+using Mvc.Services.Utilities.Interfaces;
 
 namespace Mvc
 {
@@ -9,6 +11,10 @@ namespace Mvc
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddHttpClient<IAuthenticationApiService, AuthenticationApiService>();
 
             builder.Services.AddHttpClient<IMemberApiService, MemberApiService>(client =>
             {
@@ -25,6 +31,8 @@ namespace Mvc
                 client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
             });
 
+            builder.Services.AddScoped<ICookieService, CookieService>();
+
             builder.Services.ConfigureApplicationCookie(
                 options =>
                 {
@@ -33,19 +41,15 @@ namespace Mvc
                 }
             );
 
-            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-            builder.Services.AddHttpContextAccessor();
-
             builder.Services.AddTransient<JwtCookieHandler>();
-
-            builder.Services.AddHttpClient<IUserApiService, UserApiService>()
-                .AddHttpMessageHandler<JwtCookieHandler>();
 
             builder.Services.AddHttpClient<IMemberApiService, MemberApiService>()
                 .AddHttpMessageHandler<JwtCookieHandler>();
 
             builder.Services.AddHttpClient<IMembershipPlanApiService, MembershipPlanApiService>()
+                .AddHttpMessageHandler<JwtCookieHandler>();
+            
+            builder.Services.AddHttpClient<IUserApiService, UserApiService>()
                 .AddHttpMessageHandler<JwtCookieHandler>();
 
             builder.Services.AddControllersWithViews();
