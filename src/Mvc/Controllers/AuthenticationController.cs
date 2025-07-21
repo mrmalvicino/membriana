@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Mvc.Models;
-using Mvc.Services.Api;
 using Mvc.Services.Api.Interfaces;
 using Mvc.Services.Utilities.Interfaces;
-using System.Reflection;
 
 namespace Mvc.Controllers
 {

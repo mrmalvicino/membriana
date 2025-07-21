@@ -15,22 +15,9 @@ namespace Mvc
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddHttpClient<IAuthenticationApiService, AuthenticationApiService>();
-
-            builder.Services.AddHttpClient<IMemberApiService, MemberApiService>(client =>
-            {
-                client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
-            });
-
-            builder.Services.AddHttpClient<IMembershipPlanApiService, MembershipPlanApiService>(client =>
-            {
-                client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
-            });
-
-            builder.Services.AddHttpClient<IUserApiService, UserApiService>(client =>
-            {
-                client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
-            });
-
+            builder.Services.AddHttpClient<IMemberApiService, MemberApiService>();
+            builder.Services.AddHttpClient<IMembershipPlanApiService, MembershipPlanApiService>();
+            builder.Services.AddHttpClient<IUserApiService, UserApiService>();
             builder.Services.AddScoped<ICookieService, CookieService>();
 
             builder.Services.ConfigureApplicationCookie(
