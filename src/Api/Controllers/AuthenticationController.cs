@@ -2,12 +2,8 @@
 using Application.Repositories;
 using Application.Services;
 using Domain.Entities;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace Api.Controllers
 {
@@ -15,21 +11,15 @@ namespace Api.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private readonly UserManager<AppUser> _userManager;
-        private readonly IConfiguration _configuration;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserService _userService;
 
         public AuthenticationController(
-            UserManager<AppUser> userManager,
-            IConfiguration configuration,
             IUnitOfWork unitOfWork,
             IUserService userService
 
         )
         {
-            _userManager = userManager;
-            _configuration = configuration;
             _unitOfWork = unitOfWork;
             _userService = userService;
         }
@@ -37,14 +27,14 @@ namespace Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto dto)
         {
-            var user = await _userManager.FindByEmailAsync(dto.Email);
+            var user = await _unitOfWork.IdentityService.FindByEmail(dto.Email);
 
             if (user == null)
             {
                 return Unauthorized("Mail inválido.");
             }
 
-            if (!await _userManager.CheckPasswordAsync(user, dto.Password))
+            if (!await _unitOfWork.IdentityService.PasswordIsValid(user, dto.Password))
             {
                 return Unauthorized("Contraseña inválida.");
             }
@@ -63,7 +53,7 @@ namespace Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto dto)
         {
-            if (await _userManager.FindByEmailAsync(dto.UserEmail) != null)
+            if (await _unitOfWork.IdentityService.FindByEmail(dto.UserEmail) != null)
             {
                 return Unauthorized("Mail de usuario en uso.");
             }
@@ -91,7 +81,7 @@ namespace Api.Controllers
                     OrganizationId = organization.Id
                 };
 
-                var result = await _userManager.CreateAsync(user, dto.Password);
+                var result = await _unitOfWork.IdentityService.CreateUser(user, dto.Password);
 
                 if (!result.Succeeded)
                 {
@@ -100,7 +90,7 @@ namespace Api.Controllers
                     return BadRequest(new { errors });
                 }
 
-                await _userManager.AddToRoleAsync(user, "Admin");
+                await _unitOfWork.IdentityService.AddToRole(user, "Admin");
                 await _unitOfWork.CommitAsync();
                 var token = await _userService.GenerateTokenAsync(user);
 

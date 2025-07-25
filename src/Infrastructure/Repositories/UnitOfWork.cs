@@ -1,4 +1,5 @@
 ﻿using Application.Repositories;
+using Application.Services;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -8,16 +9,22 @@ namespace Infrastructure.Repositories
     {
         private readonly AppDbContext _dbContext;
         private IDbContextTransaction? _transaction;
+        private readonly IIdentityService _identityService;
         private readonly IOrganizationRepository _organizationRepository;
 
         public UnitOfWork(
             AppDbContext dbContext,
+            IIdentityService identityService,
             IOrganizationRepository organizationRepository
         )
         {
             _dbContext = dbContext;
+            _identityService = identityService;
             _organizationRepository = organizationRepository;
         }
+
+        public IIdentityService IdentityService => _identityService;
+        public IOrganizationRepository OrganizationRepository => _organizationRepository;
 
         public async Task BeginTransactionAsync()
         {
@@ -34,7 +41,5 @@ namespace Infrastructure.Repositories
         {
             await _transaction.RollbackAsync();
         }
-
-        public IOrganizationRepository OrganizationRepository => _organizationRepository;
     }
 }

@@ -19,12 +19,14 @@ namespace Infrastructure.Extensions
                 options => options.UseSqlServer(connectionString)
             );
 
+            services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<IMemberRepository, MemberRepository>();
             services.AddScoped<IMembershipPlanRepository, MembershipPlanRepository>();
             services.AddScoped<IOrganizationRepository, OrganizationRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserService, UserService>();
+
             return services;
         }
     }
