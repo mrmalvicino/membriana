@@ -1,11 +1,10 @@
-﻿using AutoMapper;
-using Mvc.Dtos.Member;
+﻿using Mvc.Dtos.Member;
 using Mvc.Dtos.Person;
 using Mvc.Models;
 
 namespace Mvc.Profiles
 {
-    public class MemberProfile : Profile
+    public class MemberProfile : PersonProfile
     {
         public MemberProfile()
         {
