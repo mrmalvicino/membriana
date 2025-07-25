@@ -19,6 +19,7 @@ namespace Infrastructure.Extensions
                 options => options.UseSqlServer(connectionString)
             );
 
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<IMemberRepository, MemberRepository>();
             services.AddScoped<IMembershipPlanRepository, MembershipPlanRepository>();
             services.AddScoped<IOrganizationRepository, OrganizationRepository>();
