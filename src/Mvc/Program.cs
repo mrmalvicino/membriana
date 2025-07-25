@@ -15,9 +15,6 @@ namespace Mvc
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddHttpClient<IAuthenticationApiService, AuthenticationApiService>();
-            builder.Services.AddHttpClient<IMemberApiService, MemberApiService>();
-            builder.Services.AddHttpClient<IMembershipPlanApiService, MembershipPlanApiService>();
-            builder.Services.AddHttpClient<IUserApiService, UserApiService>();
             builder.Services.AddScoped<ICookieService, CookieService>();
 
             builder.Services.ConfigureApplicationCookie(
@@ -29,6 +26,9 @@ namespace Mvc
             );
 
             builder.Services.AddTransient<JwtCookieHandler>();
+
+            builder.Services.AddHttpClient<IEmployeeApiService, EmployeeApiService>()
+                .AddHttpMessageHandler<JwtCookieHandler>();
 
             builder.Services.AddHttpClient<IMemberApiService, MemberApiService>()
                 .AddHttpMessageHandler<JwtCookieHandler>();

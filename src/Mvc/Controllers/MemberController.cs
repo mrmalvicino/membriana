@@ -145,6 +145,5 @@ namespace Mvc.Controllers
             var membershipPlans = await _membershipPlanApi.GetAllAsync(organizationId);
             ViewBag.MembershipPlans = new SelectList(membershipPlans, "Id", "Name", selectedPlanId);
         }
-
     }
 }
