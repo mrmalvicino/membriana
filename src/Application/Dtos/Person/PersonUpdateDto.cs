@@ -1,6 +1,8 @@
-﻿namespace Application.Dtos.Person
+﻿using Domain.Interfaces;
+
+namespace Application.Dtos.Person
 {
-    public class PersonUpdateDto
+    public class PersonUpdateDto : IIdentifiable
     {
         public int Id { get; set; }
         public bool Active { get; set; } = true;

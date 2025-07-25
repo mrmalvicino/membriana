@@ -1,8 +1,9 @@
 ﻿using Application.Dtos.Image;
+using Domain.Interfaces;
 
 namespace Application.Dtos.Person
 {
-    public class PersonReadDto
+    public class PersonReadDto : IIdentifiable
     {
         public int Id { get; set; }
         public bool Active { get; set; } = true;

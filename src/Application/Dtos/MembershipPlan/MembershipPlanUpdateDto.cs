@@ -1,6 +1,8 @@
-﻿namespace Application.Dtos.MembershipPlan
+﻿using Domain.Interfaces;
+
+namespace Application.Dtos.MembershipPlan
 {
-    public class MembershipPlanUpdateDto
+    public class MembershipPlanUpdateDto : IIdentifiable
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
