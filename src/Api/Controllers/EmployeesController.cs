@@ -8,7 +8,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
-    public class EmployeesController : BaseController<Employee, IEmployeeRepository, EmployeeReadDto, EmployeeCreateDto, EmployeeUpdateDto>
+    public class EmployeesController : BaseController<
+        Employee,
+        IEmployeeRepository,
+        EmployeeReadDto,
+        EmployeeCreateDto,
+        EmployeeUpdateDto
+    >
     {
         public EmployeesController(
             IEmployeeRepository repository,
