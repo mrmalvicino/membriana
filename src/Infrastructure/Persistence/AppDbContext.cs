@@ -106,15 +106,44 @@ namespace Infrastructure.Persistence
             // Initial data
 
             builder.Entity<PricingPlan>().HasData(
-                new PricingPlan { Id = 1, Name = "Plan gratuito", Amount = 0 },
-                new PricingPlan { Id = 2, Name = "Plan profesional", Amount = 20 },
-                new PricingPlan { Id = 3, Name = "Plan empresarial", Amount = 30 }
+                new PricingPlan
+                {
+                    Id = (int)Domain.Enums.PricingPlan.Free,
+                    Name = "Plan gratuito",
+                    Amount = 0
+                },
+                new PricingPlan
+                {
+                    Id = (int)Domain.Enums.PricingPlan.Professional,
+                    Name = "Plan profesional",
+                    Amount = 20
+                },
+                new PricingPlan {
+                    Id = (int)Domain.Enums.PricingPlan.Enterprise,
+                    Name = "Plan empresarial",
+                    Amount = 30
+                }
             );
 
             builder.Entity<IdentityRole>().HasData(
-                new IdentityRole { Id = "1", Name = "Admin", NormalizedName = "ADMIN" },
-                new IdentityRole { Id = "2", Name = "Employee", NormalizedName = "EMPLOYEE" },
-                new IdentityRole { Id = "3", Name = "Member", NormalizedName = "MEMBER" }
+                new IdentityRole
+                {
+                    Id = ((int)Domain.Enums.AppRole.Admin).ToString(),
+                    Name = Domain.Enums.AppRole.Admin.ToString(),
+                    NormalizedName = Domain.Enums.AppRole.Admin.ToString().ToUpper()
+                },
+                new IdentityRole
+                {
+                    Id = ((int)Domain.Enums.AppRole.Employee).ToString(),
+                    Name = Domain.Enums.AppRole.Employee.ToString(),
+                    NormalizedName = Domain.Enums.AppRole.Employee.ToString().ToUpper()
+                },
+                new IdentityRole
+                {
+                    Id = ((int)Domain.Enums.AppRole.Member).ToString(),
+                    Name = Domain.Enums.AppRole.Member.ToString(),
+                    NormalizedName = Domain.Enums.AppRole.Member.ToString().ToUpper()
+                }
             );
 
             // Dummy data
@@ -148,6 +177,14 @@ namespace Infrastructure.Persistence
             var hasher = new PasswordHasher<AppUser>();
             adminUser.PasswordHash = hasher.HashPassword(adminUser, "Password123-");
             builder.Entity<AppUser>().HasData(adminUser);
+
+            builder.Entity<IdentityUserRole<string>>().HasData(
+                new IdentityUserRole<string>
+                {
+                    UserId = adminUser.Id,
+                    RoleId = ((int)Domain.Enums.AppRole.Admin).ToString()
+                }
+            );
         }
     }
 }
