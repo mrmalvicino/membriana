@@ -21,8 +21,8 @@ namespace Api.Controllers
         where TUpdateDto : class, IIdentifiable
     {
         private readonly TIRepository _repository;
-        private readonly IUserService _userService;
-        private readonly IMapper _mapper;
+        protected readonly IUserService _userService;
+        protected readonly IMapper _mapper;
 
         public BaseController(
             TIRepository repository,

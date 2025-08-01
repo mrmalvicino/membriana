@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 
 namespace Application.Services
@@ -11,6 +12,6 @@ namespace Application.Services
 
         Task<IdentityResult> CreateUser(AppUser user, string password);
 
-        Task<IdentityResult> AddToRole(AppUser user, string role);
+        Task<IdentityResult> AddToRole(AppUser user, AppRole role);
     }
 }

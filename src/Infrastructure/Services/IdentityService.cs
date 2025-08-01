@@ -1,5 +1,6 @@
 ﻿using Application.Services;
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 
 namespace Infrastructure.Services
@@ -28,9 +29,9 @@ namespace Infrastructure.Services
             return await _userManager.CreateAsync(user, password);
         }
 
-        public async Task<IdentityResult> AddToRole(AppUser user, string role)
+        public async Task<IdentityResult> AddToRole(AppUser user, AppRole role)
         {
-            return await _userManager.AddToRoleAsync(user, role);
+            return await _userManager.AddToRoleAsync(user, role.ToString());
         }
     }
 }
