@@ -1,6 +1,7 @@
 ﻿using Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities
 {
@@ -24,5 +25,9 @@ namespace Domain.Entities
         public int OrganizationId { get; set; }
         [ValidateNever]
         public virtual Organization Organization { get; set; } = null!;
+
+        public string UserId { get; set; } = null!;
+        [ForeignKey("UserId")]
+        public virtual AppUser User { get; set; } = null!;
     }
 }

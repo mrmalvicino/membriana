@@ -11,5 +11,9 @@ namespace Domain.Entities
         public int OrganizationId { get; set; }
         [ValidateNever]
         public virtual Organization Organization { get; set; } = null!;
+
+        public virtual Employee? Employee { get; set; }
+
+        public virtual Member? Member { get; set; }
     }
 }
