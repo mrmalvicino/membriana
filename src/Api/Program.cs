@@ -58,6 +58,39 @@ namespace Api
                 }
             );
 
+            builder.Services.AddAuthorization(options =>
+                {
+                    options.AddPolicy("Admin", policy =>
+                        policy.RequireRole(
+                            Domain.Enums.AppRole.Admin.ToString()
+                        )
+                    );
+                }
+            );
+
+            builder.Services.AddAuthorization(options =>
+                {
+                    options.AddPolicy("Employee", policy =>
+                        policy.RequireRole(
+                            Domain.Enums.AppRole.Admin.ToString(),
+                            Domain.Enums.AppRole.Employee.ToString()
+                        )
+                    );
+                }
+            );
+
+            builder.Services.AddAuthorization(options =>
+                {
+                    options.AddPolicy("Member", policy =>
+                        policy.RequireRole(
+                            Domain.Enums.AppRole.Admin.ToString(),
+                            Domain.Enums.AppRole.Employee.ToString(),
+                            Domain.Enums.AppRole.Member.ToString()
+                        )
+                    );
+                }
+            );
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowMvc", policy =>

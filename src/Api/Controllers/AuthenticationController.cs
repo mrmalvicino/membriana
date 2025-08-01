@@ -17,7 +17,6 @@ namespace Api.Controllers
         public AuthenticationController(
             IUnitOfWork unitOfWork,
             IUserService userService
-
         )
         {
             _unitOfWork = unitOfWork;
@@ -90,7 +89,7 @@ namespace Api.Controllers
                     return BadRequest(new { errors });
                 }
 
-                await _unitOfWork.IdentityService.AddToRole(user, "Admin");
+                await _unitOfWork.IdentityService.AddToRole(user, Domain.Enums.AppRole.Admin);
                 await _unitOfWork.CommitAsync();
                 var token = await _userService.GenerateTokenAsync(user);
 
