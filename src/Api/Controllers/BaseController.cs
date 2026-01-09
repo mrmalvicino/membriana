@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
+    /// <summary>
+    /// Controlador base genérico para operaciones CRUD.
+    /// </summary>
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
@@ -24,6 +27,9 @@ namespace Api.Controllers
         protected readonly IUserService _userService;
         protected readonly IMapper _mapper;
 
+        /// <summary>
+        /// Constructor principal.
+        /// </summary>
         public BaseController(
             TIRepository repository,
             IUserService userService,
@@ -35,6 +41,9 @@ namespace Api.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Endpoint que obtiene todas las entidades de una organización específica.
+        /// </summary>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ServiceFilter(typeof(TenancyQueryFilter))]
@@ -47,6 +56,13 @@ namespace Api.Controllers
             return Ok(readDtos);
         }
 
+        /// <summary>
+        /// Endpoint que obtiene una entidad por su ID.
+        /// </summary>
+        /// <remarks>
+        /// Es recomendable definir un controlador heredado para sobreescribir este método y poder
+        /// así utilizar el filtro de tenencia <see cref="Api.Filters.TenancyRouteFilter"/>.
+        /// </remarks>
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -64,6 +80,9 @@ namespace Api.Controllers
             return Ok(readDto);
         }
 
+        /// <summary>
+        /// Endpoint que crea una nueva entidad.
+        /// </summary>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -85,6 +104,13 @@ namespace Api.Controllers
             return CreatedAtAction(nameof(Get), new { id = readDto.Id }, readDto);
         }
 
+        /// <summary>
+        /// Endpoint que modifica una entidad existente.
+        /// </summary>
+        /// <remarks>
+        /// Es recomendable definir un controlador heredado para sobreescribir este método y poder
+        /// así utilizar el filtro de tenencia <see cref="Api.Filters.TenancyRouteFilter"/>.
+        /// </remarks>
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -105,6 +131,13 @@ namespace Api.Controllers
             return Ok(readDto);
         }
 
+        /// <summary>
+        /// Endpoint que elimina una entidad.
+        /// </summary>
+        /// <remarks>
+        /// Es recomendable definir un controlador heredado para sobreescribir este método y poder
+        /// así utilizar el filtro de tenencia <see cref="Api.Filters.TenancyRouteFilter"/>.
+        /// </remarks>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public virtual async Task<IActionResult> Delete(int id)
