@@ -13,7 +13,10 @@ namespace Application.Profiles
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.Member, opt => opt.Ignore())
                 .ForMember(dest => dest.Organization, opt => opt.Ignore())
-                .ForMember(dest => dest.OrganizationId, opt => opt.Ignore());
+                .ForMember(
+                    dest => dest.OrganizationId,
+                    opt => opt.MapFrom(src => src.OrganizationId)
+                );
             #endregion
 
             #region Read
