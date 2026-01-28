@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers
 {
     /// <summary>
-    /// Controlador base genérico para operaciones CRUD.
+    /// Controlador base genérico que define peticiones HTTP para operaciones CRUD.
     /// </summary>
     [Authorize]
     [ApiController]
