@@ -60,7 +60,7 @@ namespace Infrastructure.Repositories
         {
             await _dbSet.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
-            return entity;
+            return await GetByIdAsync(entity.Id) ?? entity;
         }
 
         /// <summary>

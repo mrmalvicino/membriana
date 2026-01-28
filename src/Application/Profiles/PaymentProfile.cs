@@ -11,6 +11,8 @@ namespace Application.Profiles
             #region Create
             CreateMap<PaymentCreateDto, Payment>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.DateTime, opt => opt.MapFrom(src => DateTime.Now))
+                .ForMember(dest => dest.Active, opt => opt.MapFrom(src => true))
                 .ForMember(dest => dest.Member, opt => opt.Ignore())
                 .ForMember(dest => dest.Organization, opt => opt.Ignore())
                 .ForMember(
@@ -27,6 +29,8 @@ namespace Application.Profiles
             #region Update
             CreateMap<PaymentUpdateDto, Payment>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.DateTime, opt => opt.Ignore())
+                .ForMember(dest => dest.Amount, opt => opt.Ignore())
                 .ForMember(dest => dest.Member, opt => opt.Ignore())
                 .ForMember(dest => dest.MemberId, opt => opt.Ignore()) // Un pago no se puede transferir entre miembros
                 .ForMember(dest => dest.Organization, opt => opt.Ignore())
