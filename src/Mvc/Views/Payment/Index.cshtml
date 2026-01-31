@@ -10,7 +10,7 @@
 
 <h1>Pagos</h1>
 <p>Gestioná los pagos de tu organización.</p>
-<a asp-action="Create" class="btn btn-primary mb-3">Crear nuevo</a>
+<a asp-action="Create" class="btn btn-primary mb-3">Registrar pago</a>
 <table class="table">
     <thead>
         <tr>
@@ -48,7 +48,6 @@
                     @Html.DisplayFor(modelItem => item.Member.Name)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
                     <a asp-action="Details" asp-route-id="@item.Id">Detalles</a> |
                     <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
                 </td>
