@@ -13,5 +13,6 @@ namespace Application.Dtos.Payment
         public DateTime DateTime { get; set; }
         public decimal Amount { get; set; }
         public virtual MemberReadDto Member { get; set; } = null!;
+        public int OrganizationId { get; set; }
     }
 }

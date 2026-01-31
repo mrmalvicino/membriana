@@ -9,5 +9,6 @@ namespace Application.Dtos.Payment
     {
         public int Id { get; set; }
         public bool Active { get; set; }
+        public int OrganizationId { get; set; }
     }
 }
