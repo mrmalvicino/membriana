@@ -35,7 +35,10 @@ namespace Mvc
 
             builder.Services.AddHttpClient<IMembershipPlanApiService, MembershipPlanApiService>()
                 .AddHttpMessageHandler<JwtCookieHandler>();
-            
+
+            builder.Services.AddHttpClient<IPaymentApiService, PaymentApiService>()
+                .AddHttpMessageHandler<JwtCookieHandler>();
+
             builder.Services.AddHttpClient<IUserApiService, UserApiService>()
                 .AddHttpMessageHandler<JwtCookieHandler>();
 
