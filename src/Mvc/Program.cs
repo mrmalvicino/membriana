@@ -3,6 +3,7 @@ using Mvc.Services.Api.Interfaces;
 using Mvc.Services.Handlers;
 using Mvc.Services.Utilities;
 using Mvc.Services.Utilities.Interfaces;
+using System.Globalization;
 
 namespace Mvc
 {
@@ -63,6 +64,11 @@ namespace Mvc
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            var culture = new CultureInfo("es-AR");
+
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
 
             app.Run();
         }
