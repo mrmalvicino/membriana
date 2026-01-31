@@ -12,7 +12,7 @@ namespace Api.Controllers
     /// <summary>
     /// Controlador para la gestión de pagos.
     /// </summary>
-    [Authorize(Policy = "Member")]
+    [Authorize(Policy = "Employee")]
     public class PaymentsController : BaseController<
         Payment,
         IPaymentRepository,
