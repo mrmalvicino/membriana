@@ -10,7 +10,7 @@ using System.Text;
 
 namespace Infrastructure.Services
 {
-    internal class UserService : IUserService
+    public class UserService : IUserService
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
