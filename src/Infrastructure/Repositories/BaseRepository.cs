@@ -81,6 +81,7 @@ namespace Infrastructure.Repositories
             }
 
             _dbContext.Entry(existingEntity).CurrentValues.SetValues(entity);
+            _dbContext.Entry(existingEntity).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync();
             return entity;
         }
