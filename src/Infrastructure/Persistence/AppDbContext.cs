@@ -6,8 +6,18 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Infrastructure.Persistence
 {
+    /// <summary>
+    /// Representa el contexto de la base de datos para la aplicación.
+    /// Hereda de IdentityDbContext para incluir la funcionalidad de autenticación y
+    /// autorización proporcionada por ASP.NET Core Identity.
+    /// Define las entidades y relaciones del modelo de datos, así como la configuración
+    /// de la base de datos.
+    /// </summary>
     public class AppDbContext : IdentityDbContext<AppUser>
     {
+        /// <summary>
+        /// Constructor principal.
+        /// </summary>
         public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
         {
@@ -23,21 +33,38 @@ namespace Infrastructure.Persistence
         public DbSet<Person> People { get; set; }
         public DbSet<PricingPlan> PricingPlans { get; set; }
 
+        /// <summary>
+        /// Establece opciones adicionales, como la conexión a la base de datos y el proveedor
+        /// de base de datos.
+        /// </summary>
+        /// <remarks>
+        /// En este caso, se ignora la advertencia de cambios pendientes en el modelo, ya que
+        /// se están utilizando datos de ejemplo (dummy data) y no se requiere una migración
+        /// completa del modelo.
+        /// </remarks>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)); // Dummy data
         }
 
+        /// <summary>
+        /// Método que se llama al crear el modelo de datos. Configura las entidades, relaciones,
+        /// restricciones y tipos de datos específicos para la base de datos.
+        /// </summary>
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            #region Tablas
 
             builder.Entity<Employee>().ToTable("Employees");
             builder.Entity<Member>().ToTable("Members");
             builder.Entity<Organization>().ToTable("Organizations");
             builder.Entity<Person>().ToTable("People");
 
-            // 1-to-1 relationships
+            #endregion
+
+            #region Relaciones 1 a 1
 
             builder.Entity<Organization>()
                 .HasOne(o => o.LogoImage)
@@ -51,7 +78,9 @@ namespace Infrastructure.Persistence
                 .HasForeignKey<Person>(p => p.ProfileImageId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // 1-to-many relationships
+            #endregion
+
+            #region Relaciones 1 a N
 
             builder.Entity<Organization>()
                 .HasMany(o => o.Employees)
@@ -83,7 +112,9 @@ namespace Infrastructure.Persistence
                 .HasForeignKey(m => m.MembershipPlanId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // SQL data types
+            #endregion
+
+            #region Tipos de datos SQL
 
             builder.Entity<MembershipPlan>()
                 .Property(m => m.Amount)
@@ -97,13 +128,17 @@ namespace Infrastructure.Persistence
                 .Property(p => p.Amount)
                 .HasColumnType("decimal(18,2)");
 
-            // Constraints
+            #endregion
+
+            #region Constraints
 
             builder.Entity<MembershipPlan>()
                 .HasIndex(m => m.Name)
                 .IsUnique();
 
-            // Initial data
+            #endregion
+
+            #region Seed data
 
             builder.Entity<PricingPlan>().HasData(
                 new PricingPlan
@@ -146,7 +181,9 @@ namespace Infrastructure.Persistence
                 }
             );
 
-            // Dummy data
+            #endregion
+
+            #region Dummy Data
 
             builder.Entity<Image>().HasData(
                 new Image { Id = 1, Url = "https://i.imgur.com/Cy1SqZy.png" }
@@ -185,6 +222,8 @@ namespace Infrastructure.Persistence
                     RoleId = ((int)Domain.Enums.AppRole.Admin).ToString()
                 }
             );
+
+            #endregion
         }
     }
 }
