@@ -10,12 +10,19 @@ using System.Text;
 
 namespace Infrastructure.Services
 {
+    /// <summary>
+    /// Servicio de infraestructura encargado de resolver información del usuario autenticado
+    /// y de generar tokens JWT para autenticación basada en bearer tokens.
+    /// </summary>
     public class UserService : IUserService
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IConfiguration _configuration;
 
+        /// <summary>
+        /// Constructor principal.
+        /// </summary>
         public UserService(
             UserManager<AppUser> userManager,
             IHttpContextAccessor httpContextAccessor,
@@ -27,6 +34,9 @@ namespace Infrastructure.Services
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// Obtiene el ID de la organización (tenant) del usuario autenticado en el request actual.
+        /// </summary>
         public async Task<int> GetOrganizationIdAsync()
         {
             var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
@@ -39,6 +49,9 @@ namespace Infrastructure.Services
             return user.OrganizationId;
         }
 
+        /// <summary>
+        /// Genera un token JWT firmado para el usuario indicado, incluyendo claims de identidad, roles y tenant.
+        /// </summary>
         public async Task<JwtSecurityToken> GenerateTokenAsync(AppUser user)
         {
             var roles = await _userManager.GetRolesAsync(user);
