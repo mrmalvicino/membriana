@@ -4,15 +4,13 @@ using System.IdentityModel.Tokens.Jwt;
 namespace Application.Services
 {
     /// <summary>
-    /// Abstrae el acceso a información del usuario en sesión y a la generación de tokens
-    /// de autenticación, desacoplando a las capas superiores (API, MVC, servicios de aplicación)
-    /// de los detalles de infraestructura como Identity, HTTP o JWT.
+    /// Servicio para gestionar el acceso a información del usuario en sesión
+    /// y a la generación de tokens de autenticación.
     /// </summary>
     public interface IUserService
     {
         /// <summary>
-        /// Obtiene el identificador de la organización (tenant) asociada
-        /// al usuario autenticado en el contexto de ejecución actual.
+        /// Obtiene el ID de la organización (tenant) del usuario autenticado en el request actual.
         /// </summary>
         /// <remarks>
         /// Este método es utilizado por controladores y servicios de aplicación para
@@ -22,7 +20,8 @@ namespace Application.Services
         Task<int> GetOrganizationIdAsync();
 
         /// <summary>
-        /// Genera un token de autenticación para el usuario especificado.
+        /// Genera un token JWT firmado para el usuario indicado, incluyendo claims de
+        /// identidad, roles y tenant.
         /// </summary>
         /// <remarks>
         /// Este método suele ser invocado desde flujos de login o emisión de credenciales,
