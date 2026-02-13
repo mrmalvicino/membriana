@@ -2,6 +2,9 @@
 
 namespace Application.Repositories
 {
+    /// <summary>
+    /// Repositorio genérico que define consultas a la base de datos para operaciones CRUD.
+    /// </summary>
     public interface IBaseRepository<T> where T : class, IIdentifiable
     {
         /// <summary>
