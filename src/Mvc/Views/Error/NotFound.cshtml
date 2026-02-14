@@ -1,0 +1,23 @@
+﻿@model Membriana.Web.Models.ErrorViewModel
+@{
+    ViewData["Title"] = "Página no encontrada";
+}
+
+<div class="container py-5">
+    <h1 class="mb-3">Página no encontrada (404)</h1>
+    <p class="text-muted">
+        La página que buscás no existe o fue movida.
+    </p>
+
+    @if (Model.ShowRequestId)
+    {
+        <div class="mt-4">
+            <strong>Código de seguimiento:</strong>
+            <code>@Model.RequestId</code>
+        </div>
+    }
+
+    <div class="mt-4 d-flex gap-2">
+        <a class="btn btn-primary" href="/">Volver al inicio</a>
+    </div>
+</div>
