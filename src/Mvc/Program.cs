@@ -7,13 +7,24 @@ using System.Globalization;
 
 namespace Mvc
 {
+    /// <summary>
+    /// Punto de entrada de la aplicación y bootstrapper del frontend MVC.
+    /// Configura el contenedor de dependencias (DI), middleware pipeline y rutas.
+    /// </summary>
     public class Program
     {
+        /// <summary>
+        /// Método principal que inicializa y ejecuta la aplicación web.
+        /// </summary>
+        /// <param name="args">Argumentos de línea de comandos.</param>
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            #region Authentication
+
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddHttpClient<IAuthenticationApiService, AuthenticationApiService>();
             builder.Services.AddScoped<ICookieService, CookieService>();
@@ -25,6 +36,10 @@ namespace Mvc
                     options.AccessDeniedPath = "/Authentication/AccessDenied";
                 }
             );
+
+            #endregion
+
+            #region HTTP Client
 
             builder.Services.AddTransient<JwtCookieHandler>();
 
@@ -43,14 +58,28 @@ namespace Mvc
             builder.Services.AddHttpClient<IUserApiService, UserApiService>()
                 .AddHttpMessageHandler<JwtCookieHandler>();
 
+            #endregion
+
+            #region MVC
+
             builder.Services.AddControllersWithViews();
             builder.Services.AddSession();
 
+            #endregion
+
             var app = builder.Build();
 
-            if (!app.Environment.IsDevelopment())
+            #region Middleware Pipeline
+
+            if (app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseDeveloperExceptionPage();
+                app.UseStatusCodePagesWithReExecute("/Error/{0}");
+            }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+                app.UseStatusCodePagesWithReExecute("/Error/{0}");
                 app.UseHsts();
             }
 
@@ -65,10 +94,16 @@ namespace Mvc
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
+            #endregion
+
+            #region Globalization
+
             var culture = new CultureInfo("es-AR");
 
             CultureInfo.DefaultThreadCurrentCulture = culture;
             CultureInfo.DefaultThreadCurrentUICulture = culture;
+
+            #endregion
 
             app.Run();
         }
