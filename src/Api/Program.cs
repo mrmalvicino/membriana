@@ -27,19 +27,8 @@ namespace Api
 
             #region Configuration
 
-            /// <summary>
-            /// Cadena de conexión principal utilizada por la infraestructura (EF Core y persistencia).
-            /// </summary>
             var dbConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-            /// <summary>
-            /// Configuración de JWT (Issuer, Audience, Key) utilizada por autenticación.
-            /// </summary>
             var jwtSettings = builder.Configuration.GetSection("Jwt");
-
-            /// <summary>
-            /// Clave simétrica utilizada para firmar y validar tokens JWT.
-            /// </summary>
             var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
 
             #endregion
@@ -61,34 +50,16 @@ namespace Api
 
             #endregion
 
-            #region Dependency Injection - Infrastructure
+            #region Dependency Injection
 
-            /// <summary>
-            /// Registra dependencias de infraestructura
-            /// </summary>
             builder.Services.AddInfrastructure(dbConnectionString);
-
-            #endregion
-
-            #region Dependency Injection - Filters
-
-            /// <summary>
-            /// Filtro para validar tenancy por querystring (organizationId) y evitar acceso cross-tenant.
-            /// </summary>
             builder.Services.AddScoped<TenancyQueryFilter>();
-
-            /// <summary>
-            /// Filtro para validar tenancy por ruta (organizationId) y evitar acceso cross-tenant.
-            /// </summary>
             builder.Services.AddScoped(typeof(TenancyRouteFilter<,>));
 
             #endregion
 
             #region Identity
 
-            /// <summary>
-            /// Configura Identity con almacenamiento EF Core sobre <see cref="AppDbContext"/>.
-            /// </summary>
             builder.Services
                 .AddIdentity<AppUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
@@ -98,9 +69,6 @@ namespace Api
 
             #region Authentication - JWT Bearer
 
-            /// <summary>
-            /// Configura autenticación basada en JWT Bearer.
-            /// </summary>
             builder.Services
                 .AddAuthentication(options =>
                 {
@@ -131,9 +99,6 @@ namespace Api
 
             #region Authorization - Policies
 
-            /// <summary>
-            /// Políticas de autorización por roles.
-            /// </summary>
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("Admin", policy =>
@@ -160,9 +125,6 @@ namespace Api
 
             #region CORS
 
-            /// <summary>
-            /// Política CORS para permitir que el frontend MVC consuma la API en desarrollo.
-            /// </summary>
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowMvc", policy =>
@@ -177,24 +139,10 @@ namespace Api
 
             #region MVC
 
-            /// <summary>
-            /// Registra AutoMapper escaneando los assemblies de Application/Infrastructure/Api.
-            /// </summary>
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-            /// <summary>
-            /// Habilita controllers para endpoints REST.
-            /// </summary>
             builder.Services.AddControllers();
-
-            /// <summary>
-            /// Permite descubrir endpoints para Swagger/OpenAPI.
-            /// </summary>
             builder.Services.AddEndpointsApiExplorer();
 
-            /// <summary>
-            /// Configura Swagger/OpenAPI e incorpora esquema de seguridad JWT Bearer para "Authorize".
-            /// </summary>
             builder.Services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1",
@@ -232,51 +180,25 @@ namespace Api
 
             #endregion
 
-            #region Build
-
             var app = builder.Build();
-
-            #endregion
 
             #region Middleware Pipeline
 
-            /// <summary>
-            /// Swagger habilitado solo en Development.
-            /// </summary>
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
-            /// <summary>
-            /// Redirección a HTTPS.
-            /// </summary>
             app.UseHttpsRedirection();
-
-            /// <summary>
-            /// Aplica la política CORS para permitir el consumo desde el frontend MVC.
-            /// </summary>
             app.UseCors("AllowMvc");
-
-            /// <summary>
-            /// Autenticación y autorización, en ese orden.
-            /// </summary>
             app.UseAuthentication();
             app.UseAuthorization();
-
-            /// <summary>
-            /// Mapea controllers como endpoints.
-            /// </summary>
             app.MapControllers();
 
             #endregion
 
-            #region Run
-
             app.Run();
-
-            #endregion
         }
     }
 }
