@@ -5,6 +5,8 @@ using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
+using Serilog.Sinks.MSSqlServer;
 using System.Text;
 
 namespace Api
@@ -28,7 +30,7 @@ namespace Api
             /// <summary>
             /// Cadena de conexión principal utilizada por la infraestructura (EF Core y persistencia).
             /// </summary>
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            var dbConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
             /// <summary>
             /// Configuración de JWT (Issuer, Audience, Key) utilizada por autenticación.
@@ -42,12 +44,29 @@ namespace Api
 
             #endregion
 
+            #region Logging
+
+            builder.Host.UseSerilog((context, services, configuration) =>
+            {
+                configuration
+                    .WriteTo.Console()
+                    .WriteTo.MSSqlServer(
+                        connectionString: dbConnectionString,
+                        sinkOptions: new MSSqlServerSinkOptions
+                        {
+                            TableName = "Logs",
+                            AutoCreateSqlTable = true
+                        });
+            });
+
+            #endregion
+
             #region Dependency Injection - Infrastructure
 
             /// <summary>
             /// Registra dependencias de infraestructura
             /// </summary>
-            builder.Services.AddInfrastructure(connectionString);
+            builder.Services.AddInfrastructure(dbConnectionString);
 
             #endregion
 
