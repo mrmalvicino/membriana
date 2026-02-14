@@ -35,6 +35,6 @@ namespace Application.Repositories
         /// <summary>
         /// Elimina una entidad perteneciente a una organización.
         /// </summary>
-        Task DeleteAsync(int id);
+        Task<bool> DeleteAsync(int id);
     }
 }

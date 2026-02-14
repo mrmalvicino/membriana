@@ -5,6 +5,7 @@ using AutoMapper;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers
 {
@@ -142,9 +143,27 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public virtual async Task<IActionResult> Delete(int id)
         {
-            await _repository.DeleteAsync(id);
+            try
+            {
+                var deleted = await _repository.DeleteAsync(id);
 
-            return NoContent();
+                if (!deleted)
+                {
+                    return NotFound();
+                }
+
+                return NoContent();
+            }
+            catch (DbUpdateException)
+            {
+                return Conflict(
+                    new ProblemDetails
+                    {
+                        Title = "No se puede eliminar",
+                        Detail = "El recurso es referenciado por otros registros."
+                    }
+                );
+            }
         }
     }
 }

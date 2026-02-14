@@ -89,15 +89,18 @@ namespace Infrastructure.Repositories
         /// <summary>
         /// Elimina una entidad perteneciente a una organización.
         /// </summary>
-        public async Task DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             var entity = await _dbSet.FindAsync(id);
 
-            if (entity != null)
+            if (entity == null)
             {
-                _dbSet.Remove(entity);
-                await _dbContext.SaveChangesAsync();
+                return false;
             }
+            
+            _dbSet.Remove(entity);
+            await _dbContext.SaveChangesAsync();
+            return true;
         }
 
         /// <summary>
