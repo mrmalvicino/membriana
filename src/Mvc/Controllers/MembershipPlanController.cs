@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Mvc.Exceptions;
 using Mvc.Filters;
 using Mvc.Models;
 using Mvc.Services.Api.Interfaces;
@@ -131,8 +132,20 @@ namespace Mvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _membershipPlanApi.DeleteAsync(id);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await _membershipPlanApi.DeleteAsync(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (BusinessRuleException ex)
+            {
+                TempData["BusinessError"] = ex.Message;
+                return RedirectToAction(nameof(Delete), new { id });
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
         }
     }
 }

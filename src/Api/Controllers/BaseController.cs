@@ -159,8 +159,8 @@ namespace Api.Controllers
                 return Conflict(
                     new ProblemDetails
                     {
-                        Title = "No se puede eliminar",
-                        Detail = "El recurso es referenciado por otros registros."
+                        Title = "No es posible eliminar recurso",
+                        Detail = "El recurso está en uso y no puede ser eliminado."
                     }
                 );
             }

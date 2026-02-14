@@ -1,7 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Mvc.Dtos.MembershipPlan;
+using Mvc.Exceptions;
 using Mvc.Models;
 using Mvc.Services.Api.Interfaces;
+using System.Net;
+using System.Text.Json;
 
 namespace Mvc.Services.Api
 {
@@ -70,6 +74,38 @@ namespace Mvc.Services.Api
         {
             var url = $"{_apiBaseUrl}api/membershipplans/{id}";
             var response = await _httpClient.DeleteAsync(url);
+
+            if (response.StatusCode == HttpStatusCode.Conflict)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+
+                string message = "No se puede eliminar el recurso.";
+
+                if (!string.IsNullOrWhiteSpace(body))
+                {
+                    try
+                    {
+                        var problem = JsonSerializer.Deserialize<ProblemDetails>(
+                            body,
+                            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                        );
+
+                        message = problem?.Detail ?? problem?.Title ?? message;
+                    }
+                    catch
+                    {
+                        message = body;
+                    }
+                }
+
+                throw new BusinessRuleException(message);
+            }
+
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                throw new KeyNotFoundException("El plan de membresía no existe.");
+            }
+
             response.EnsureSuccessStatusCode();
         }
     }
