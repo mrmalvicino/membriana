@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces;
+﻿using Domain.Enums;
+using Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -41,6 +42,12 @@ namespace Domain.Entities
         public string UserId { get; set; } = null!;
         [ForeignKey("UserId")]
         public virtual AppUser User { get; set; } = null!;
+        #endregion
+
+        #region MemberStatus
+        [Display(Name = "Estado")]
+        [Required]
+        public MemberStatus MemberStatus { get; set; } = MemberStatus.Active;
         #endregion
     }
 }
