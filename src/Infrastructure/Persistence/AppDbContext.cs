@@ -54,92 +54,13 @@ namespace Infrastructure.Persistence
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+            SeedStableData(builder);
+            SeedDummyData(builder);
+        }
 
-            #region Tablas
-
-            builder.Entity<Employee>().ToTable("Employees");
-            builder.Entity<Member>().ToTable("Members");
-            builder.Entity<Organization>().ToTable("Organizations");
-            builder.Entity<Person>().ToTable("People");
-
-            #endregion
-
-            #region Relaciones 1 a 1
-
-            builder.Entity<Organization>()
-                .HasOne(o => o.LogoImage)
-                .WithOne()
-                .HasForeignKey<Organization>(o => o.LogoImageId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<Person>()
-                .HasOne(p => p.ProfileImage)
-                .WithOne()
-                .HasForeignKey<Person>(p => p.ProfileImageId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            #endregion
-
-            #region Relaciones 1 a N
-
-            builder.Entity<Organization>()
-                .HasMany(o => o.Employees)
-                .WithOne(e => e.Organization)
-                .HasForeignKey(e => e.OrganizationId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<Organization>()
-                .HasMany(o => o.Members)
-                .WithOne(m => m.Organization)
-                .HasForeignKey(m => m.OrganizationId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<Organization>()
-                .HasMany(o => o.MembershipPlans)
-                .WithOne(p => p.Organization)
-                .HasForeignKey(p => p.OrganizationId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<Member>()
-                .HasMany(p => p.Payments)
-                .WithOne(m => m.Member)
-                .HasForeignKey(m => m.MemberId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<Member>()
-                .HasOne(m => m.MembershipPlan)
-                .WithMany(p => p.Members)
-                .HasForeignKey(m => m.MembershipPlanId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            #endregion
-
-            #region Tipos de datos SQL
-
-            builder.Entity<MembershipPlan>()
-                .Property(m => m.Amount)
-                .HasColumnType("decimal(18,2)");
-
-            builder.Entity<Payment>()
-                .Property(p => p.Amount)
-                .HasColumnType("decimal(18,2)");
-
-            builder.Entity<PricingPlan>()
-                .Property(p => p.Amount)
-                .HasColumnType("decimal(18,2)");
-
-            #endregion
-
-            #region Constraints
-
-            builder.Entity<MembershipPlan>()
-                .HasIndex(m => m.Name)
-                .IsUnique();
-
-            #endregion
-
-            #region Seed data
-
+        private static void SeedStableData(ModelBuilder builder)
+        {
             builder.Entity<PricingPlan>().HasData(
                 new PricingPlan
                 {
@@ -153,7 +74,8 @@ namespace Infrastructure.Persistence
                     Name = "Plan profesional",
                     Amount = 20
                 },
-                new PricingPlan {
+                new PricingPlan
+                {
                     Id = (int)Domain.Enums.PricingPlan.Enterprise,
                     Name = "Plan empresarial",
                     Amount = 30
@@ -180,13 +102,16 @@ namespace Infrastructure.Persistence
                     NormalizedName = Domain.Enums.AppRole.Member.ToString().ToUpper()
                 }
             );
+        }
 
-            #endregion
-
-            #region Dummy Data
-
+        private static void SeedDummyData(ModelBuilder builder)
+        {
             builder.Entity<Image>().HasData(
-                new Image { Id = 1, Url = "https://i.imgur.com/Cy1SqZy.png" }
+                new Image
+                {
+                    Id = 1,
+                    Url = "https://i.imgur.com/Cy1SqZy.png"
+                }
             );
 
             builder.Entity<Organization>().HasData(
@@ -213,6 +138,7 @@ namespace Infrastructure.Persistence
 
             var hasher = new PasswordHasher<AppUser>();
             adminUser.PasswordHash = hasher.HashPassword(adminUser, "Password123-");
+
             builder.Entity<AppUser>().HasData(adminUser);
 
             builder.Entity<IdentityUserRole<string>>().HasData(
@@ -222,8 +148,6 @@ namespace Infrastructure.Persistence
                     RoleId = ((int)Domain.Enums.AppRole.Admin).ToString()
                 }
             );
-
-            #endregion
         }
     }
 }
