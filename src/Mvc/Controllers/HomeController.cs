@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Mvc.Filters;
 using Mvc.Models;
-using System.Diagnostics;
 
 namespace Mvc.Controllers
 {
