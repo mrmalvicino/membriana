@@ -28,6 +28,7 @@ namespace Infrastructure.Persistence
         public DbSet<Image> Images { get; set; }
         public DbSet<Member> Members { get; set; }
         public DbSet<MembershipPlan> MembershipPlans { get; set; }
+        public DbSet<MemberStatusEvent> MemberStatusEvents { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Person> People { get; set; }

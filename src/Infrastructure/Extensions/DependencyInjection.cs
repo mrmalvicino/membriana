@@ -47,9 +47,11 @@ namespace Infrastructure.Extensions
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<IMemberRepository, MemberRepository>();
             services.AddScoped<IMembershipPlanRepository, MembershipPlanRepository>();
+            services.AddScoped<IMemberStatusEventRepository, MemberStatusEventRepository>();
             services.AddScoped<IOrganizationRepository, OrganizationRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IMemberStatusService, MemberStatusService>();
             services.AddScoped<IUserService, UserService>();
 
             return services;
