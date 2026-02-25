@@ -36,7 +36,8 @@ namespace Infrastructure.Persistence.Configurations
                    .HasDefaultValueSql("GETUTCDATE()");
 
             builder.Property(x => x.ChangedByUserId)
-                   .IsRequired();
+                   .IsRequired()
+                   .HasMaxLength(450);
 
             builder.Property(x => x.Details)
                    .HasMaxLength(1000)

@@ -35,9 +35,9 @@ public class MemberStatusEvent : IIdentifiable, ITenantable, IAuditable
     #region ChangedAtDateTime
     public DateTime ChangedAtDateTime { get; set; }
     #endregion
-    
+
     #region ChangedByUser
-    public int ChangedByUserId { get; set; }
+    public string ChangedByUserId { get; set; } = null!;
     public AppUser ChangedByUser { get; set; } = null!;
     #endregion
 
