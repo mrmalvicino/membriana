@@ -21,7 +21,11 @@ public class MemberStatusService : IMemberStatusService
         _userService = userService;
     }
 
-    public async Task<int> CountMembersWithStatusAsync(int year, int month, MemberStatus targetStatus)
+    public async Task<int> CountMembersWithStatusAsync(
+        int year,
+        int month,
+        MemberStatus targetStatus
+    )
     {
         int orgId = await _userService.GetOrganizationIdAsync();
 
