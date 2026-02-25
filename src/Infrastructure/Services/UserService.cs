@@ -35,6 +35,29 @@ namespace Infrastructure.Services
         }
 
         /// <summary>
+        /// Obtiene el usuario actualmente autenticado en el contexto HTTP actual.
+        /// </summary>
+        /// <remarks>
+        /// Cuando un usuario autenticado realiza una petición HTTP al servidor, el
+        /// middleware de autenticación valida el token JWT (extraído desde la cookie
+        /// o header Authorization) y, si es válido, construye un objeto ClaimsPrincipal
+        /// con los datos del usuario mediante <see cref="IHttpContextAccessor"/> y
+        /// utiliza <see cref="UserManager{TUser}"/> para recuperar desde la base de datos
+        /// la entidad <see cref="AppUser"/> completa.
+        /// </remarks>
+        public async Task<AppUser> GetLoggedUserAsync()
+        {
+            var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+
+            if (user == null)
+            {
+                throw new Exception("No hay usuario en sesión.");
+            }
+
+            return user;
+        }
+
+        /// <summary>
         /// Obtiene el ID de la organización (tenant) del usuario autenticado en el request actual.
         /// </summary>
         /// <remarks>
@@ -44,9 +67,9 @@ namespace Infrastructure.Services
         /// </remarks>
         public async Task<int> GetOrganizationIdAsync()
         {
-            var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+            var user = await GetLoggedUserAsync();
 
-            if (user == null || user.OrganizationId == 0)
+            if (user.OrganizationId == 0)
             {
                 throw new Exception("No se encontró la organización del usuario.");
             }
