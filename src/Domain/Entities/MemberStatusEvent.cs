@@ -8,7 +8,7 @@ namespace Domain.Entities;
 /// de una organización. Incluye información sobre el estado anterior, el nuevo estado, la
 /// fecha y hora del cambio, el usuario que realizó el cambio y otros detalles relevantes.
 /// </summary>
-public class MemberStatusEvent : ITenantable, IAuditable
+public class MemberStatusEvent : IIdentifiable, ITenantable, IAuditable
 {
     #region Id
     public int Id { get; set; }
