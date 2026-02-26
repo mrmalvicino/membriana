@@ -57,7 +57,7 @@ namespace Infrastructure.Persistence
             base.OnModelCreating(builder);
             builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
             SeedStableData(builder);
-            SeedDummyData(builder);
+            //SeedDummyData(builder);
         }
 
         private static void SeedStableData(ModelBuilder builder)

@@ -27,7 +27,13 @@ namespace Api
 
             #region Configuration
 
-            var dbConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            var dbConnectionString = builder.Configuration.GetConnectionString();
+
+            if (dbConnectionString == null)
+            {
+                throw new InvalidOperationException("No existe el ConnectionString.");
+            }
+
             var jwtSettings = builder.Configuration.GetSection("Jwt");
             var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
 
