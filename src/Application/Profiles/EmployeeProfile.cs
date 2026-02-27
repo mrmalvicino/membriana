@@ -1,5 +1,5 @@
-﻿using Application.Dtos.Employee;
-using Application.Dtos.Person;
+﻿using Contracts.Dtos.Employee;
+using Contracts.Dtos.Person;
 using Domain.Entities;
 
 namespace Application.Profiles

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Mvc.Dtos.MembershipPlan;
+using Contracts.Dtos.MembershipPlan;
 using Mvc.Exceptions;
 using Mvc.Models;
 using Mvc.Services.Api.Interfaces;

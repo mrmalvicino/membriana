@@ -1,6 +1,6 @@
 ﻿using Application.Repositories;
 using Application.Services;
-using Domain.Interfaces;
+using Contracts.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 

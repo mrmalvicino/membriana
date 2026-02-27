@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Mvc.Dtos.Payment;
+using Contracts.Dtos.Payment;
 using Mvc.Models;
 using Mvc.Services.Api.Interfaces;
 

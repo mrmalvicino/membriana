@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Mvc.Dtos.MembershipPlan;
+using Contracts.Dtos.MembershipPlan;
 using Mvc.Models;
 
 namespace Mvc.Profiles

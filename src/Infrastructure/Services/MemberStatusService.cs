@@ -1,6 +1,6 @@
 ﻿using Application.Repositories;
 using Application.Services;
-using Domain.Enums;
+using Contracts.Enums;
 
 namespace Infrastructure.Services;
 

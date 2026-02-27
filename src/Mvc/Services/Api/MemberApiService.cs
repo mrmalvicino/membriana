@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Mvc.Dtos.Member;
+using Contracts.Dtos.Member;
 using Mvc.Models;
 using Mvc.Services.Api.Interfaces;
 

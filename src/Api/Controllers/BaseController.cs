@@ -2,7 +2,7 @@
 using Application.Repositories;
 using Application.Services;
 using AutoMapper;
-using Domain.Interfaces;
+using Contracts.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

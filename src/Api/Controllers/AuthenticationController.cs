@@ -1,4 +1,4 @@
-﻿using Application.Dtos.Authentication;
+﻿using Contracts.Dtos.Authentication;
 using Application.Repositories;
 using Application.Services;
 using Domain.Entities;

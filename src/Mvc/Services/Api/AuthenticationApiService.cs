@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Contracts.Dtos.Authentication;
 using Mvc.Dtos.Authentication;
 using Mvc.Models;
 using Mvc.Services.Api.Interfaces;

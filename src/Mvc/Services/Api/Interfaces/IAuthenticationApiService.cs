@@ -1,4 +1,4 @@
-﻿using Mvc.Dtos.Authentication;
+﻿using Contracts.Dtos.Authentication;
 using Mvc.Models;
 
 namespace Mvc.Services.Api.Interfaces

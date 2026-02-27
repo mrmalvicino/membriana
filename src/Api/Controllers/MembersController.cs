@@ -1,5 +1,5 @@
 ﻿using Api.Filters;
-using Application.Dtos.Member;
+using Contracts.Dtos.Member;
 using Application.Repositories;
 using Application.Services;
 using AutoMapper;

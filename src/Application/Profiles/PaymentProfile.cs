@@ -1,4 +1,4 @@
-﻿using Application.Dtos.Payment;
+﻿using Contracts.Dtos.Payment;
 using AutoMapper;
 using Domain.Entities;
 

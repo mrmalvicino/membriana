@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Mvc.Dtos.Image;
+using Contracts.Dtos.Image;
 using Mvc.Models;
 
 namespace Mvc.Profiles

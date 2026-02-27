@@ -1,4 +1,5 @@
-﻿using Domain.Enums;
+﻿using Contracts.Enums;
+using Contracts.Interfaces;
 using Domain.Interfaces;
 
 namespace Domain.Entities;

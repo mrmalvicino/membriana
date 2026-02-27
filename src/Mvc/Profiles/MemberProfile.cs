@@ -1,5 +1,5 @@
-﻿using Mvc.Dtos.Member;
-using Mvc.Dtos.Person;
+﻿using Contracts.Dtos.Member;
+using Contracts.Dtos.Person;
 using Mvc.Models;
 
 namespace Mvc.Profiles

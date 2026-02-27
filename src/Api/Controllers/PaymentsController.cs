@@ -1,5 +1,5 @@
 ﻿using Api.Filters;
-using Application.Dtos.Payment;
+using Contracts.Dtos.Payment;
 using Application.Repositories;
 using Application.Services;
 using AutoMapper;

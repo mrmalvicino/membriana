@@ -1,4 +1,4 @@
-﻿using Application.Dtos.Image;
+﻿using Contracts.Dtos.Image;
 using AutoMapper;
 using Domain.Entities;
 

@@ -1,8 +1,10 @@
-﻿using Application.Dtos.Member;
-using Application.Dtos.Person;
+﻿using Contracts.Dtos.Member;
+using Contracts.Dtos.Person;
 using Domain.Entities;
 
 namespace Application.Profiles
+
+ 
 {
     public class MemberProfile : PersonProfile
     {

@@ -1,4 +1,4 @@
-﻿using Application.Dtos.Person;
+﻿using Contracts.Dtos.Person;
 using AutoMapper;
 using Domain.Entities;
 

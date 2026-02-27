@@ -1,4 +1,4 @@
-﻿using Application.Dtos.MembershipPlan;
+﻿using Contracts.Dtos.MembershipPlan;
 using AutoMapper;
 using Domain.Entities;
 
