@@ -1,15 +1,14 @@
 ﻿using Application.Services;
 
-namespace Application.Repositories
+namespace Application.Repositories;
+
+public interface IUnitOfWork
 {
-    public interface IUnitOfWork
-    {
-        IIdentityService IdentityService { get; }
-        IEmployeeRepository EmployeeRepository { get; }
-        IMemberRepository MemberRepository { get; }
-        IOrganizationRepository OrganizationRepository { get; }
-        Task BeginTransactionAsync();
-        Task CommitAsync();
-        Task RollbackAsync();
-    }
+    IIdentityService IdentityService { get; }
+    IEmployeeRepository EmployeeRepository { get; }
+    IMemberRepository MemberRepository { get; }
+    IOrganizationRepository OrganizationRepository { get; }
+    Task BeginTransactionAsync();
+    Task CommitAsync();
+    Task RollbackAsync();
 }

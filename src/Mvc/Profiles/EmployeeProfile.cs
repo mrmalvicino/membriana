@@ -2,20 +2,19 @@
 using Contracts.Dtos.Person;
 using Mvc.Models;
 
-namespace Mvc.Profiles
+namespace Mvc.Profiles;
+
+public class EmployeeProfile : PersonProfile
 {
-    public class EmployeeProfile : PersonProfile
+    public EmployeeProfile()
     {
-        public EmployeeProfile()
-        {
-            CreateMap<EmployeeViewModel, EmployeeCreateDto>()
-                .IncludeBase<PersonViewModel, PersonCreateDto>();
+        CreateMap<EmployeeViewModel, EmployeeCreateDto>()
+            .IncludeBase<PersonViewModel, PersonCreateDto>();
 
-            CreateMap<EmployeeReadDto, EmployeeViewModel>()
-                .IncludeBase<PersonReadDto, PersonViewModel>();
+        CreateMap<EmployeeReadDto, EmployeeViewModel>()
+            .IncludeBase<PersonReadDto, PersonViewModel>();
 
-            CreateMap<EmployeeViewModel, EmployeeUpdateDto>()
-                .IncludeBase<PersonViewModel, PersonUpdateDto>();
-        }
+        CreateMap<EmployeeViewModel, EmployeeUpdateDto>()
+            .IncludeBase<PersonViewModel, PersonUpdateDto>();
     }
 }

@@ -1,8 +1,7 @@
-﻿namespace Mvc.Services.Utilities.Interfaces
+﻿namespace Mvc.Services.Utilities.Interfaces;
+
+public interface ICookieService
 {
-    public interface ICookieService
-    {
-        public void SetJwtCookie(string token);
-        public void DeleteJwtCookie();
-    }
+    public void SetJwtCookie(string token);
+    public void DeleteJwtCookie();
 }

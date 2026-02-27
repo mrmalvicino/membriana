@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Mvc.Models;
 using System.Diagnostics;
 
+namespace Mvc.Controllers;
+
 /// <summary>
 /// Controlador para manejar mostrar errores.
 /// </summary>

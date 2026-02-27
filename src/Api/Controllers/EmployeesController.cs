@@ -7,102 +7,101 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Controllers
+namespace Api.Controllers;
+
+[Authorize(Policy = "Admin")]
+public class EmployeesController : BaseController<
+    Employee,
+    IEmployeeRepository,
+    EmployeeReadDto,
+    EmployeeCreateDto,
+    EmployeeUpdateDto
+>
 {
-    [Authorize(Policy = "Admin")]
-    public class EmployeesController : BaseController<
-        Employee,
-        IEmployeeRepository,
-        EmployeeReadDto,
-        EmployeeCreateDto,
-        EmployeeUpdateDto
-    >
+    private readonly IUnitOfWork _unitOfWork;
+
+    public EmployeesController(
+        IEmployeeRepository repository,
+        IUserService userService,
+        IMapper mapper,
+        IUnitOfWork unitOfWork
+    ) : base(repository, userService, mapper)
     {
-        private readonly IUnitOfWork _unitOfWork;
+        _unitOfWork = unitOfWork;
+    }
 
-        public EmployeesController(
-            IEmployeeRepository repository,
-            IUserService userService,
-            IMapper mapper,
-            IUnitOfWork unitOfWork
-        ) : base(repository, userService, mapper)
+    [ServiceFilter(typeof(TenancyRouteFilter<Employee, IEmployeeRepository>))]
+    public override async Task<ActionResult<EmployeeReadDto>> Get(int id)
+    {
+        return await base.Get(id);
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public override async Task<ActionResult<EmployeeReadDto>> Create(
+        [FromBody] EmployeeCreateDto createDto
+    )
+    {
+        int userOrgId = await _userService.GetOrganizationIdAsync();
+
+        if (createDto.OrganizationId != userOrgId)
         {
-            _unitOfWork = unitOfWork;
+            return Forbid();
         }
 
-        [ServiceFilter(typeof(TenancyRouteFilter<Employee, IEmployeeRepository>))]
-        public override async Task<ActionResult<EmployeeReadDto>> Get(int id)
+        await _unitOfWork.BeginTransactionAsync();
+
+        try
         {
-            return await base.Get(id);
-        }
-
-        [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public override async Task<ActionResult<EmployeeReadDto>> Create(
-            [FromBody] EmployeeCreateDto createDto
-        )
-        {
-            int userOrgId = await _userService.GetOrganizationIdAsync();
-
-            if (createDto.OrganizationId != userOrgId)
+            var user = new AppUser
             {
-                return Forbid();
-            }
+                UserName = createDto.Email,
+                Email = createDto.Email,
+                NormalizedEmail = createDto.Email,
+                EmailConfirmed = true,
+                OrganizationId = createDto.OrganizationId
+            };
 
-            await _unitOfWork.BeginTransactionAsync();
+            var result = await _unitOfWork.IdentityService.CreateUser(user, "Password123-");
 
-            try
+            if (!result.Succeeded)
             {
-                var user = new AppUser
-                {
-                    UserName = createDto.Email,
-                    Email = createDto.Email,
-                    NormalizedEmail = createDto.Email,
-                    EmailConfirmed = true,
-                    OrganizationId = createDto.OrganizationId
-                };
-
-                var result = await _unitOfWork.IdentityService.CreateUser(user, "Password123-");
-
-                if (!result.Succeeded)
-                {
-                    var errors = result.Errors.Select(e => e.Description);
-                    await _unitOfWork.RollbackAsync();
-                    return BadRequest(new { errors });
-                }
-
-                await _unitOfWork.IdentityService.AddToRole(user, Domain.Enums.AppRole.Employee);
-
-                var employee = _mapper.Map<Employee>(createDto);
-                employee.UserId = user.Id;
-                var created = await _unitOfWork.EmployeeRepository.AddAsync(employee);
-                var readDto = _mapper.Map<EmployeeReadDto>(created);
-
-                await _unitOfWork.CommitAsync();
-
-                return CreatedAtAction(nameof(Get), new { id = readDto.Id }, readDto);
-            }
-            catch (Exception ex)
-            {
+                var errors = result.Errors.Select(e => e.Description);
                 await _unitOfWork.RollbackAsync();
-                return StatusCode(500, ex.Message);
+                return BadRequest(new { errors });
             }
-        }
 
-        [ServiceFilter(typeof(TenancyRouteFilter<Employee, IEmployeeRepository>))]
-        public override async Task<ActionResult<EmployeeReadDto>> Update(
-            int id,
-            [FromBody] EmployeeUpdateDto updateDto
-        )
-        {
-            return await base.Update(id, updateDto);
-        }
+            await _unitOfWork.IdentityService.AddToRole(user, Domain.Enums.AppRole.Employee);
 
-        [ServiceFilter(typeof(TenancyRouteFilter<Employee, IEmployeeRepository>))]
-        public override async Task<IActionResult> Delete(int id)
-        {
-            return await base.Delete(id);
+            var employee = _mapper.Map<Employee>(createDto);
+            employee.UserId = user.Id;
+            var created = await _unitOfWork.EmployeeRepository.AddAsync(employee);
+            var readDto = _mapper.Map<EmployeeReadDto>(created);
+
+            await _unitOfWork.CommitAsync();
+
+            return CreatedAtAction(nameof(Get), new { id = readDto.Id }, readDto);
         }
+        catch (Exception ex)
+        {
+            await _unitOfWork.RollbackAsync();
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [ServiceFilter(typeof(TenancyRouteFilter<Employee, IEmployeeRepository>))]
+    public override async Task<ActionResult<EmployeeReadDto>> Update(
+        int id,
+        [FromBody] EmployeeUpdateDto updateDto
+    )
+    {
+        return await base.Update(id, updateDto);
+    }
+
+    [ServiceFilter(typeof(TenancyRouteFilter<Employee, IEmployeeRepository>))]
+    public override async Task<IActionResult> Delete(int id)
+    {
+        return await base.Delete(id);
     }
 }

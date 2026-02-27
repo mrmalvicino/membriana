@@ -1,11 +1,10 @@
 ﻿using Contracts.Dtos.Authentication;
 using Mvc.Models;
 
-namespace Mvc.Services.Api.Interfaces
+namespace Mvc.Services.Api.Interfaces;
+
+public interface IAuthenticationApiService
 {
-    public interface IAuthenticationApiService
-    {
-        Task<LoginResponseDto?> LoginAsync(LoginViewModel loginViewModel);
-        Task<RegisterResponseDto?> RegisterAsync(RegisterViewModel registerViewModel);
-    }
+    Task<LoginResponseDto?> LoginAsync(LoginViewModel loginViewModel);
+    Task<RegisterResponseDto?> RegisterAsync(RegisterViewModel registerViewModel);
 }

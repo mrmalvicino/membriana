@@ -2,14 +2,13 @@
 using Contracts.Dtos.Authentication;
 using Mvc.Models;
 
-namespace Mvc.Profiles
+namespace Mvc.Profiles;
+
+public class AuthenticationProfile : Profile
 {
-    public class AuthenticationProfile : Profile
+    public AuthenticationProfile()
     {
-        public AuthenticationProfile()
-        {
-            CreateMap<LoginViewModel, LoginRequestDto>();
-            CreateMap<RegisterViewModel, RegisterRequestDto>();
-        }
+        CreateMap<LoginViewModel, LoginRequestDto>();
+        CreateMap<RegisterViewModel, RegisterRequestDto>();
     }
 }

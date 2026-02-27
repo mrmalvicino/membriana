@@ -6,97 +6,96 @@ using Mvc.Services.Api.Interfaces;
 using System.Text;
 using System.Text.Json;
 
-namespace Mvc.Services.Api
+namespace Mvc.Services.Api;
+
+public class AuthenticationApiService : IAuthenticationApiService
 {
-    public class AuthenticationApiService : IAuthenticationApiService
+    private readonly string _apiBaseUrl;
+    private readonly HttpClient _httpClient;
+    private readonly IMapper _mapper;
+
+    public AuthenticationApiService(
+        IConfiguration configuration,
+        HttpClient httpClient,
+        IMapper mapper
+    )
     {
-        private readonly string _apiBaseUrl;
-        private readonly HttpClient _httpClient;
-        private readonly IMapper _mapper;
+        _apiBaseUrl = configuration.GetValue<string>("ApiBaseUrl");
+        _httpClient = httpClient;
+        _mapper = mapper;
+    }
 
-        public AuthenticationApiService(
-            IConfiguration configuration,
-            HttpClient httpClient,
-            IMapper mapper
-        )
+    public async Task<LoginResponseDto?> LoginAsync(LoginViewModel loginViewModel)
+    {
+        var loginRequestDto = _mapper.Map<LoginRequestDto>(loginViewModel);
+
+        var content = new StringContent(
+            JsonSerializer.Serialize(loginRequestDto),
+            Encoding.UTF8, "application/json"
+        );
+
+        var url = $"{_apiBaseUrl}api/authentication/login";
+        var response = await _httpClient.PostAsync(url, content);
+
+        if (!response.IsSuccessStatusCode)
         {
-            _apiBaseUrl = configuration.GetValue<string>("ApiBaseUrl");
-            _httpClient = httpClient;
-            _mapper = mapper;
+            return null;
         }
 
-        public async Task<LoginResponseDto?> LoginAsync(LoginViewModel loginViewModel)
-        {
-            var loginRequestDto = _mapper.Map<LoginRequestDto>(loginViewModel);
+        var json = await response.Content.ReadAsStringAsync();
 
-            var content = new StringContent(
-                JsonSerializer.Serialize(loginRequestDto),
-                Encoding.UTF8, "application/json"
-            );
-
-            var url = $"{_apiBaseUrl}api/authentication/login";
-            var response = await _httpClient.PostAsync(url, content);
-
-            if (!response.IsSuccessStatusCode)
+        var loginResponseDto = JsonSerializer.Deserialize<LoginResponseDto>(
+            json,
+            new JsonSerializerOptions
             {
-                return null;
+                PropertyNameCaseInsensitive = true
             }
+        );
 
-            var json = await response.Content.ReadAsStringAsync();
+        return loginResponseDto;
+    }
 
-            var loginResponseDto = JsonSerializer.Deserialize<LoginResponseDto>(
-                json,
+    public async Task<RegisterResponseDto?> RegisterAsync(RegisterViewModel registerViewModel)
+    {
+        var registerRequestDto = _mapper.Map<RegisterRequestDto>(registerViewModel);
+
+        var content = new StringContent(
+            JsonSerializer.Serialize(registerRequestDto),
+            Encoding.UTF8, "application/json"
+        );
+
+        var url = $"{_apiBaseUrl}api/authentication/register";
+        var response = await _httpClient.PostAsync(url, content);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync();
+            var errorResponse = JsonSerializer.Deserialize<ErrorResponseDto>(
+                errorContent,
                 new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 }
             );
 
-            return loginResponseDto;
+            throw new ApplicationException(
+                errorResponse != null &&
+                errorResponse.Errors != null
+                ? string.Join(", ", errorResponse.Errors)
+                : "Datos inválidos"
+            );
         }
 
-        public async Task<RegisterResponseDto?> RegisterAsync(RegisterViewModel registerViewModel)
-        {
-            var registerRequestDto = _mapper.Map<RegisterRequestDto>(registerViewModel);
+        var json = await response.Content.ReadAsStringAsync();
 
-            var content = new StringContent(
-                JsonSerializer.Serialize(registerRequestDto),
-                Encoding.UTF8, "application/json"
-            );
-
-            var url = $"{_apiBaseUrl}api/authentication/register";
-            var response = await _httpClient.PostAsync(url, content);
-
-            if (!response.IsSuccessStatusCode)
+        var registerResponseDto = JsonSerializer.Deserialize<RegisterResponseDto>(
+            json,
+            new JsonSerializerOptions
             {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                var errorResponse = JsonSerializer.Deserialize<ErrorResponseDto>(
-                    errorContent,
-                    new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    }
-                );
-
-                throw new ApplicationException(
-                    errorResponse != null &&
-                    errorResponse.Errors != null
-                    ? string.Join(", ", errorResponse.Errors)
-                    : "Datos inválidos"
-                );
+                PropertyNameCaseInsensitive = true
             }
+        );
 
-            var json = await response.Content.ReadAsStringAsync();
-
-            var registerResponseDto = JsonSerializer.Deserialize<RegisterResponseDto>(
-                json,
-                new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                }
-            );
-
-            return registerResponseDto;
-        }
+        return registerResponseDto;
     }
 }

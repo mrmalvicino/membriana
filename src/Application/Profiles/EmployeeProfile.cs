@@ -2,20 +2,19 @@
 using Contracts.Dtos.Person;
 using Domain.Entities;
 
-namespace Application.Profiles
+namespace Application.Profiles;
+
+public class EmployeeProfile : PersonProfile
 {
-    public class EmployeeProfile : PersonProfile
+    public EmployeeProfile()
     {
-        public EmployeeProfile()
-        {
-            CreateMap<EmployeeCreateDto, Employee>()
-                .IncludeBase<PersonCreateDto, Person>();
+        CreateMap<EmployeeCreateDto, Employee>()
+            .IncludeBase<PersonCreateDto, Person>();
 
-            CreateMap<Employee, EmployeeReadDto>()
-                .IncludeBase<Person, PersonReadDto>();
+        CreateMap<Employee, EmployeeReadDto>()
+            .IncludeBase<Person, PersonReadDto>();
 
-            CreateMap<EmployeeUpdateDto, Employee>()
-                .IncludeBase<PersonUpdateDto, Person>();
-        }
+        CreateMap<EmployeeUpdateDto, Employee>()
+            .IncludeBase<PersonUpdateDto, Person>();
     }
 }

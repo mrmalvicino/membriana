@@ -2,15 +2,14 @@
 using Contracts.Dtos.Person;
 using Mvc.Models;
 
-namespace Mvc.Profiles
+namespace Mvc.Profiles;
+
+public class PersonProfile : Profile
 {
-    public class PersonProfile : Profile
+    public PersonProfile()
     {
-        public PersonProfile()
-        {
-            CreateMap<PersonViewModel, PersonCreateDto>().ReverseMap();
-            CreateMap<PersonReadDto, PersonViewModel>().ReverseMap();
-            CreateMap<PersonViewModel, PersonUpdateDto>().ReverseMap();
-        }
+        CreateMap<PersonViewModel, PersonCreateDto>().ReverseMap();
+        CreateMap<PersonReadDto, PersonViewModel>().ReverseMap();
+        CreateMap<PersonViewModel, PersonUpdateDto>().ReverseMap();
     }
 }

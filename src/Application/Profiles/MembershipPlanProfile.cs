@@ -2,15 +2,14 @@
 using AutoMapper;
 using Domain.Entities;
 
-namespace Application.Profiles
+namespace Application.Profiles;
+
+public class MembershipPlanProfile : Profile
 {
-    public class MembershipPlanProfile : Profile
+    public MembershipPlanProfile()
     {
-        public MembershipPlanProfile()
-        {
-            CreateMap<MembershipPlanCreateDto, MembershipPlan>();
-            CreateMap<MembershipPlan, MembershipPlanReadDto>();
-            CreateMap<MembershipPlanUpdateDto, MembershipPlan>();
-        }
+        CreateMap<MembershipPlanCreateDto, MembershipPlan>();
+        CreateMap<MembershipPlan, MembershipPlanReadDto>();
+        CreateMap<MembershipPlanUpdateDto, MembershipPlan>();
     }
 }

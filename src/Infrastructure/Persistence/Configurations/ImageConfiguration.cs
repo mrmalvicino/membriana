@@ -2,19 +2,18 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Persistence.Configurations
+namespace Infrastructure.Persistence.Configurations;
+
+public class ImageConfiguration : IEntityTypeConfiguration<Image>
 {
-    public class ImageConfiguration : IEntityTypeConfiguration<Image>
+    public void Configure(EntityTypeBuilder<Image> builder)
     {
-        public void Configure(EntityTypeBuilder<Image> builder)
-        {
-            builder.ToTable("Images");
+        builder.ToTable("Images");
 
-            builder.HasKey(i => i.Id);
+        builder.HasKey(i => i.Id);
 
-            builder.Property(i => i.Url)
-                   .IsRequired()
-                   .HasMaxLength(2048);
-        }
+        builder.Property(i => i.Url)
+               .IsRequired()
+               .HasMaxLength(2048);
     }
 }

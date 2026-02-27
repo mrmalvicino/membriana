@@ -7,60 +7,59 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Controllers
+namespace Api.Controllers;
+
+/// <summary>
+/// Controlador para la gestión de pagos.
+/// </summary>
+[Authorize(Policy = "Employee")]
+public class PaymentsController : BaseController<
+    Payment,
+    IPaymentRepository,
+    PaymentReadDto,
+    PaymentCreateDto,
+    PaymentUpdateDto
+>
 {
     /// <summary>
-    /// Controlador para la gestión de pagos.
+    /// Constructor principal.
     /// </summary>
-    [Authorize(Policy = "Employee")]
-    public class PaymentsController : BaseController<
-        Payment,
-        IPaymentRepository,
-        PaymentReadDto,
-        PaymentCreateDto,
-        PaymentUpdateDto
-    >
+    public PaymentsController(
+        IPaymentRepository repository,
+        IUserService userService,
+        IMapper mapper
+    ) : base(repository, userService, mapper)
     {
-        /// <summary>
-        /// Constructor principal.
-        /// </summary>
-        public PaymentsController(
-            IPaymentRepository repository,
-            IUserService userService,
-            IMapper mapper
-        ) : base(repository, userService, mapper)
-        {
 
-        }
+    }
 
-        /// <summary>
-        /// Endpoint que obtiene un pago por su ID.
-        /// </summary>
-        [ServiceFilter(typeof(TenancyRouteFilter<Payment, IPaymentRepository>))]
-        public override async Task<ActionResult<PaymentReadDto>> Get(int id)
-        {
-            return await base.Get(id);
-        }
+    /// <summary>
+    /// Endpoint que obtiene un pago por su ID.
+    /// </summary>
+    [ServiceFilter(typeof(TenancyRouteFilter<Payment, IPaymentRepository>))]
+    public override async Task<ActionResult<PaymentReadDto>> Get(int id)
+    {
+        return await base.Get(id);
+    }
 
-        /// <summary>
-        /// Endpoint que modifica un pago existente.
-        /// </summary>
-        [ServiceFilter(typeof(TenancyRouteFilter<Payment, IPaymentRepository>))]
-        public override async Task<ActionResult<PaymentReadDto>> Update(
-            int id,
-            [FromBody] PaymentUpdateDto updateDto
-        )
-        {
-            return await base.Update(id, updateDto);
-        }
+    /// <summary>
+    /// Endpoint que modifica un pago existente.
+    /// </summary>
+    [ServiceFilter(typeof(TenancyRouteFilter<Payment, IPaymentRepository>))]
+    public override async Task<ActionResult<PaymentReadDto>> Update(
+        int id,
+        [FromBody] PaymentUpdateDto updateDto
+    )
+    {
+        return await base.Update(id, updateDto);
+    }
 
-        /// <summary>
-        /// Endpoint que elimina un pago.
-        /// </summary>
-        [ServiceFilter(typeof(TenancyRouteFilter<Payment, IPaymentRepository>))]
-        public override async Task<IActionResult> Delete(int id)
-        {
-            return await base.Delete(id);
-        }
+    /// <summary>
+    /// Endpoint que elimina un pago.
+    /// </summary>
+    [ServiceFilter(typeof(TenancyRouteFilter<Payment, IPaymentRepository>))]
+    public override async Task<IActionResult> Delete(int id)
+    {
+        return await base.Delete(id);
     }
 }

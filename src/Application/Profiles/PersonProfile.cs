@@ -2,15 +2,14 @@
 using AutoMapper;
 using Domain.Entities;
 
-namespace Application.Profiles
+namespace Application.Profiles;
+
+public class PersonProfile : Profile
 {
-    public class PersonProfile : Profile
+    public PersonProfile()
     {
-        public PersonProfile()
-        {
-            CreateMap<PersonCreateDto, Person>();
-            CreateMap<Person, PersonReadDto>();
-            CreateMap<PersonUpdateDto, Person>();
-        }
+        CreateMap<PersonCreateDto, Person>();
+        CreateMap<Person, PersonReadDto>();
+        CreateMap<PersonUpdateDto, Person>();
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Mvc.Services.Api.Interfaces;
 
+namespace Mvc.Services.Api;
+
 public class UserApiService : IUserApiService
 {
     private readonly string _apiBaseUrl;

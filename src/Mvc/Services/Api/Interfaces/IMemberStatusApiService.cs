@@ -1,7 +1,6 @@
-﻿namespace Mvc.Services.Api.Interfaces
+﻿namespace Mvc.Services.Api.Interfaces;
+
+public interface IMemberStatusApiService
 {
-    public interface IMemberStatusApiService
-    {
-        
-    }
+    
 }

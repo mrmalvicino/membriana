@@ -2,13 +2,12 @@
 using Contracts.Dtos.Image;
 using Mvc.Models;
 
-namespace Mvc.Profiles
+namespace Mvc.Profiles;
+
+public class ImageProfile : Profile
 {
-    public class ImageProfile : Profile
+    public ImageProfile()
     {
-        public ImageProfile()
-        {
-            CreateMap<ImageReadDto, ImageViewModel>().ReverseMap();
-        }
+        CreateMap<ImageReadDto, ImageViewModel>().ReverseMap();
     }
 }

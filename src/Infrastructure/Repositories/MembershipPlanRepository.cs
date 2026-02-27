@@ -2,13 +2,12 @@
 using Domain.Entities;
 using Infrastructure.Persistence;
 
-namespace Infrastructure.Repositories
-{
-    public class MembershipPlanRepository : BaseRepository<MembershipPlan>, IMembershipPlanRepository
-    {
-        public MembershipPlanRepository(AppDbContext dbContext) : base(dbContext)
-        {
+namespace Infrastructure.Repositories;
 
-        }
+public class MembershipPlanRepository : BaseRepository<MembershipPlan>, IMembershipPlanRepository
+{
+    public MembershipPlanRepository(AppDbContext dbContext) : base(dbContext)
+    {
+
     }
 }

@@ -2,13 +2,12 @@
 using AutoMapper;
 using Domain.Entities;
 
-namespace Application.Profiles
+namespace Application.Profiles;
+
+public class ImageProfile : Profile
 {
-    public class ImageProfile : Profile
+    public ImageProfile()
     {
-        public ImageProfile()
-        {
-            CreateMap<Image, ImageReadDto>();
-        }
+        CreateMap<Image, ImageReadDto>();
     }
 }

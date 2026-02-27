@@ -2,23 +2,22 @@
 using Contracts.Dtos.Payment;
 using Mvc.Models;
 
-namespace Mvc.Profiles
+namespace Mvc.Profiles;
+
+public class PaymentProfile : Profile
 {
-    public class PaymentProfile : Profile
+    public PaymentProfile()
     {
-        public PaymentProfile()
-        {
-            #region Create
-            CreateMap<PaymentViewModel, PaymentCreateDto>().ReverseMap();
-            #endregion
+        #region Create
+        CreateMap<PaymentViewModel, PaymentCreateDto>().ReverseMap();
+        #endregion
 
-            #region Read
-            CreateMap<PaymentReadDto, PaymentViewModel>().ReverseMap();
-            #endregion
+        #region Read
+        CreateMap<PaymentReadDto, PaymentViewModel>().ReverseMap();
+        #endregion
 
-            #region Update
-            CreateMap<PaymentViewModel, PaymentUpdateDto>().ReverseMap();
-            #endregion
-        }
+        #region Update
+        CreateMap<PaymentViewModel, PaymentUpdateDto>().ReverseMap();
+        #endregion
     }
 }

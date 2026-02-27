@@ -1,7 +1,6 @@
-﻿namespace Mvc.Dtos.Authentication
+﻿namespace Mvc.Dtos.Authentication;
+
+public class ErrorResponseDto
 {
-    public class ErrorResponseDto
-    {
-        public List<string>? Errors { get; set; }
-    }
+    public List<string>? Errors { get; set; }
 }

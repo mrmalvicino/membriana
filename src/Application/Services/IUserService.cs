@@ -1,46 +1,45 @@
 ﻿using Domain.Entities;
 using System.IdentityModel.Tokens.Jwt;
 
-namespace Application.Services
+namespace Application.Services;
+
+/// <summary>
+/// Servicio para gestionar el acceso a información del usuario en sesión
+/// y a la generación de tokens de autenticación.
+/// </summary>
+public interface IUserService
 {
     /// <summary>
-    /// Servicio para gestionar el acceso a información del usuario en sesión
-    /// y a la generación de tokens de autenticación.
+    /// Obtiene el usuario actualmente autenticado en el contexto HTTP actual.
     /// </summary>
-    public interface IUserService
-    {
-        /// <summary>
-        /// Obtiene el usuario actualmente autenticado en el contexto HTTP actual.
-        /// </summary>
-        /// <remarks>
-        /// Cuando un usuario autenticado realiza una petición HTTP al servidor, el
-        /// middleware de autenticación valida el token JWT (extraído desde la cookie
-        /// o header Authorization) y, si es válido, construye un objeto ClaimsPrincipal
-        /// con los datos del usuario mediante <see cref="IHttpContextAccessor"/> y
-        /// utiliza <see cref="UserManager{TUser}"/> para recuperar desde la base de datos
-        /// la entidad <see cref="AppUser"/> completa.
-        /// </remarks>
-        Task<AppUser> GetLoggedUserAsync();
+    /// <remarks>
+    /// Cuando un usuario autenticado realiza una petición HTTP al servidor, el
+    /// middleware de autenticación valida el token JWT (extraído desde la cookie
+    /// o header Authorization) y, si es válido, construye un objeto ClaimsPrincipal
+    /// con los datos del usuario mediante <see cref="IHttpContextAccessor"/> y
+    /// utiliza <see cref="UserManager{TUser}"/> para recuperar desde la base de datos
+    /// la entidad <see cref="AppUser"/> completa.
+    /// </remarks>
+    Task<AppUser> GetLoggedUserAsync();
 
-        /// <summary>
-        /// Obtiene el ID de la organización (tenant) del usuario autenticado en el request actual.
-        /// </summary>
-        /// <remarks>
-        /// Este método es utilizado por controladores y servicios de aplicación para
-        /// validar y reforzar el aislamiento multi-tenant, evitando que un usuario
-        /// opere sobre datos de una organización distinta a la propia.
-        /// </remarks>
-        Task<int> GetOrganizationIdAsync();
+    /// <summary>
+    /// Obtiene el ID de la organización (tenant) del usuario autenticado en el request actual.
+    /// </summary>
+    /// <remarks>
+    /// Este método es utilizado por controladores y servicios de aplicación para
+    /// validar y reforzar el aislamiento multi-tenant, evitando que un usuario
+    /// opere sobre datos de una organización distinta a la propia.
+    /// </remarks>
+    Task<int> GetOrganizationIdAsync();
 
-        /// <summary>
-        /// Genera un token JWT firmado para el usuario indicado, incluyendo claims de
-        /// identidad, roles y tenant.
-        /// </summary>
-        /// <remarks>
-        /// Este método suele ser invocado desde flujos de login o emisión de credenciales,
-        /// mientras que el consumo del token queda a cargo de los middlewares de
-        /// autenticación configurados en la aplicación.
-        /// </remarks>
-        Task<JwtSecurityToken> GenerateTokenAsync(AppUser user);
-    }
+    /// <summary>
+    /// Genera un token JWT firmado para el usuario indicado, incluyendo claims de
+    /// identidad, roles y tenant.
+    /// </summary>
+    /// <remarks>
+    /// Este método suele ser invocado desde flujos de login o emisión de credenciales,
+    /// mientras que el consumo del token queda a cargo de los middlewares de
+    /// autenticación configurados en la aplicación.
+    /// </remarks>
+    Task<JwtSecurityToken> GenerateTokenAsync(AppUser user);
 }

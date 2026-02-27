@@ -2,40 +2,39 @@
 using AutoMapper;
 using Domain.Entities;
 
-namespace Application.Profiles
+namespace Application.Profiles;
+
+public class PaymentProfile : Profile
 {
-    public class PaymentProfile : Profile
+    public PaymentProfile()
     {
-        public PaymentProfile()
-        {
-            #region Create
-            CreateMap<PaymentCreateDto, Payment>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore())
-                .ForMember(dest => dest.DateTime, opt => opt.MapFrom(src => DateTime.Now))
-                .ForMember(dest => dest.Active, opt => opt.MapFrom(src => true))
-                .ForMember(dest => dest.Member, opt => opt.Ignore())
-                .ForMember(dest => dest.Organization, opt => opt.Ignore())
-                .ForMember(
-                    dest => dest.OrganizationId,
-                    opt => opt.MapFrom(src => src.OrganizationId)
-                );
-            #endregion
+        #region Create
+        CreateMap<PaymentCreateDto, Payment>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.DateTime, opt => opt.MapFrom(src => DateTime.Now))
+            .ForMember(dest => dest.Active, opt => opt.MapFrom(src => true))
+            .ForMember(dest => dest.Member, opt => opt.Ignore())
+            .ForMember(dest => dest.Organization, opt => opt.Ignore())
+            .ForMember(
+                dest => dest.OrganizationId,
+                opt => opt.MapFrom(src => src.OrganizationId)
+            );
+        #endregion
 
-            #region Read
-            CreateMap<Payment, PaymentReadDto>()
-                .ForMember(dest => dest.Member, opt => opt.MapFrom(src => src.Member));
-            #endregion
+        #region Read
+        CreateMap<Payment, PaymentReadDto>()
+            .ForMember(dest => dest.Member, opt => opt.MapFrom(src => src.Member));
+        #endregion
 
-            #region Update
-            CreateMap<PaymentUpdateDto, Payment>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore())
-                .ForMember(dest => dest.DateTime, opt => opt.Ignore())
-                .ForMember(dest => dest.Amount, opt => opt.Ignore())
-                .ForMember(dest => dest.Member, opt => opt.Ignore())
-                .ForMember(dest => dest.MemberId, opt => opt.Ignore()) // Un pago no se puede transferir entre miembros
-                .ForMember(dest => dest.Organization, opt => opt.Ignore())
-                .ForMember(dest => dest.OrganizationId, opt => opt.Ignore()); // Por seguridad, no se toma desde el cliente
-            #endregion
-        }
+        #region Update
+        CreateMap<PaymentUpdateDto, Payment>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.DateTime, opt => opt.Ignore())
+            .ForMember(dest => dest.Amount, opt => opt.Ignore())
+            .ForMember(dest => dest.Member, opt => opt.Ignore())
+            .ForMember(dest => dest.MemberId, opt => opt.Ignore()) // Un pago no se puede transferir entre miembros
+            .ForMember(dest => dest.Organization, opt => opt.Ignore())
+            .ForMember(dest => dest.OrganizationId, opt => opt.Ignore()); // Por seguridad, no se toma desde el cliente
+        #endregion
     }
 }

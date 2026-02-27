@@ -4,148 +4,147 @@ using Mvc.Filters;
 using Mvc.Models;
 using Mvc.Services.Api.Interfaces;
 
-namespace Mvc.Controllers
+namespace Mvc.Controllers;
+
+[JwtAuthorizationFilter]
+public class MembershipPlanController : Controller
 {
-    [JwtAuthorizationFilter]
-    public class MembershipPlanController : Controller
+    private readonly IMembershipPlanApiService _membershipPlanApi;
+    private readonly IUserApiService _userApi;
+
+    public MembershipPlanController(IMembershipPlanApiService membershipPlanService, IUserApiService userService)
     {
-        private readonly IMembershipPlanApiService _membershipPlanApi;
-        private readonly IUserApiService _userApi;
+        _membershipPlanApi = membershipPlanService;
+        _userApi = userService;
+    }
 
-        public MembershipPlanController(IMembershipPlanApiService membershipPlanService, IUserApiService userService)
+    [HttpGet]
+    public async Task<IActionResult> Index()
+    {
+        int organizationId = await _userApi.GetOrganizationIdAsync();
+        var membershipPlans = await _membershipPlanApi.GetAllAsync(organizationId);
+        return View(membershipPlans);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Details(int? id)
+    {
+        if (id == null)
         {
-            _membershipPlanApi = membershipPlanService;
-            _userApi = userService;
+            return NotFound();
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Index()
+        var membershipPlan = await _membershipPlanApi.GetByIdAsync(id.Value);
+
+        if (membershipPlan == null)
         {
-            int organizationId = await _userApi.GetOrganizationIdAsync();
-            var membershipPlans = await _membershipPlanApi.GetAllAsync(organizationId);
-            return View(membershipPlans);
+            return NotFound();
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Details(int? id)
+        if (membershipPlan.OrganizationId != await _userApi.GetOrganizationIdAsync())
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var membershipPlan = await _membershipPlanApi.GetByIdAsync(id.Value);
-
-            if (membershipPlan == null)
-            {
-                return NotFound();
-            }
-
-            if (membershipPlan.OrganizationId != await _userApi.GetOrganizationIdAsync())
-            {
-                return NotFound();
-            }
-
-            return View(membershipPlan);
+            return NotFound();
         }
 
-        public IActionResult Create()
+        return View(membershipPlan);
+    }
+
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(MembershipPlanViewModel membershipPlan)
+    {
+        if (ModelState.IsValid)
         {
-            return View();
+            membershipPlan.OrganizationId = await _userApi.GetOrganizationIdAsync();
+            await _membershipPlanApi.CreateAsync(membershipPlan);
+            return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(MembershipPlanViewModel membershipPlan)
-        {
-            if (ModelState.IsValid)
-            {
-                membershipPlan.OrganizationId = await _userApi.GetOrganizationIdAsync();
-                await _membershipPlanApi.CreateAsync(membershipPlan);
-                return RedirectToAction(nameof(Index));
-            }
+        return View(membershipPlan);
+    }
 
-            return View(membershipPlan);
+    [HttpGet]
+    public async Task<IActionResult> Edit(int? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Edit(int? id)
+        var membershipPlan = await _membershipPlanApi.GetByIdAsync(id.Value);
+
+        if (membershipPlan == null)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var membershipPlan = await _membershipPlanApi.GetByIdAsync(id.Value);
-
-            if (membershipPlan == null)
-            {
-                return NotFound();
-            }
-
-            if (membershipPlan.OrganizationId != await _userApi.GetOrganizationIdAsync())
-            {
-                return NotFound();
-            }
-
-            return View(membershipPlan);
+            return NotFound();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(MembershipPlanViewModel membershipPlan)
+        if (membershipPlan.OrganizationId != await _userApi.GetOrganizationIdAsync())
         {
-            if (ModelState.IsValid)
-            {
-                membershipPlan.OrganizationId = await _userApi.GetOrganizationIdAsync();
-                await _membershipPlanApi.UpdateAsync(membershipPlan);
-                return RedirectToAction(nameof(Index));
-            }
-
-            return View(membershipPlan);
+            return NotFound();
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Delete(int? id)
+        return View(membershipPlan);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(MembershipPlanViewModel membershipPlan)
+    {
+        if (ModelState.IsValid)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var membershipPlan = await _membershipPlanApi.GetByIdAsync(id.Value);
-
-            if (membershipPlan == null)
-            {
-                return NotFound();
-            }
-
-            if (membershipPlan.OrganizationId != await _userApi.GetOrganizationIdAsync())
-            {
-                return NotFound();
-            }
-
-            return View(membershipPlan);
+            membershipPlan.OrganizationId = await _userApi.GetOrganizationIdAsync();
+            await _membershipPlanApi.UpdateAsync(membershipPlan);
+            return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        return View(membershipPlan);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Delete(int? id)
+    {
+        if (id == null)
         {
-            try
-            {
-                await _membershipPlanApi.DeleteAsync(id);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (BusinessRuleException ex)
-            {
-                TempData["BusinessError"] = ex.Message;
-                return RedirectToAction(nameof(Delete), new { id });
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
+            return NotFound();
+        }
+
+        var membershipPlan = await _membershipPlanApi.GetByIdAsync(id.Value);
+
+        if (membershipPlan == null)
+        {
+            return NotFound();
+        }
+
+        if (membershipPlan.OrganizationId != await _userApi.GetOrganizationIdAsync())
+        {
+            return NotFound();
+        }
+
+        return View(membershipPlan);
+    }
+
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        try
+        {
+            await _membershipPlanApi.DeleteAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (BusinessRuleException ex)
+        {
+            TempData["BusinessError"] = ex.Message;
+            return RedirectToAction(nameof(Delete), new { id });
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
         }
     }
 }

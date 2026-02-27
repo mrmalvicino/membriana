@@ -1,9 +1,8 @@
 ﻿using Domain.Entities;
 
-namespace Application.Repositories
-{
-    public interface IMemberStatusEventRepository : IBaseRepository<MemberStatusEvent>
-    {
+namespace Application.Repositories;
 
-    }
+public interface IMemberStatusEventRepository : IBaseRepository<MemberStatusEvent>
+{
+
 }
