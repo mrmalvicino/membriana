@@ -93,9 +93,22 @@ public class Program
         app.UseAuthentication();
         app.UseAuthorization();
 
+        app.MapAreaControllerRoute(
+            name: "admin",
+            areaName: "Admin",
+            pattern: "Admin/{controller=Dashboard}/{action=Index}/{id?}"
+        );
+
+        app.MapAreaControllerRoute(
+            name: "portal",
+            areaName: "Portal",
+            pattern: "Portal/{controller=Dashboard}/{action=Index}/{id?}"
+        );
+
         app.MapControllerRoute(
             name: "default",
-            pattern: "{controller=Home}/{action=Index}/{id?}");
+            pattern: "{controller=Home}/{action=Index}/{id?}"
+        );
 
         #endregion
 

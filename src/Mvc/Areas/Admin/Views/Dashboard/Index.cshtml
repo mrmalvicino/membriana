@@ -1,0 +1,212 @@
+﻿@using Mvc.Areas.Admin.ViewModels
+@using Mvc.ViewModels
+@model DashboardViewModel
+
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Inicio";
+}
+
+<div class="container-fluid py-3">
+
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+        <div>
+            <h1 class="h3 mb-1">Dashboard</h1>
+            <div class="text-muted">Resumen del estado actual y porcentaje de variación</div>
+        </div>
+    </div>
+
+    <div class="mb-4">
+
+        <!-- Estadísticas -->
+        <div class="row g-3">
+
+            <!-- Miembros activos -->
+            <div class="col-12 col-sm-6 col-lg">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="fw-semibold text-muted small">Miembros activos</div>
+                        </div>
+                        <div class="mt-2">
+                            <div class="display-6 lh-1">@Model.ActiveMembersCount</div>
+                        </div>
+                        <div class="mt-3 small">
+                            <span class="text-success fw-semibold">▲ @Model.ActiveMembersVariationPercent.ToString("0.0")%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Miembros inactivos -->
+            <div class="col-12 col-sm-6 col-lg">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="fw-semibold text-muted small">Miembros inactivos</div>
+                        </div>
+                        <div class="mt-2">
+                            <div class="display-6 lh-1">@Model.InactiveMembersCount</div>
+                        </div>
+                        <div class="mt-3 small">
+                            <span class="text-danger fw-semibold">▼ @Model.InactiveMembersVariationPercent.ToString("0.0")%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Altas del mes -->
+            <div class="col-12 col-sm-6 col-lg">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="fw-semibold text-muted small">Altas del mes</div>
+                        </div>
+                        <div class="mt-2">
+                            <div class="display-6 lh-1">@Model.MonthlySignupsCount</div>
+                        </div>
+                        <div class="mt-3 small">
+                            <span class="text-success fw-semibold">▲ @Model.MonthlySignupsVariationPercent.ToString("0.0")%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bajas del mes -->
+            <div class="col-12 col-sm-6 col-lg">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="fw-semibold text-muted small">Bajas del mes</div>
+                        </div>
+                        <div class="mt-2">
+                            <div class="display-6 lh-1">@Model.MonthlyCancellationsCount</div>
+                        </div>
+                        <div class="mt-3 small">
+                            <span class="text-danger fw-semibold">▲ @Model.MonthlyCancellationsVariationPercent.ToString("0.0")%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Facturación del mes -->
+            <div class="col-12 col-sm-6 col-lg">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="fw-semibold text-muted small">Facturación del mes</div>
+                        </div>
+                        <div class="mt-2">
+                            <div class="fs-2 fw-semibold lh-1 text-nowrap">
+                                @Model.MonthlyIncome.ToString("C")
+                            </div>
+                        </div>
+                        <div class="mt-3 small">
+                            <span class="text-danger fw-semibold">▼ @Model.MonthlyIncomeVariationPercent.ToString("0.0")%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-baseline mb-2">
+            <h2 class="h5 mb-0">Gráficos</h2>
+        </div>
+
+        <div class="row g-3">
+
+            <!-- Miembros activos -->
+            <div class="col-12 col-lg-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <div class="fw-semibold">Miembros activos</div>
+                                <div class="text-muted small">Evolución mensual del año en curso</div>
+                            </div>
+                        </div>
+                        <div style="height: 260px;">
+                            <canvas id="activeMembersChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Altas vs. Bajas -->
+            <div class="col-12 col-lg-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <div class="fw-semibold">Altas vs. bajas</div>
+                                <div class="text-muted small">Comparación mensual del año en curso</div>
+                            </div>
+                        </div>
+                        <div style="height: 260px;">
+                            <canvas id="signupsVsCancellationsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        const months = @Html.Raw(Json.Serialize(Model.Months));
+        const activeMembersData = @Html.Raw(Json.Serialize(Model.ActiveMembersByMonth));
+        const signupsData = @Html.Raw(Json.Serialize(Model.SignupsByMonth));
+        const cancellationsData = @Html.Raw(Json.Serialize(Model.CancellationsByMonth));
+
+        // Miembros activos
+        new Chart(document.getElementById('activeMembersChart'), {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Miembros activos',
+                    data: activeMembersData,
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Altas vs Bajas
+        new Chart(document.getElementById('signupsVsCancellationsChart'), {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: 'Altas',
+                        data: signupsData
+                    },
+                    {
+                        label: 'Bajas',
+                        data: cancellationsData
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    </script>
+}

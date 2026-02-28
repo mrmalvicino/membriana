@@ -1,5 +1,5 @@
 ﻿using Contracts.Dtos.Authentication;
-using Mvc.Models;
+using Mvc.ViewModels;
 
 namespace Mvc.Services.Api.Interfaces;
 

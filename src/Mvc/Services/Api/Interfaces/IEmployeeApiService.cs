@@ -1,4 +1,4 @@
-﻿using Mvc.Models;
+﻿using Mvc.Areas.Admin.ViewModels;
 
 namespace Mvc.Services.Api.Interfaces;
 

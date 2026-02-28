@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.Member;
-using Mvc.Models;
+using Mvc.Areas.Admin.ViewModels;
 using Mvc.Services.Api.Interfaces;
 
 namespace Mvc.Services.Api;

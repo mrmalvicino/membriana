@@ -1,6 +1,6 @@
 ﻿using Contracts.Dtos.Member;
 using Contracts.Dtos.Person;
-using Mvc.Models;
+using Mvc.Areas.Admin.ViewModels;
 
 namespace Mvc.Profiles;
 

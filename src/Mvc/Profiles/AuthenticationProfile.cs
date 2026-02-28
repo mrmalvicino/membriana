@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.Authentication;
-using Mvc.Models;
+using Mvc.ViewModels;
 
 namespace Mvc.Profiles;
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Mvc.Models;
 using Mvc.Services.Api.Interfaces;
 using Mvc.Services.Utilities.Interfaces;
+using Mvc.ViewModels;
 
 namespace Mvc.Controllers;
 
@@ -43,7 +43,7 @@ public class AuthenticationController : Controller
 
         _cookieService.SetJwtCookie(loginResponse.Token);
 
-        return RedirectToAction("Dashboard", "Home");
+        return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
     }
 
     [HttpGet]

@@ -1,4 +1,4 @@
-﻿using Mvc.Models;
+﻿using Mvc.ViewModels;
 
 namespace Mvc.Services.Api.Interfaces;
 

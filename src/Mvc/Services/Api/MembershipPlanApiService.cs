@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Contracts.Dtos.MembershipPlan;
 using Mvc.Exceptions;
-using Mvc.Models;
 using Mvc.Services.Api.Interfaces;
 using System.Net;
 using System.Text.Json;
+using Mvc.ViewModels;
 
 namespace Mvc.Services.Api;
 

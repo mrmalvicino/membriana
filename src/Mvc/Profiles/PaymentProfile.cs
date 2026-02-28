@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.Payment;
-using Mvc.Models;
+using Mvc.Areas.Admin.ViewModels;
 
 namespace Mvc.Profiles;
 

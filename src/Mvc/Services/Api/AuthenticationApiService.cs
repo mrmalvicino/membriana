@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.Authentication;
-using Mvc.Dtos.Authentication;
-using Mvc.Models;
+using Contracts.Dtos.Common;
 using Mvc.Services.Api.Interfaces;
+using Mvc.ViewModels;
 using System.Text;
 using System.Text.Json;
 

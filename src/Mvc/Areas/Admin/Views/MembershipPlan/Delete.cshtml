@@ -1,0 +1,56 @@
+﻿@using Mvc.ViewModels
+@model MembershipPlanViewModel
+
+@{
+    Layout = "_LayoutAdmin";
+}
+
+@{
+    ViewData["Title"] = "Eliminar plan";
+}
+
+<h1 class="text-center">¿Estás seguro?</h1>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4 class="card-title mb-0">Eliminar plan de membresía</h4>
+                </div>
+                <div class="card-body">
+                    @if (TempData["BusinessError"] is string error && !string.IsNullOrWhiteSpace(error))
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @error
+                        </div>
+                    }
+
+                    <dl class="row">
+                        <dt class="col-sm-4">
+                            @Html.DisplayNameFor(model => model.Name)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Name)
+                        </dd>
+                        <dt class="col-sm-4">
+                            @Html.DisplayNameFor(model => model.Amount)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Amount)
+                        </dd>
+                    </dl>
+
+                    <div class="form-group mt-4">
+                        <form asp-action="Delete">
+                            <input type="hidden" asp-for="Id" />
+                            <input type="submit" value="Eliminar" class="btn btn-danger w-100" />
+                        </form>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <a asp-action="Index" class="btn btn-secondary btn-sm">Volver al listado</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
