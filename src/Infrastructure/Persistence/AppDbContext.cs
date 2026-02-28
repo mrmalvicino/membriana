@@ -57,9 +57,13 @@ public class AppDbContext : IdentityDbContext<AppUser>
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         SeedStableData(builder);
-        //SeedDummyData(builder);
+        //SeedDummyData(builder); // Descomentar para inicializar datos de prueba
     }
 
+    /// <summary>
+    /// Inicializa datos estables en la base de datos que son necesarios para el funcionamiento
+    /// de la aplicación. Estos datos no deben eliminarse y permanecen en todas las migraciones.
+    /// </summary>
     private static void SeedStableData(ModelBuilder builder)
     {
         builder.Entity<PricingPlan>().HasData(
@@ -105,6 +109,10 @@ public class AppDbContext : IdentityDbContext<AppUser>
         );
     }
 
+    /// <summary>
+    /// Inicializa datos de prueba (dummy data) en la base de datos para propósitos de
+    /// desarrollo y testing.
+    /// </summary>
     private static void SeedDummyData(ModelBuilder builder)
     {
         builder.Entity<Image>().HasData(
