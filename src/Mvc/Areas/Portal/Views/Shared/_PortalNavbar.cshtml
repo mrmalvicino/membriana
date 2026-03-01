@@ -1,0 +1,86 @@
+﻿@* Areas/Portal/Views/Shared/_PortalNavbar.cshtml *@
+<header>
+    <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <div class="container-fluid">
+            <a class="navbar-brand"
+               asp-area="Portal"
+               asp-controller="Dashboard"
+               asp-action="Index">
+                Membriana
+            </a>
+
+            <button class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target=".navbar-collapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <ul class="navbar-nav flex-grow-1">
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark"
+                           asp-area="Portal"
+                           asp-controller="Dashboard"
+                           asp-action="Index">
+                            Inicio
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark"
+                           asp-area="Portal"
+                           asp-controller="Payments"
+                           asp-action="Index">
+                            Mis pagos
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark"
+                           asp-area="Portal"
+                           asp-controller="AccountStatus"
+                           asp-action="Index">
+                            Estado
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark"
+                           asp-area="Portal"
+                           asp-controller="Profile"
+                           asp-action="Index">
+                            Mi perfil
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark"
+                           asp-area="Portal"
+                           asp-controller="Billing"
+                           asp-action="Index">
+                            Pagar cuota
+                        </a>
+                    </li>
+
+                    <li class="nav-item d-flex align-items-center">
+                        <form asp-area=""
+                              asp-controller="Authentication"
+                              asp-action="Logout"
+                              method="post"
+                              class="d-inline m-0 p-0">
+                            @Html.AntiForgeryToken()
+                            <button type="submit"
+                                    class="nav-link btn btn-link text-dark p-0 m-0"
+                                    style="text-decoration: none;">
+                                Cerrar sesión
+                            </button>
+                        </form>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>

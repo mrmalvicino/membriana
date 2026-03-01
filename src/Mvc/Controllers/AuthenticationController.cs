@@ -73,7 +73,7 @@ public class AuthenticationController : Controller
 
             _cookieService.SetJwtCookie(registerResponseDto.Token);
 
-            return RedirectToAction("Dashboard", "Home");
+            return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
         }
         catch (ApplicationException ex)
         {

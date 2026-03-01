@@ -1,10 +1,11 @@
 ﻿<!DOCTYPE html>
 <html lang="es">
 <head>
-    @await Html.PartialAsync("_Head")
+    <partial name="~/Views/Shared/_Head.cshtml" />
 </head>
 <body>
-    @await Html.PartialAsync("_PublicNavbar")
+
+    <partial name="_AdminNavbar" />
 
     <main role="main" class="pb-3">
         <div class="container">
@@ -12,9 +13,10 @@
         </div>
     </main>
 
-    @await Html.PartialAsync("_Footer")
+    <partial name="~/Views/Shared/_Footer.cshtml" />
+    <partial name="~/Views/Shared/_Scripts.cshtml" />
 
-    @await Html.PartialAsync("_Scripts")
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>
