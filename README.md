@@ -146,6 +146,9 @@ Install each of the following **NuGet Packages** for the respective projects acc
 | [Application](./src/Application/), [Mvc](./src/Mvc/) | [AutoMapper](https://www.nuget.org/packages/AutoMapper.Extensions.Microsoft.DependencyInjection/) | 12.0.1 | DTOs and Views mapping. |
 | [Api](./src/Api/), [Mvc](./src/Mvc/) | [Serilog.Sinks.MSSqlServer](https://www.nuget.org/packages/Serilog.Sinks.MSSqlServer/) | 9.0.3 | Writes the log event data to SQL table. |
 | [Api](./src/Api/), [Mvc](./src/Mvc/) | [Serilog.AspNetCore](https://www.nuget.org/packages/Serilog.AspNetCore) | 10.0.0 | Gets ILogger information. |
+| [Infrastructure](./src/Infrastructure/) | [Microsoft.Extensions.Configuration](https://www.nuget.org/packages/Microsoft.Extensions.Configuration/) | 8.0.0 | Used by AppDbContextFactory. |
+| [Infrastructure](./src/Infrastructure/) | [Microsoft.Extensions.Configuration.Json](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Json/) | 8.0.0 | Used by AppDbContextFactory. |
+| [Infrastructure](./src/Infrastructure/) | [Microsoft.Extensions.Configuration.EnvironmentVariables](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.EnvironmentVariables/) | 8.0.0 | Used by AppDbContextFactory. |
 
 >[!TIP]
 &nbsp;
