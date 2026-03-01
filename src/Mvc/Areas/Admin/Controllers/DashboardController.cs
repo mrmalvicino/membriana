@@ -5,7 +5,7 @@ using Mvc.Filters;
 namespace Mvc.Areas.Admin.Controllers;
 
 /// <summary>
-/// Controlador principal para el Dashboard de la aplicación.
+/// Controlador principal para el Dashboard del Back Office (Admin).
 /// </summary>
 [Area("Admin")]
 [JwtAuthorizationFilter]

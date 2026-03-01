@@ -1,5 +1,128 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model Mvc.Areas.Portal.ViewModels.DashboardViewModel
+
 @{
+    ViewData["Title"] = "Mi portal";
+    string statusText = Model.Status.ToString();
+
+    string badgeClass = Model.Status switch
+    {
+        Contracts.Enums.MemberStatus.Active => "bg-success",
+        Contracts.Enums.MemberStatus.Debtor => "bg-warning text-dark",
+        Contracts.Enums.MemberStatus.Inactive => "bg-secondary",
+        _ => "bg-light text-dark"
+    };
 }
+
+<div class="container py-3">
+
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+        <div>
+            <h1 class="h4 mb-1">Mi portal</h1>
+            <div class="text-muted">Resumen de tu membresía y pagos</div>
+        </div>
+
+        <div>
+            <span class="badge @badgeClass px-3 py-2">
+                Estado: @statusText
+            </span>
+        </div>
+    </div>
+
+    <div class="row g-3">
+
+        <!-- Tarjeta: Estado + Último pago -->
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="fw-semibold mb-2">Estado y pagos</div>
+
+                    <div class="mb-3">
+                        <div class="text-muted small">Condición del socio</div>
+                        <div class="fs-5">
+                            <span class="badge @badgeClass">@statusText</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="text-muted small">Último pago realizado</div>
+
+                        @if (Model.LastPayment is null)
+                        {
+                            <div class="text-muted">No hay pagos registrados.</div>
+                        }
+                        else
+                        {
+                            <div class="fs-5 fw-semibold">
+                                @Model.LastPayment.Amount.ToString("C")
+                            </div>
+                            <div class="text-muted small">
+                                @Model.LastPayment.PaidAt.ToString("dd/MM/yyyy")
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta: Datos del socio -->
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="fw-semibold mb-2">Mis datos</div>
+
+                    <div class="mb-2">
+                        <div class="text-muted small">Nombre</div>
+                        <div class="fs-5 fw-semibold">@Model.MemberFullName</div>
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.Document))
+                    {
+                        <div class="mb-2">
+                            <div class="text-muted small">Documento</div>
+                            <div>@Model.Document</div>
+                        </div>
+                    }
+
+                    <div class="row g-2 mt-1">
+                        @if (!string.IsNullOrWhiteSpace(Model.Email))
+                        {
+                            <div class="col-12 col-sm-6">
+                                <div class="text-muted small">Email</div>
+                                <div>@Model.Email</div>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(Model.Phone))
+                        {
+                            <div class="col-12 col-sm-6">
+                                <div class="text-muted small">Teléfono</div>
+                                <div>@Model.Phone</div>
+                            </div>
+                        }
+                    </div>
+
+                    <hr class="my-3" />
+
+                    <div class="row g-2">
+                        <div class="col-12 col-sm-6">
+                            <div class="text-muted small">Organización</div>
+                            <div>@Model.OrganizationName</div>
+                        </div>
+
+                        <div class="col-12 col-sm-6">
+                            <div class="text-muted small">Plan</div>
+                            <div>@Model.MembershipPlanName</div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="text-muted small">Fecha de admisión</div>
+                            <div>@Model.AdmissionDate.ToString("dd/MM/yyyy")</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
