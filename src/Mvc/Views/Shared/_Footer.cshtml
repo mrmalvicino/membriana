@@ -1,5 +1,36 @@
-﻿<footer class="border-top footer text-muted">
+﻿<footer class="border-top footer text-muted py-4">
     <div class="container">
-        &copy; 2025 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Políticas de privacidad</a>
+        <div class="row align-items-start">
+
+            <!-- Columna izquierda -->
+            <div class="col-md-6 small">
+                <div class="d-flex flex-column style="line-height:1.4;">
+                    <a class="text-muted text-decoration-none"
+                       asp-area="" asp-controller="Home" asp-action="License">
+                        Licencia del software
+                    </a>
+                    <a class="text-muted text-decoration-none"
+                       asp-area="" asp-controller="Home" asp-action="Privacy">
+                        Políticas de privacidad
+                    </a>
+                    <a class="text-muted text-decoration-none"
+                       asp-area="" asp-controller="Home" asp-action="Terms">
+                        Términos y condiciones de uso
+                    </a>
+                </div>
+            </div>
+
+            <!-- Columna derecha -->
+            <div class="col-md-6 text-md-end mt-4 mt-md-0 small">
+                <div class="fw-semibold">Membriana</div>
+                <div>
+                    Sistema de gestión de miembros
+                </div>
+                <div>
+                    &copy; @DateTime.Now.Year - Amplivect Technologies
+                </div>
+            </div>
+
+        </div>
     </div>
 </footer>

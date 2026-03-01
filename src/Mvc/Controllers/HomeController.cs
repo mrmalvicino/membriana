@@ -16,9 +16,25 @@ public class HomeController : Controller
     }
 
     /// <summary>
-    /// Muestra la página de política de privacidad.
+    /// Muestra la página de licencia del software.
+    /// </summary>
+    public IActionResult License()
+    {
+        return View();
+    }
+
+    /// <summary>
+    /// Muestra la página de políticas de privacidad.
     /// </summary>
     public IActionResult Privacy()
+    {
+        return View();
+    }
+
+    /// <summary>
+    /// Muestra la página de términos y condiciones de uso.
+    /// </summary>
+    public IActionResult Terms()
     {
         return View();
     }
