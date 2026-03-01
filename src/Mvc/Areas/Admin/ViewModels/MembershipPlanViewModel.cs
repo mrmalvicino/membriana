@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Mvc.ViewModels;
+namespace Mvc.Areas.Admin.ViewModels;
 
 public class MembershipPlanViewModel
 {

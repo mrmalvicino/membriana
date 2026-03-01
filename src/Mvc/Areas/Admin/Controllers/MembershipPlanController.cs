@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Mvc.Areas.Admin.ViewModels;
 using Mvc.Exceptions;
 using Mvc.Filters;
 using Mvc.Services.Api.Interfaces;
-using Mvc.ViewModels;
 
 namespace Mvc.Areas.Admin.Controllers;
 

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.MembershipPlan;
-using Mvc.ViewModels;
+using Mvc.Areas.Admin.ViewModels;
 
 namespace Mvc.Profiles;
 

@@ -5,7 +5,7 @@ using Mvc.Exceptions;
 using Mvc.Services.Api.Interfaces;
 using System.Net;
 using System.Text.Json;
-using Mvc.ViewModels;
+using Mvc.Areas.Admin.ViewModels;
 
 namespace Mvc.Services.Api;
 
