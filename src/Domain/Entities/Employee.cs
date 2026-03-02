@@ -13,7 +13,7 @@ public class Employee : Person, IIdentifiable, ITenantable
     #region AdmissionDate
     [Display(Name = "Fecha de admisión")]
     [Required]
-    public DateTime AdmissionDate { get; set; }
+    public DateTime AdmissionDate { get; set; } = DateTime.Now;
     #endregion
 
     #region Organization

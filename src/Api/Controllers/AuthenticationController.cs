@@ -66,7 +66,7 @@ public class AuthenticationController : ControllerBase
                 Active = true,
                 Name = dto.OrganizationName,
                 Email = dto.OrganizationEmail,
-                PricingPlanId = (int)Domain.Enums.PricingPlan.Free
+                PricingPlanId = (int)Domain.Enums.PricingPlan.Free,
             };
 
             organization = await _unitOfWork.OrganizationRepository.AddAsync(organization);
@@ -77,7 +77,7 @@ public class AuthenticationController : ControllerBase
                 Email = dto.UserEmail,
                 NormalizedEmail = dto.UserEmail,
                 EmailConfirmed = true,
-                OrganizationId = organization.Id
+                OrganizationId = organization.Id,
             };
 
             var result = await _unitOfWork.IdentityService.CreateUser(user, dto.Password);
@@ -90,6 +90,17 @@ public class AuthenticationController : ControllerBase
             }
 
             await _unitOfWork.IdentityService.AddToRole(user, Domain.Enums.AppRole.Admin);
+
+            var employee = new Employee
+            {
+                Name = dto.UserName,
+                Email = dto.UserEmail,
+                OrganizationId = organization.Id,
+                UserId = user.Id,
+            };
+
+            await _unitOfWork.EmployeeRepository.AddAsync(employee);
+
             await _unitOfWork.CommitAsync();
             var token = await _userService.GenerateTokenAsync(user);
 
@@ -102,7 +113,7 @@ public class AuthenticationController : ControllerBase
                     OrganizationName = organization.Name,
                     OrganizationEmail = organization.Email,
                     UserId = user.Id,
-                    UserEmail = user.Email
+                    UserEmail = user.Email,
                 }
             );
         }
