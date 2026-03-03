@@ -24,8 +24,8 @@ public class Employee : Person, IIdentifiable, ITenantable
     #endregion
 
     #region User
-    public string UserId { get; set; } = null!;
+    public string? UserId { get; set; }
     [ForeignKey("UserId")]
-    public virtual AppUser User { get; set; } = null!;
+    public virtual AppUser? User { get; set; }
     #endregion
 }

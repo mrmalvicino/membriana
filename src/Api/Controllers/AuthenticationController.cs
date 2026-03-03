@@ -61,6 +61,7 @@ public class AuthenticationController : ControllerBase
 
         try
         {
+            // Crear organización
             var organization = new Organization
             {
                 Active = true,
@@ -71,12 +72,13 @@ public class AuthenticationController : ControllerBase
 
             organization = await _unitOfWork.OrganizationRepository.AddAsync(organization);
 
+            // Crear usuario con rol Admin
             var user = new AppUser
             {
                 UserName = dto.UserEmail,
                 Email = dto.UserEmail,
                 NormalizedEmail = dto.UserEmail,
-                EmailConfirmed = true,
+                EmailConfirmed = false,
                 OrganizationId = organization.Id,
             };
 
@@ -91,6 +93,7 @@ public class AuthenticationController : ControllerBase
 
             await _unitOfWork.IdentityService.AddToRole(user, Domain.Enums.AppRole.Admin);
 
+            // Crear empleado asociado al usuario
             var employee = new Employee
             {
                 Name = dto.UserName,
@@ -101,6 +104,7 @@ public class AuthenticationController : ControllerBase
 
             await _unitOfWork.EmployeeRepository.AddAsync(employee);
 
+            // Confirmar transacción
             await _unitOfWork.CommitAsync();
             var token = await _userService.GenerateTokenAsync(user);
 

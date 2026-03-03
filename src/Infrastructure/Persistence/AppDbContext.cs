@@ -57,7 +57,6 @@ public class AppDbContext : IdentityDbContext<AppUser>
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         SeedStableData(builder);
-        //SeedDummyData(builder); // Descomentar para inicializar datos de prueba
     }
 
     /// <summary>
@@ -105,56 +104,6 @@ public class AppDbContext : IdentityDbContext<AppUser>
                 Id = ((int)Domain.Enums.AppRole.Member).ToString(),
                 Name = Domain.Enums.AppRole.Member.ToString(),
                 NormalizedName = Domain.Enums.AppRole.Member.ToString().ToUpper()
-            }
-        );
-    }
-
-    /// <summary>
-    /// Inicializa datos de prueba (dummy data) en la base de datos para propósitos de
-    /// desarrollo y testing.
-    /// </summary>
-    private static void SeedDummyData(ModelBuilder builder)
-    {
-        builder.Entity<Image>().HasData(
-            new Image
-            {
-                Id = 1,
-                Url = "https://i.imgur.com/Cy1SqZy.png"
-            }
-        );
-
-        builder.Entity<Organization>().HasData(
-            new Organization
-            {
-                Id = 1,
-                Active = true,
-                Name = "Ftnes Gym",
-                Email = "ftnesgym@mail.com",
-                Phone = "1512345678",
-                LogoImageId = 1,
-                PricingPlanId = 1
-            }
-        );
-
-        var adminUser = new AppUser
-        {
-            UserName = "admin@mail.com",
-            Email = "admin@mail.com",
-            NormalizedEmail = "admin@mail.com",
-            EmailConfirmed = true,
-            OrganizationId = 1
-        };
-
-        var hasher = new PasswordHasher<AppUser>();
-        adminUser.PasswordHash = hasher.HashPassword(adminUser, "Password123-");
-
-        builder.Entity<AppUser>().HasData(adminUser);
-
-        builder.Entity<IdentityUserRole<string>>().HasData(
-            new IdentityUserRole<string>
-            {
-                UserId = adminUser.Id,
-                RoleId = ((int)Domain.Enums.AppRole.Admin).ToString()
             }
         );
     }
