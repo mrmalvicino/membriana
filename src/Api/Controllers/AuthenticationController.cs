@@ -1,9 +1,11 @@
-﻿using Contracts.Dtos.Authentication;
-using Application.Repositories;
+﻿using Application.Repositories;
 using Application.Services;
+using Contracts.Dtos.Authentication;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace Api.Controllers;
 
@@ -13,14 +15,17 @@ public class AuthenticationController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserService _userService;
+    private readonly IAccountService _accountService;
 
     public AuthenticationController(
         IUnitOfWork unitOfWork,
-        IUserService userService
+        IUserService userService,
+        IAccountService accountService
     )
     {
         _unitOfWork = unitOfWork;
         _userService = userService;
+        _accountService = accountService;
     }
 
     [HttpPost("login")]
@@ -36,6 +41,11 @@ public class AuthenticationController : ControllerBase
         if (!await _unitOfWork.IdentityService.PasswordIsValid(user, dto.Password))
         {
             return Unauthorized("Contraseña inválida.");
+        }
+
+        if (!user.EmailConfirmed)
+        {
+            return Forbid("Cuenta no confirmada.");
         }
 
         var token = await _userService.GenerateTokenAsync(user);
@@ -86,8 +96,8 @@ public class AuthenticationController : ControllerBase
 
             if (!result.Succeeded)
             {
-                var errors = result.Errors.Select(e => e.Description);
                 await _unitOfWork.RollbackAsync();
+                var errors = result.Errors.Select(e => e.Description);
                 return BadRequest(new { errors });
             }
 
@@ -104,20 +114,15 @@ public class AuthenticationController : ControllerBase
 
             await _unitOfWork.EmployeeRepository.AddAsync(employee);
 
-            // Confirmar transacción
+            // Confirmar transacción y enviar mail de confirmación
             await _unitOfWork.CommitAsync();
-            var token = await _userService.GenerateTokenAsync(user);
+            await _accountService.SendConfirmationAsync(user);
 
             return Ok(
                 new RegisterResponseDto
                 {
-                    Token = new JwtSecurityTokenHandler().WriteToken(token),
-                    Expiration = token.ValidTo,
-                    OrganizationId = organization.Id,
-                    OrganizationName = organization.Name,
-                    OrganizationEmail = organization.Email,
-                    UserId = user.Id,
-                    UserEmail = user.Email,
+                    Message = "La cuenta fue creada. Revisá tu correo para confirmar el email.",
+                    UserEmail = user.Email!
                 }
             );
         }
@@ -126,5 +131,75 @@ public class AuthenticationController : ControllerBase
             await _unitOfWork.RollbackAsync();
             return StatusCode(500, ex.Message);
         }
+    }
+
+    [HttpGet("confirm-email")]
+    public async Task<IActionResult> ConfirmEmail([FromQuery] ConfirmEmailRequestDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.UserId) || string.IsNullOrWhiteSpace(dto.Token))
+        {
+            return BadRequest("Parámetros inválidos.");
+        }
+
+        // Buscar usuario
+        var user = await _unitOfWork.IdentityService.FindById(dto.UserId);
+
+        if (user == null)
+        {
+            return BadRequest("Usuario inválido.");
+        }
+
+        if (user.EmailConfirmed)
+        {
+            return Ok("El email ya fue confirmado.");
+        }
+
+        // Decodificar token
+        string decodedToken;
+
+        try
+        {
+            var decodedBytes = WebEncoders.Base64UrlDecode(dto.Token);
+            decodedToken = Encoding.UTF8.GetString(decodedBytes);
+        }
+        catch
+        {
+            return BadRequest("Token inválido.");
+        }
+
+        // Confirmar email
+        var result = await _unitOfWork.IdentityService.ConfirmEmail(user, decodedToken);
+
+        if (!result.Succeeded)
+        {
+            return BadRequest("No se pudo confirmar el email.");
+        }
+
+        return Ok("Email confirmado correctamente.");
+    }
+
+    [HttpPost("resend-confirmation")]
+    public async Task<IActionResult> ResendConfirmation([FromBody] ResendConfirmationRequestDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.Email))
+        {
+            return BadRequest("Email inválido.");
+        }
+
+        var user = await _unitOfWork.IdentityService.FindByEmail(dto.Email);
+
+        if (user == null)
+        {
+            return Ok("Si el email existe, se enviará una confirmación.");
+        }
+
+        if (user.EmailConfirmed)
+        {
+            return Ok("El email ya está confirmado.");
+        }
+
+        await _accountService.SendConfirmationAsync(user);
+
+        return Ok("Se envió el correo de confirmación.");
     }
 }

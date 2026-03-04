@@ -88,4 +88,47 @@ public class AuthenticationController : Controller
         _cookieService.DeleteJwtCookie();
         return RedirectToAction("Login", "Authentication");
     }
+
+    [HttpGet]
+    public IActionResult RegisterConfirmation()
+    {
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult RegisterConfirmation()
+    {
+        var registerConfirmation = new RegisterConfirmationViewModel
+        {
+            Email = TempData["RegisteredEmail"] as string ?? string.Empty,
+            SuccessMessage = TempData["ResendOk"] as string,
+            ErrorMessage = TempData["ResendError"] as string
+        };
+
+        // Si querés que el email quede disponible para siguientes requests:
+        TempData.Keep("RegisteredEmail");
+
+        return View(registerConfirmation);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResendConfirmation(string email)
+    {
+        try
+        {
+            // llamás a tu AuthApiService
+            await _authApiService.ResendConfirmationAsync(email);
+
+            TempData["RegisteredEmail"] = email;
+            TempData["ResendOk"] = "Te reenviamos el correo de confirmación. Revisá tu casilla.";
+        }
+        catch
+        {
+            TempData["RegisteredEmail"] = email;
+            TempData["ResendError"] = "No pudimos reenviar el correo. Intentá nuevamente.";
+        }
+
+        return RedirectToAction(nameof(RegisterConfirmation));
+    }
 }

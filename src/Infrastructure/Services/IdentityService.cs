@@ -22,6 +22,14 @@ public class IdentityService : IIdentityService
     }
 
     /// <summary>
+    /// Obtiene un usuario a partir de su ID.
+    /// </summary>
+    public async Task<AppUser?> FindById(string id)
+    {
+        return await _userManager.FindByIdAsync(id);
+    }
+
+    /// <summary>
     /// Obtiene un usuario a partir de su correo electrónico.
     /// </summary>
     public async Task<AppUser?> FindByEmail(string email)
@@ -51,5 +59,29 @@ public class IdentityService : IIdentityService
     public async Task<IdentityResult> AddToRole(AppUser user, AppRole role)
     {
         return await _userManager.AddToRoleAsync(user, role.ToString());
+    }
+
+    /// <summary>
+    /// Obtiene los roles de un usuario.
+    /// </summary>
+    public async Task<IList<string>> GetRoles(AppUser user)
+    {
+        return await _userManager.GetRolesAsync(user);
+    }
+
+    /// <summary>
+    /// Genera un token que puede ser enviado por email para verificar su dirección.
+    /// </summary>
+    public async Task<string> GenerateEmailConfirmationToken(AppUser user)
+    {
+        return await _userManager.GenerateEmailConfirmationTokenAsync(user);
+    }
+
+    /// <summary>
+    /// Valida el Token y persiste EmailConfirmed = true.
+    /// </summary>
+    public async Task<IdentityResult> ConfirmEmail(AppUser user, string token)
+    {
+        return await _userManager.ConfirmEmailAsync(user, token);
     }
 }

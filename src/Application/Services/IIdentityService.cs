@@ -11,6 +11,11 @@ namespace Application.Services;
 public interface IIdentityService
 {
     /// <summary>
+    /// Obtiene un usuario a partir de su ID.
+    /// </summary>
+    Task<AppUser?> FindById(string id);
+
+    /// <summary>
     /// Obtiene un usuario a partir de su correo electrónico.
     /// </summary>
     Task<AppUser?> FindByEmail(string email);
@@ -29,4 +34,19 @@ public interface IIdentityService
     /// Le asigna un rol a un usuario.
     /// </summary>
     Task<IdentityResult> AddToRole(AppUser user, AppRole role);
+
+    /// <summary>
+    /// Obtiene los roles de un usuario.
+    /// </summary>
+    Task<IList<string>> GetRoles(AppUser user);
+
+    /// <summary>
+    /// Genera un token que puede ser enviado por email para verificar su dirección.
+    /// </summary>
+    Task<string> GenerateEmailConfirmationToken(AppUser user);
+
+    /// <summary>
+    /// Valida el Token y persiste EmailConfirmed = true.
+    /// </summary>
+    Task<IdentityResult> ConfirmEmail(AppUser user, string token);
 }
