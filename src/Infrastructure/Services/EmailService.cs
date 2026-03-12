@@ -1,6 +1,4 @@
-﻿using Application.Repositories;
-using Application.Services;
-using Domain.Entities;
+﻿using Application.Services;
 using Infrastructure.Dtos.Mailtrap;
 using Infrastructure.Dtos.Settings;
 using Microsoft.Extensions.Options;
@@ -13,17 +11,14 @@ public class EmailService : IEmailService
 {
     private readonly MembrianaSettingsDto _membrianaSettings;
     private readonly MailtrapSettingsDto _mailtrapSettings;
-    private readonly IUserService _userService;
 
     public EmailService(
         IOptions<MembrianaSettingsDto> membrianaSettings,
-        IOptions<MailtrapSettingsDto> mailtrapSettings,
-        IUserService userService
+        IOptions<MailtrapSettingsDto> mailtrapSettings
     )
     {
         _membrianaSettings = membrianaSettings.Value;
         _mailtrapSettings = mailtrapSettings.Value;
-        _userService = userService;
     }
 
     public async Task SendConfirmationEmailAsync(
