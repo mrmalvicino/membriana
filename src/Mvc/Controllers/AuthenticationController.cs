@@ -65,15 +65,15 @@ public class AuthenticationController : Controller
         {
             var registerResponseDto = await _authenticationApi.RegisterAsync(registerViewModel);
 
-            if (registerResponseDto is null || string.IsNullOrWhiteSpace(registerResponseDto.Token))
+            if (registerResponseDto is null)
             {
-                ModelState.AddModelError("", "No se recibió un token válido.");
+                ModelState.AddModelError("", "No se recibió una respuesta válida.");
                 return View(registerViewModel);
             }
 
-            _cookieService.SetJwtCookie(registerResponseDto.Token);
+            TempData["RegisteredEmail"] = registerResponseDto.UserEmail;
 
-            return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+            return RedirectToAction(nameof(RegisterConfirmation));
         }
         catch (ApplicationException ex)
         {
@@ -92,12 +92,6 @@ public class AuthenticationController : Controller
     [HttpGet]
     public IActionResult RegisterConfirmation()
     {
-        return View();
-    }
-
-    [HttpGet]
-    public IActionResult RegisterConfirmation()
-    {
         var registerConfirmation = new RegisterConfirmationViewModel
         {
             Email = TempData["RegisteredEmail"] as string ?? string.Empty,
@@ -105,7 +99,6 @@ public class AuthenticationController : Controller
             ErrorMessage = TempData["ResendError"] as string
         };
 
-        // Si querés que el email quede disponible para siguientes requests:
         TempData.Keep("RegisteredEmail");
 
         return View(registerConfirmation);
