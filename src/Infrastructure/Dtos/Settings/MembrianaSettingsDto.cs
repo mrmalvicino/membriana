@@ -5,6 +5,7 @@
 /// </summary>
 public class MembrianaSettingsDto
 {
+    public string ProductName { get; set; } = null!;
     public string HostingUrl { get; set; } = null!;
     public string MailingEmail { get; set; } = null!;
 }
