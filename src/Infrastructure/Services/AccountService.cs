@@ -1,6 +1,9 @@
-﻿using Application.Services;
+﻿using Application.Repositories;
+using Application.Services;
 using Domain.Entities;
+using Infrastructure.Dtos.Settings;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 using System.Text;
 
 namespace Infrastructure.Services;
@@ -10,16 +13,22 @@ namespace Infrastructure.Services;
 /// </summary>
 public class AccountService : IAccountService
 {
+    private readonly MembrianaSettingsDto _membrianaSettings;
     private readonly IIdentityService _identityService;
     private readonly IEmailService _emailService;
-    
+    private readonly IOrganizationRepository _organizationRepository;
+
     public AccountService(
+        IOptions<MembrianaSettingsDto> membrianaSettings,
         IIdentityService identityService,
-        IEmailService emailService
+        IEmailService emailService,
+        IOrganizationRepository organizationRepository
     )
     {
+        _membrianaSettings = membrianaSettings.Value;
         _identityService = identityService;
         _emailService = emailService;
+        _organizationRepository = organizationRepository;
     }
 
     /// <summary>
@@ -31,12 +40,15 @@ public class AccountService : IAccountService
 
         var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
-        var confirmationLink = $"{_frontendUrl}/auth/confirm?userId={user.Id}&token={encodedToken}";
+        var confirmationLink =
+            $"{_membrianaSettings.HostingUrl}/auth/confirm?userId={user.Id}&token={encodedToken}";
 
-        await _emailService.SendAsync(
-            user.Email!,
-            "Confirmá tu cuenta",
-            $"Hacé click acá para confirmar tu cuenta: <a href='{confirmationLink}'>Confirmar</a>"
+        var organization = await _organizationRepository.GetByIdAsync(user.OrganizationId);
+
+        await _emailService.SendConfirmationEmailAsync(
+            user.Email,
+            organization.Name,
+            confirmationLink
         );
     }
 }

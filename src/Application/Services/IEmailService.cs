@@ -2,5 +2,9 @@
 
 public interface IEmailService
 {
-    Task SendAsync(string to, string subject, string htmlBody);
+    Task SendConfirmationEmailAsync(
+        string userEmail,
+        string organizationName,
+        string confirmEmailUrl
+    );
 }
