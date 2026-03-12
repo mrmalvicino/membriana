@@ -106,6 +106,14 @@ Create a file named `appsettings.json` in the [Api](./src/Api/) project director
     "Issuer": "Membriana.Api",
     "Audience": "Membriana.Mvc",
     "ExpireMinutes": 60
+  },
+  "Mailtrap": {
+    "ApiUrl": "https://send.api.mailtrap.io/api/send",
+    "ApiToken": "MAILING_API_TOKEN",
+    "BusinessEmail": "EMAIL@DOMAIN.COM",
+    "BusinessUrl": "BUSINESSURL.COM",
+    "WelcomeTemplateUuid": "WELCOME_TEMPLATE_UUID",
+    "ConfirmationTemplateUuid": "CONFIRMATION_TEMPLATE_UUID"
   }
 }
 ```
@@ -122,6 +130,11 @@ The following table details the parameters which need to be modified:
 | `USERNAME` | `ConnectionStrings` | Username to access the external server. |
 | `PASSWORD` | `ConnectionStrings` | Password to access the external server. |
 | `SECRET_KEY` | `Jwt` | Random string for signing JWTs. |
+| `MAILING_API_TOKEN` | `Mailtrap` | [Mailtrap](https://mailtrap.io) API Token. |
+| `EMAIL@DOMAIN.COM` | `Mailtrap` | Mailing sending address. |
+| `BUSINESSURL.COM` | `Mailtrap` | Mailing parameter. |
+| `WELCOME_TEMPLATE_UUID` | `Mailtrap` | Mailtrap template to send welcome emails. |
+| `CONFIRMATION_TEMPLATE_UUID` | `Mailtrap` | Mailtrap template to confirm addresses. |
 
 > [!TIP]
 &nbsp;
