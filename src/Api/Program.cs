@@ -1,6 +1,6 @@
 using Api.Filters;
 using Domain.Entities;
-using Infrastructure.Dtos;
+using Infrastructure.Dtos.Settings;
 using Infrastructure.Extensions;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -62,6 +62,10 @@ public class Program
         builder.Services.AddInfrastructure(dbConnectionString);
         builder.Services.AddScoped<TenancyQueryFilter>();
         builder.Services.AddScoped(typeof(TenancyRouteFilter<,>));
+
+        builder.Services.Configure<MembrianaSettingsDto>(
+            builder.Configuration.GetSection("Membriana")
+        );
 
         builder.Services.Configure<MailtrapSettingsDto>(
             builder.Configuration.GetSection("Mailtrap")

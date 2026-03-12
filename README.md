@@ -110,10 +110,11 @@ Create a file named `appsettings.json` in the [Api](./src/Api/) project director
   "Mailtrap": {
     "ApiUrl": "https://send.api.mailtrap.io/api/send",
     "ApiToken": "MAILING_API_TOKEN",
-    "BusinessEmail": "EMAIL@DOMAIN.COM",
-    "BusinessUrl": "BUSINESSURL.COM",
-    "WelcomeTemplateUuid": "WELCOME_TEMPLATE_UUID",
-    "ConfirmationTemplateUuid": "CONFIRMATION_TEMPLATE_UUID"
+    "ConfirmEmailTemplateUuid": "CONFIRM_EMAIL_TEMPLATE_UUID"
+  },
+  "Membriana": {
+    "HostingUrl": "https://membriana.somee.com",
+    "MailingEmail": "membriana@amplivec.com"
   }
 }
 ```
@@ -131,10 +132,7 @@ The following table details the parameters which need to be modified:
 | `PASSWORD` | `ConnectionStrings` | Password to access the external server. |
 | `SECRET_KEY` | `Jwt` | Random string for signing JWTs. |
 | `MAILING_API_TOKEN` | `Mailtrap` | [Mailtrap](https://mailtrap.io) API Token. |
-| `EMAIL@DOMAIN.COM` | `Mailtrap` | Mailing sending address. |
-| `BUSINESSURL.COM` | `Mailtrap` | Mailing parameter. |
-| `WELCOME_TEMPLATE_UUID` | `Mailtrap` | Mailtrap template to send welcome emails. |
-| `CONFIRMATION_TEMPLATE_UUID` | `Mailtrap` | Mailtrap template to confirm addresses. |
+| `CONFIRM_EMAIL_TEMPLATE_UUID` | `Mailtrap` | Mailtrap template to confirm email addresses. |
 
 > [!TIP]
 &nbsp;
@@ -162,6 +160,7 @@ Install each of the following **NuGet Packages** for the respective projects acc
 | [Infrastructure](./src/Infrastructure/) | [Microsoft.Extensions.Configuration](https://www.nuget.org/packages/Microsoft.Extensions.Configuration/) | 8.0.0 | Used by AppDbContextFactory. |
 | [Infrastructure](./src/Infrastructure/) | [Microsoft.Extensions.Configuration.Json](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Json/) | 8.0.0 | Used by AppDbContextFactory. |
 | [Infrastructure](./src/Infrastructure/) | [Microsoft.Extensions.Configuration.EnvironmentVariables](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.EnvironmentVariables/) | 8.0.0 | Used by AppDbContextFactory. |
+| [Infrastructure](./src/Infrastructure/) | [RestSharp](https://www.nuget.org/packages/RestSharp) | 114.0.0 | Library for consuming REST APIs. |
 
 >[!TIP]
 &nbsp;
