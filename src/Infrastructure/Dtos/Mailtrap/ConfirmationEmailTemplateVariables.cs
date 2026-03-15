@@ -12,4 +12,7 @@ public class ConfirmationEmailTemplateVariables
 
     [JsonPropertyName("organization_name")]
     public string OrganizationName { get; set; } = null!;
+
+    [JsonPropertyName("product_name")]
+    public string ProductName { get; set; } = null!;
 }

@@ -52,7 +52,8 @@ public class EmailService : IEmailService
             {
                 HostingUrl = _membrianaSettings.HostingUrl,
                 ConfirmationLink = confirmationLink,
-                OrganizationName = organizationName
+                OrganizationName = organizationName,
+                ProductName = _membrianaSettings.ProductName
             }
         };
 
