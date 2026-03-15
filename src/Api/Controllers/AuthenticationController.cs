@@ -138,7 +138,12 @@ public class AuthenticationController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(dto.UserId) || string.IsNullOrWhiteSpace(dto.Token))
         {
-            return BadRequest("Parámetros inválidos.");
+            return BadRequest(
+                new ConfirmEmailResponseDto
+                {
+                    Message = "Parámetros inválidos."
+                }
+            );
         }
 
         // Buscar usuario
@@ -146,12 +151,22 @@ public class AuthenticationController : ControllerBase
 
         if (user == null)
         {
-            return BadRequest("Usuario inválido.");
+            return BadRequest(
+                new ConfirmEmailResponseDto
+                {
+                    Message = "Usuario no encontrado."
+                }
+            );
         }
 
         if (user.EmailConfirmed)
         {
-            return Ok("El email ya fue confirmado.");
+            return Ok(
+                new ConfirmEmailResponseDto
+                {
+                    Message = "El email ya fue confirmado."
+                }
+            );
         }
 
         // Decodificar token
@@ -164,7 +179,12 @@ public class AuthenticationController : ControllerBase
         }
         catch
         {
-            return BadRequest("Token inválido.");
+            return BadRequest(
+                new ConfirmEmailResponseDto
+                {
+                    Message = "Token inválido."
+                }
+            );
         }
 
         // Confirmar email
@@ -172,10 +192,20 @@ public class AuthenticationController : ControllerBase
 
         if (!result.Succeeded)
         {
-            return BadRequest("No se pudo confirmar el email.");
+            return BadRequest(
+                new ConfirmEmailResponseDto
+                {
+                    Message = "No se pudo confirmar el email."
+                }
+            );
         }
 
-        return Ok("Email confirmado correctamente.");
+        return Ok(
+            new ConfirmEmailResponseDto
+            {
+                Message = "Email confirmado correctamente."
+            }
+        );
     }
 
     [HttpPost("resend-confirmation")]
@@ -183,23 +213,43 @@ public class AuthenticationController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(dto.Email))
         {
-            return BadRequest("Email inválido.");
+            return BadRequest(
+                new ResendConfirmationResponseDto
+                {
+                    Message = "Email inválido."
+                }
+            );
         }
 
         var user = await _unitOfWork.IdentityService.FindByEmail(dto.Email);
 
         if (user == null)
         {
-            return Ok("Si el email existe, se enviará una confirmación.");
+            return Ok(
+                new ResendConfirmationResponseDto
+                {
+                    Message = "Si el email existe, se enviará una confirmación."
+                }
+            );
         }
 
         if (user.EmailConfirmed)
         {
-            return Ok("El email ya está confirmado.");
+            return Ok(
+                new ResendConfirmationResponseDto
+                {
+                    Message = "El email ya está confirmado."
+                }
+            );
         }
 
         await _accountService.SendConfirmationAsync(user);
 
-        return Ok("Se envió el correo de confirmación.");
+        return Ok(
+            new ResendConfirmationResponseDto
+            {
+                Message = "Se envió el correo de confirmación."
+            }
+        );
     }
 }
