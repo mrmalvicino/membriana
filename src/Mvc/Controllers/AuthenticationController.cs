@@ -106,19 +106,20 @@ public class AuthenticationController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ResendConfirmation(string email)
+    public async Task<IActionResult> ResendConfirmation(
+        ResendConfirmationViewModel resendConfirmationViewModel
+    )
     {
         try
         {
-            // llamás a tu AuthApiService
-            await _authApiService.ResendConfirmationAsync(email);
+            await _authenticationApi.ResendConfirmationAsync(resendConfirmationViewModel);
 
-            TempData["RegisteredEmail"] = email;
+            TempData["RegisteredEmail"] = resendConfirmationViewModel.Email;
             TempData["ResendOk"] = "Te reenviamos el correo de confirmación. Revisá tu casilla.";
         }
         catch
         {
-            TempData["RegisteredEmail"] = email;
+            TempData["RegisteredEmail"] = resendConfirmationViewModel.Email;
             TempData["ResendError"] = "No pudimos reenviar el correo. Intentá nuevamente.";
         }
 

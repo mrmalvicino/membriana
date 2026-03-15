@@ -98,4 +98,36 @@ public class AuthenticationApiService : IAuthenticationApiService
 
         return registerResponseDto;
     }
+
+    public async Task<ResendConfirmationResponseDto?> ResendConfirmationAsync(
+        ResendConfirmationViewModel resendConfirmationViewModel
+    )
+    {
+        var resendConfirmationRequestDto = _mapper.Map<ResendConfirmationRequestDto>(resendConfirmationViewModel);
+
+        var content = new StringContent(
+            JsonSerializer.Serialize(resendConfirmationRequestDto),
+            Encoding.UTF8, "application/json"
+        );
+
+        var url = $"{_apiBaseUrl}api/authentication/resend-confirmation";
+        var response = await _httpClient.PostAsync(url, content);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+
+        var resendConfirmationResponseDto = JsonSerializer.Deserialize<ResendConfirmationResponseDto>(
+            json,
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            }
+        );
+
+        return resendConfirmationResponseDto;
+    }
 }
