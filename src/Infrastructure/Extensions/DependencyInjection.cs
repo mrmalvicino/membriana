@@ -43,7 +43,6 @@ public static class DependencyInjection
             options => options.UseSqlServer(connectionString)
         );
 
-        services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IMemberRepository, MemberRepository>();
         services.AddScoped<IMembershipPlanRepository, MembershipPlanRepository>();
@@ -51,6 +50,9 @@ public static class DependencyInjection
         services.AddScoped<IOrganizationRepository, OrganizationRepository>();
         services.AddScoped<IPaymentRepository, PaymentRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IAccountService, AccountService>();
+        services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IMemberStatusService, MemberStatusService>();
         services.AddScoped<IUserService, UserService>();
 
