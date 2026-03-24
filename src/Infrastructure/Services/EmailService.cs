@@ -67,19 +67,18 @@ public class EmailService : IEmailService
         string jsonParameters = JsonSerializer.Serialize(emailRequest, options);
         request.AddParameter("application/json", jsonParameters, ParameterType.RequestBody);
 
-        try
-        {
-            var response = httpClient.Post(request);
+        var response = await httpClient.PostAsync(request);
 
-            if (!response.IsSuccessful)
-            {
-                throw new Exception(response.Content);
-            }
-        }
-        catch (Exception ex)
+        if (response is null)
         {
-            Console.WriteLine("An error occurred: " + ex.Message);
-            Console.WriteLine(ex.StackTrace);
+            throw new HttpRequestException("La API de Mailtrap no devolvió ninguna Response.");
+        }
+
+        if (!response.IsSuccessful)
+        {
+            throw new HttpRequestException(
+                $"La Request de Mailtrap falló con status code {(int)response.StatusCode}: {response.Content}"
+            );
         }
     }
 }

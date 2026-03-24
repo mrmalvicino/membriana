@@ -110,7 +110,7 @@ Create a file named `appsettings.json` in the [Api](./src/Api/) project director
   "Mailtrap": {
     "ApiUrl": "https://send.api.mailtrap.io/api/send",
     "ApiToken": "MAILING_API_TOKEN",
-    "ConfirmEmailTemplateUuid": "CONFIRM_EMAIL_TEMPLATE_UUID"
+    "EmailConfirmationTemplateUuid": "EMAIL_CONFIRMATION_TEMPLATE_UUID"
   },
   "Membriana": {
     "HostingUrl": "https://membriana.somee.com",
@@ -132,7 +132,7 @@ The following table details the parameters which need to be modified:
 | `PASSWORD` | `ConnectionStrings` | Password to access the external server. |
 | `SECRET_KEY` | `Jwt` | Random string for signing JWTs. |
 | `MAILING_API_TOKEN` | `Mailtrap` | [Mailtrap](https://mailtrap.io) API Token. |
-| `CONFIRM_EMAIL_TEMPLATE_UUID` | `Mailtrap` | Mailtrap template to confirm email addresses. |
+| `EMAIL_CONFIRMATION_TEMPLATE_UUID` | `Mailtrap` | Mailtrap template to confirm email addresses. |
 
 > [!TIP]
 &nbsp;
