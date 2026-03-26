@@ -1,42 +1,44 @@
 @model ConfirmEmailViewModel
 
 @{
-    ViewData["Title"] = "Confirmacion de email";
+    ViewData["Title"] = "Confirmación de email";
 }
 
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-12 col-md-7 col-lg-5">
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-4 p-md-5 text-center">
-                    <h2 class="mb-3">Confirmacion de email</h2>
+        <div class="col-12 col-md-6 col-lg-4 text-center">
+            <h2 class="mb-3 text-nowrap">
+                @(Model.IsSuccess ? "Email confirmado" : "No pudimos confirmar tu email")
+            </h2>
 
-                    <div class="alert @(Model.IsSuccess ? "alert-success" : "alert-danger") mb-4" role="alert">
-                        @Model.Message
-                    </div>
+            <p class="mb-4 @(Model.IsSuccess ? "text-success" : "text-danger")">
+                @Model.Message
+            </p>
 
-                    @if (Model.IsSuccess)
-                    {
-                        <p class="text-muted mb-4">
-                            Ya podes iniciar sesion con tu cuenta.
-                        </p>
+            @if (Model.IsSuccess)
+            {
+                <p class="small text-muted mb-4">
+                    Ya podés iniciar sesión con tu cuenta.
+                </p>
 
-                        <a asp-action="Login" class="btn btn-primary w-100">
-                            Ir a iniciar sesion
-                        </a>
-                    }
-                    else
-                    {
-                        <p class="text-muted mb-4">
-                            Si el problema continua, pedi un nuevo correo de confirmacion.
-                        </p>
-
-                        <a asp-action="RegisterConfirmation" class="btn btn-outline-primary w-100">
-                            Volver a confirmacion
-                        </a>
-                    }
+                <div class="d-grid">
+                    <a asp-action="Login" class="btn btn-primary">
+                        Iniciar sesión
+                    </a>
                 </div>
-            </div>
+            }
+            else
+            {
+                <p class="small text-muted mb-4">
+                    Si el problema continúa, pedí un nuevo link de confirmación.
+                </p>
+
+                <div class="d-grid gap-2">
+                    <a asp-action="RegisterConfirmation" class="btn btn-primary">
+                        Reintentar
+                    </a>
+                </div>
+            }
         </div>
     </div>
 </div>
