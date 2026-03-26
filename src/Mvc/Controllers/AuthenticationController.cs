@@ -104,22 +104,81 @@ public class AuthenticationController : Controller
         return View(registerConfirmation);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
+    {
+        if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
+        {
+            return View(
+                new ConfirmEmailViewModel
+                {
+                    IsSuccess = false,
+                    Message = "El enlace de confirmación es inválido o está incompleto."
+                }
+            );
+        }
+
+        try
+        {
+            var response = await _authenticationApi.ConfirmEmailAsync(
+                new ConfirmEmailViewModel
+                {
+                    UserId = userId,
+                    Token = token
+                }
+            );
+
+            return View(
+                new ConfirmEmailViewModel
+                {
+                    IsSuccess = true,
+                    Message = response.Message
+                }
+            );
+        }
+        catch (ApplicationException ex)
+        {
+            return View(
+                new ConfirmEmailViewModel
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                }
+            );
+        }
+        catch
+        {
+            return View(
+                new ConfirmEmailViewModel
+                {
+                    IsSuccess = false,
+                    Message = "No pudimos confirmar tu email en este momento. Intentá nuevamente."
+                }
+            );
+        }
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ResendConfirmation(
         ResendConfirmationViewModel resendConfirmationViewModel
     )
     {
+        TempData["RegisteredEmail"] = resendConfirmationViewModel.Email;
+
         try
         {
-            await _authenticationApi.ResendConfirmationAsync(resendConfirmationViewModel);
+            var response = await _authenticationApi.ResendConfirmationAsync(resendConfirmationViewModel);
 
-            TempData["RegisteredEmail"] = resendConfirmationViewModel.Email;
-            TempData["ResendOk"] = "Te reenviamos el correo de confirmación. Revisá tu casilla.";
+            TempData["ResendOk"] =
+                response?.Message ?? "Te reenviamos el correo de confirmación. Revisá tu casilla.";
+        }
+        catch (ApplicationException ex)
+        {
+            TempData["ResendError"] = ex.Message;
         }
         catch
         {
-            TempData["RegisteredEmail"] = resendConfirmationViewModel.Email;
             TempData["ResendError"] = "No pudimos reenviar el correo. Intentá nuevamente.";
         }
 

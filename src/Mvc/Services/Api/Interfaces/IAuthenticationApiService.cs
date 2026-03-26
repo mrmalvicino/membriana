@@ -6,9 +6,11 @@ namespace Mvc.Services.Api.Interfaces;
 public interface IAuthenticationApiService
 {
     Task<LoginResponseDto?> LoginAsync(LoginViewModel loginViewModel);
-    
+
     Task<RegisterResponseDto?> RegisterAsync(RegisterViewModel registerViewModel);
-    
+
+    Task<ConfirmEmailResponseDto> ConfirmEmailAsync(ConfirmEmailViewModel confirmEmailViewModel);
+
     Task<ResendConfirmationResponseDto> ResendConfirmationAsync(
         ResendConfirmationViewModel resendConfirmationViewModel
     );

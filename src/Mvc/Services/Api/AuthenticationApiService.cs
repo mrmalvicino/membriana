@@ -1,6 +1,7 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Contracts.Dtos.Authentication;
 using Contracts.Dtos.Common;
+using Microsoft.AspNetCore.WebUtilities;
 using Mvc.Services.Api.Interfaces;
 using Mvc.ViewModels;
 using System.Text;
@@ -99,6 +100,45 @@ public class AuthenticationApiService : IAuthenticationApiService
         return registerResponseDto;
     }
 
+    public async Task<ConfirmEmailResponseDto> ConfirmEmailAsync(
+        ConfirmEmailViewModel confirmEmailViewModel
+    )
+    {
+        var confirmEmailRequestDto = _mapper.Map<ConfirmEmailRequestDto>(confirmEmailViewModel);
+
+        var url = QueryHelpers.AddQueryString(
+            $"{_apiBaseUrl}api/authentication/confirm-email",
+            new Dictionary<string, string?>
+            {
+                ["userId"] = confirmEmailRequestDto.UserId,
+                ["token"] = confirmEmailRequestDto.Token
+            }
+        );
+
+        var response = await _httpClient.GetAsync(url);
+        var json = await response.Content.ReadAsStringAsync();
+
+        var confirmEmailResponseDto = JsonSerializer.Deserialize<ConfirmEmailResponseDto>(
+            json,
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            }
+        );
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new ApplicationException(
+                confirmEmailResponseDto?.Message ?? "No se pudo confirmar el email."
+            );
+        }
+
+        return confirmEmailResponseDto ?? new ConfirmEmailResponseDto
+        {
+            Message = "Email confirmado correctamente."
+        };
+    }
+
     public async Task<ResendConfirmationResponseDto?> ResendConfirmationAsync(
         ResendConfirmationViewModel resendConfirmationViewModel
     )
@@ -115,7 +155,19 @@ public class AuthenticationApiService : IAuthenticationApiService
 
         if (!response.IsSuccessStatusCode)
         {
-            return null;
+            var errorContent = await response.Content.ReadAsStringAsync();
+
+            var errorResponse = JsonSerializer.Deserialize<ResendConfirmationResponseDto>(
+                errorContent,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }
+            );
+
+            throw new ApplicationException(
+                errorResponse?.Message ?? "No pudimos reenviar el correo. Intenta nuevamente."
+            );
         }
 
         var json = await response.Content.ReadAsStringAsync();

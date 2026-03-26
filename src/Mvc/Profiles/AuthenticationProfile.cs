@@ -10,5 +10,7 @@ public class AuthenticationProfile : Profile
     {
         CreateMap<LoginViewModel, LoginRequestDto>();
         CreateMap<RegisterViewModel, RegisterRequestDto>();
+        CreateMap<ConfirmEmailViewModel, ConfirmEmailRequestDto>();
+        CreateMap<ResendConfirmationViewModel, ResendConfirmationRequestDto>();
     }
 }
