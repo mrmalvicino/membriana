@@ -41,7 +41,7 @@ public class AccountService : IAccountService
         var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
         var confirmationLink =
-            $"{_membrianaSettings.HostingUrl}/authentication/confirm-email?userId={user.Id}&token={encodedToken}";
+            $"{_membrianaSettings.HostingUrl}/Authentication/ConfirmEmail?userId={user.Id}&token={encodedToken}";
 
         var organization = await _organizationRepository.GetByIdAsync(user.OrganizationId);
 
