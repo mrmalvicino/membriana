@@ -1,7 +1,6 @@
 using AutoMapper;
 using Contracts.Dtos.Authentication;
 using Contracts.Dtos.Common;
-using Microsoft.AspNetCore.WebUtilities;
 using Mvc.Services.Api.Interfaces;
 using Mvc.ViewModels;
 using System.Text;
@@ -106,16 +105,14 @@ public class AuthenticationApiService : IAuthenticationApiService
     {
         var confirmEmailRequestDto = _mapper.Map<ConfirmEmailRequestDto>(confirmEmailViewModel);
 
-        var url = QueryHelpers.AddQueryString(
-            $"{_apiBaseUrl}api/authentication/confirm-email",
-            new Dictionary<string, string?>
-            {
-                ["userId"] = confirmEmailRequestDto.UserId,
-                ["token"] = confirmEmailRequestDto.Token
-            }
+        var content = new StringContent(
+            JsonSerializer.Serialize(confirmEmailRequestDto),
+            Encoding.UTF8,
+            "application/json"
         );
 
-        var response = await _httpClient.GetAsync(url);
+        var url = $"{_apiBaseUrl}api/authentication/confirm-email";
+        var response = await _httpClient.PostAsync(url, content);
         var json = await response.Content.ReadAsStringAsync();
 
         var confirmEmailResponseDto = JsonSerializer.Deserialize<ConfirmEmailResponseDto>(
