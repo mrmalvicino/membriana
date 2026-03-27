@@ -46,6 +46,13 @@ public class AuthenticationController : Controller
         return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
     }
 
+    [HttpPost]
+    public IActionResult Logout()
+    {
+        _cookieService.DeleteJwtCookie();
+        return RedirectToAction("Login", "Authentication");
+    }
+
     [HttpGet]
     public IActionResult Register()
     {
@@ -85,10 +92,27 @@ public class AuthenticationController : Controller
     }
 
     [HttpPost]
-    public IActionResult Logout()
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResendConfirmation(
+        ResendConfirmationViewModel resendConfirmationViewModel
+    )
     {
-        _cookieService.DeleteJwtCookie();
-        return RedirectToAction("Login", "Authentication");
+        TempData["EmailSendTo"] = resendConfirmationViewModel.Email;
+
+        try
+        {
+            var response = await _authenticationApi.ResendConfirmationAsync(resendConfirmationViewModel);
+
+            TempData["EmailSendIsSuccess"] = true;
+            TempData["EmailSendMessage"] = response?.Message ?? "Te reenviamos el correo de confirmación.";
+        }
+        catch (Exception ex)
+        {
+            TempData["EmailSendIsSuccess"] = false;
+            TempData["EmailSendMessage"] = ex.Message;
+        }
+
+        return RedirectToAction(nameof(RegisterConfirmation));
     }
 
     [HttpGet]
@@ -148,29 +172,5 @@ public class AuthenticationController : Controller
                 }
             );
         }
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ResendConfirmation(
-        ResendConfirmationViewModel resendConfirmationViewModel
-    )
-    {
-        TempData["EmailSendTo"] = resendConfirmationViewModel.Email;
-
-        try
-        {
-            var response = await _authenticationApi.ResendConfirmationAsync(resendConfirmationViewModel);
-
-            TempData["EmailSendIsSuccess"] = true;
-            TempData["EmailSendMessage"] = response?.Message ?? "Te reenviamos el correo de confirmación.";
-        }
-        catch (Exception ex)
-        {
-            TempData["EmailSendIsSuccess"] = false;
-            TempData["EmailSendMessage"] = ex.Message;
-        }
-
-        return RedirectToAction(nameof(RegisterConfirmation));
     }
 }

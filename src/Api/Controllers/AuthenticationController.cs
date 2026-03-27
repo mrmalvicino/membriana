@@ -133,6 +133,51 @@ public class AuthenticationController : ControllerBase
         }
     }
 
+    [HttpPost("resend-confirmation")]
+    public async Task<IActionResult> ResendConfirmation([FromBody] ResendConfirmationRequestDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.Email))
+        {
+            return BadRequest(
+                new ResendConfirmationResponseDto
+                {
+                    Message = "Email inválido."
+                }
+            );
+        }
+
+        var user = await _unitOfWork.IdentityService.FindByEmail(dto.Email);
+
+        if (user == null)
+        {
+            return Ok(
+                new ResendConfirmationResponseDto
+                {
+                    Message = "Si el email existe, se enviará una confirmación."
+                }
+            );
+        }
+
+        if (user.EmailConfirmed)
+        {
+            return Ok(
+                new ResendConfirmationResponseDto
+                {
+                    Message = "El email ya está confirmado."
+                }
+            );
+        }
+
+        await _accountService.SendConfirmationAsync(user);
+
+        return Ok(
+            new ResendConfirmationResponseDto
+            {
+                Message = "Se envió el correo de confirmación."
+            }
+        );
+    }
+
     [HttpPost("confirm-email")]
     public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequestDto dto)
     {
@@ -204,51 +249,6 @@ public class AuthenticationController : ControllerBase
             new ConfirmEmailResponseDto
             {
                 Message = "Email confirmado correctamente."
-            }
-        );
-    }
-
-    [HttpPost("resend-confirmation")]
-    public async Task<IActionResult> ResendConfirmation([FromBody] ResendConfirmationRequestDto dto)
-    {
-        if (string.IsNullOrWhiteSpace(dto.Email))
-        {
-            return BadRequest(
-                new ResendConfirmationResponseDto
-                {
-                    Message = "Email inválido."
-                }
-            );
-        }
-
-        var user = await _unitOfWork.IdentityService.FindByEmail(dto.Email);
-
-        if (user == null)
-        {
-            return Ok(
-                new ResendConfirmationResponseDto
-                {
-                    Message = "Si el email existe, se enviará una confirmación."
-                }
-            );
-        }
-
-        if (user.EmailConfirmed)
-        {
-            return Ok(
-                new ResendConfirmationResponseDto
-                {
-                    Message = "El email ya está confirmado."
-                }
-            );
-        }
-
-        await _accountService.SendConfirmationAsync(user);
-
-        return Ok(
-            new ResendConfirmationResponseDto
-            {
-                Message = "Se envió el correo de confirmación."
             }
         );
     }

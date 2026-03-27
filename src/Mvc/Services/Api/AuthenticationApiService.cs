@@ -99,43 +99,6 @@ public class AuthenticationApiService : IAuthenticationApiService
         return registerResponseDto;
     }
 
-    public async Task<ConfirmEmailResponseDto> ConfirmEmailAsync(
-        ConfirmEmailViewModel confirmEmailViewModel
-    )
-    {
-        var confirmEmailRequestDto = _mapper.Map<ConfirmEmailRequestDto>(confirmEmailViewModel);
-
-        var content = new StringContent(
-            JsonSerializer.Serialize(confirmEmailRequestDto),
-            Encoding.UTF8,
-            "application/json"
-        );
-
-        var url = $"{_apiBaseUrl}api/authentication/confirm-email";
-        var response = await _httpClient.PostAsync(url, content);
-        var json = await response.Content.ReadAsStringAsync();
-
-        var confirmEmailResponseDto = JsonSerializer.Deserialize<ConfirmEmailResponseDto>(
-            json,
-            new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            }
-        );
-
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new ApplicationException(
-                confirmEmailResponseDto?.Message ?? "No se pudo confirmar el email."
-            );
-        }
-
-        return confirmEmailResponseDto ?? new ConfirmEmailResponseDto
-        {
-            Message = "Email confirmado correctamente."
-        };
-    }
-
     public async Task<ResendConfirmationResponseDto?> ResendConfirmationAsync(
         ResendConfirmationViewModel resendConfirmationViewModel
     )
@@ -178,5 +141,42 @@ public class AuthenticationApiService : IAuthenticationApiService
         );
 
         return resendConfirmationResponseDto;
+    }
+
+    public async Task<ConfirmEmailResponseDto> ConfirmEmailAsync(
+        ConfirmEmailViewModel confirmEmailViewModel
+    )
+    {
+        var confirmEmailRequestDto = _mapper.Map<ConfirmEmailRequestDto>(confirmEmailViewModel);
+
+        var content = new StringContent(
+            JsonSerializer.Serialize(confirmEmailRequestDto),
+            Encoding.UTF8,
+            "application/json"
+        );
+
+        var url = $"{_apiBaseUrl}api/authentication/confirm-email";
+        var response = await _httpClient.PostAsync(url, content);
+        var json = await response.Content.ReadAsStringAsync();
+
+        var confirmEmailResponseDto = JsonSerializer.Deserialize<ConfirmEmailResponseDto>(
+            json,
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            }
+        );
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new ApplicationException(
+                confirmEmailResponseDto?.Message ?? "No se pudo confirmar el email."
+            );
+        }
+
+        return confirmEmailResponseDto ?? new ConfirmEmailResponseDto
+        {
+            Message = "Email confirmado correctamente."
+        };
     }
 }
