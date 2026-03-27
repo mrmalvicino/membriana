@@ -121,7 +121,7 @@ public class AuthenticationController : ControllerBase
             return Ok(
                 new RegisterResponseDto
                 {
-                    Message = "La cuenta fue creada. Revisá tu correo para confirmar el email.",
+                    Message = "¡Cuenta creada! Revisá tu correo para confirmar el email.",
                     UserEmail = user.Email!
                 }
             );

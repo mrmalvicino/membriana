@@ -8,32 +8,35 @@
     <div class="row justify-content-center">
         <div class="col-12 col-md-6 col-lg-4 text-center">
 
-            <h2 class="mb-3 text-nowrap">Revisá tu email</h2>
+            <h2 class="mb-3 text-nowrap">
+                @(Model.IsSuccess ? "Revisá tu email" : "No pudimos enviar el link")
+            </h2>
 
-            <p class="text-muted mb-4">
-                Te enviamos un enlace para confirmar tu cuenta.
+            <p class="mb-4 @(Model.IsSuccess ? "text-success" : "text-danger")">
+                @Model.Message
             </p>
 
-            @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+            @if (Model.IsSuccess)
             {
-                <div class="alert alert-success" role="alert">
-                    @Model.SuccessMessage
+                <div class="mb-4">
+                    <div class="small text-muted mb-1">
+                        Correo de confirmación enviado a:
+                    </div>
+                    <div class="fw-semibold">@Model.Email</div>
                 </div>
             }
-
-            @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+            else
             {
-                <div class="alert alert-danger" role="alert">
-                    @Model.ErrorMessage
+                <p class="small text-muted mb-4">
+                    Si el problema continúa, pedí un nuevo link de confirmación.
+                </p>
+
+                <div class="d-grid gap-2">
+                    <a asp-action="RegisterConfirmation" class="btn btn-primary">
+                        Reintentar
+                    </a>
                 </div>
             }
-
-            <div class="mb-4">
-                <div class="small text-muted mb-1">
-                    Correo de confirmación enviado a:
-                </div>
-                <div class="fw-semibold">@Model.Email</div>
-            </div>
 
             <form asp-action="ResendConfirmation" method="post" class="d-grid">
                 @Html.AntiForgeryToken()

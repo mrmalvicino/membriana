@@ -71,7 +71,9 @@ public class AuthenticationController : Controller
                 return View(registerViewModel);
             }
 
-            TempData["RegisteredEmail"] = registerResponseDto.UserEmail;
+            TempData["EmailSendTo"] = registerResponseDto.UserEmail;
+            TempData["EmailSendIsSuccess"] = true;
+            TempData["EmailSendMessage"] = registerResponseDto.Message;
 
             return RedirectToAction(nameof(RegisterConfirmation));
         }
@@ -94,9 +96,9 @@ public class AuthenticationController : Controller
     {
         var registerConfirmation = new RegisterConfirmationViewModel
         {
-            Email = TempData["RegisteredEmail"] as string ?? string.Empty,
-            SuccessMessage = TempData["ResendOk"] as string,
-            ErrorMessage = TempData["ResendError"] as string
+            Email = TempData["EmailSendTo"] as string ?? string.Empty,
+            IsSuccess = TempData["EmailSendIsSuccess"] as bool? ?? false,
+            Message = TempData["EmailSendMessage"] as string ?? string.Empty
         };
 
         TempData.Keep("RegisteredEmail");
@@ -110,7 +112,7 @@ public class AuthenticationController : Controller
         if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
         {
             return View(
-                new ConfirmEmailViewModel
+                new ResponseViewModel
                 {
                     IsSuccess = false,
                     Message = "El enlace de confirmación es inválido o está incompleto."
@@ -129,30 +131,20 @@ public class AuthenticationController : Controller
             );
 
             return View(
-                new ConfirmEmailViewModel
+                new ResponseViewModel
                 {
                     IsSuccess = true,
                     Message = response.Message
                 }
             );
         }
-        catch (ApplicationException ex)
+        catch (Exception ex)
         {
             return View(
-                new ConfirmEmailViewModel
+                new ResponseViewModel
                 {
                     IsSuccess = false,
                     Message = ex.Message
-                }
-            );
-        }
-        catch
-        {
-            return View(
-                new ConfirmEmailViewModel
-                {
-                    IsSuccess = false,
-                    Message = "No pudimos confirmar tu email en este momento. Intentá nuevamente."
                 }
             );
         }
@@ -164,22 +156,19 @@ public class AuthenticationController : Controller
         ResendConfirmationViewModel resendConfirmationViewModel
     )
     {
-        TempData["RegisteredEmail"] = resendConfirmationViewModel.Email;
+        TempData["EmailSendTo"] = resendConfirmationViewModel.Email;
 
         try
         {
             var response = await _authenticationApi.ResendConfirmationAsync(resendConfirmationViewModel);
 
-            TempData["ResendOk"] =
-                response?.Message ?? "Te reenviamos el correo de confirmación. Revisá tu casilla.";
+            TempData["EmailSendIsSuccess"] = true;
+            TempData["EmailSendMessage"] = response?.Message ?? "Te reenviamos el correo de confirmación.";
         }
-        catch (ApplicationException ex)
+        catch (Exception ex)
         {
-            TempData["ResendError"] = ex.Message;
-        }
-        catch
-        {
-            TempData["ResendError"] = "No pudimos reenviar el correo. Intentá nuevamente.";
+            TempData["EmailSendIsSuccess"] = false;
+            TempData["EmailSendMessage"] = ex.Message;
         }
 
         return RedirectToAction(nameof(RegisterConfirmation));

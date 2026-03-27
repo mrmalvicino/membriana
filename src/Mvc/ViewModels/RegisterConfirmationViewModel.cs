@@ -1,6 +1,6 @@
-﻿public class RegisterConfirmationViewModel
+﻿namespace Mvc.ViewModels;
+
+public class RegisterConfirmationViewModel : ResponseViewModel
 {
     public string Email { get; set; } = string.Empty;
-    public string? SuccessMessage { get; set; }
-    public string? ErrorMessage { get; set; }
 }
