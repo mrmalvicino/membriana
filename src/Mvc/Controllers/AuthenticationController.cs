@@ -125,7 +125,9 @@ public class AuthenticationController : Controller
             Message = TempData["EmailSendMessage"] as string ?? string.Empty
         };
 
-        TempData.Keep("RegisteredEmail");
+        TempData.Keep("EmailSendTo");
+        TempData.Keep("EmailSendIsSuccess");
+        TempData.Keep("EmailSendMessage");
 
         return View(registerConfirmation);
     }
