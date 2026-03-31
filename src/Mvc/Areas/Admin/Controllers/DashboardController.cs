@@ -18,6 +18,7 @@ public class DashboardController : Controller
     {
         var dashboard = new DashboardViewModel
         {
+            OrganizationName = "Gimnasio FitLife",
             ActiveMembersCount = 342,
             ActiveMembersVariationPercent = 4.9m,
             InactiveMembersCount = 58,

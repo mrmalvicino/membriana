@@ -2,6 +2,8 @@
 
 public class DashboardViewModel
 {
+    public string OrganizationName { get; set; } = string.Empty;
+
     public int ActiveMembersCount { get; set; }
     public decimal ActiveMembersVariationPercent { get; set; }
 
