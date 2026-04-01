@@ -21,6 +21,18 @@ public class MemberStatusService : IMemberStatusService
         _userService = userService;
     }
 
+    /// <summary>
+    /// Cuenta cuántos socios de la organización del usuario autenticado tenían el estado indicado
+    /// al cierre del mes especificado.
+    /// </summary>
+    /// <remarks>
+    /// El cálculo reconstruye el estado vigente de cada socio tomando el último
+    /// <see cref="Domain.Entities.MemberStatusEvent"/> ocurrido hasta el final del mes.
+    /// Si un socio no tiene eventos registrados para ese período, se usa el estado actual
+    /// almacenado en la entidad <see cref="Domain.Entities.Member"/>.
+    /// Para métricas de dashboard, el estado <see cref="MemberStatus.Active"/> incluye también
+    /// a los socios en estado <see cref="MemberStatus.Debtor"/>.
+    /// </remarks>
     public async Task<int> CountMembersWithStatusAsync(
         int year,
         int month,
@@ -37,28 +49,35 @@ public class MemberStatusService : IMemberStatusService
         var events = await _memberStatusEventRepository.GetAllAsync(orgId);
         var lastStatusByMemberId = new Dictionary<int, MemberStatus>();
 
-        foreach (var e in events)
+        // Recorre los eventos en orden cronológico para que el diccionario tenga el último
+        // cambio de estado al cierre de mes de cada socio.
+        foreach (var e in events.OrderBy(e => e.ChangedAtDateTime))
         {
             if (e.ChangedAtDateTime > endOfMonth)
             {
                 continue;
             }
 
-            if (!lastStatusByMemberId.ContainsKey(e.MemberId))
-            {
-                lastStatusByMemberId[e.MemberId] = e.NewStatus;
-            }
+            lastStatusByMemberId[e.MemberId] = e.NewStatus;
         }
 
         int count = 0;
 
         foreach (var m in members)
         {
-            var actualStatus = lastStatusByMemberId.TryGetValue(m.Id, out var memberStatus)
-                ? memberStatus
-                : m.MemberStatus;
+            MemberStatus endMonthStatus;
 
-            if (MatchesDashboardStatus(actualStatus, targetStatus))
+            // Si el socio no tuvo cambios de estado antes del cierre del mes, se toma el actual
+            if (lastStatusByMemberId.TryGetValue(m.Id, out var memberStatus))
+            {
+                endMonthStatus = memberStatus;
+            }
+            else
+            {
+                endMonthStatus = m.MemberStatus;
+            }
+
+            if (MatchesDashboardStatus(endMonthStatus, targetStatus))
             {
                 count++;
             }
