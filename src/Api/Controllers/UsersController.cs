@@ -1,4 +1,5 @@
 ﻿using Application.Services;
+using Contracts.Dtos.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,20 @@ public class UsersController : ControllerBase
     public UsersController(IUserService userService)
     {
         _userService = userService;
+    }
+
+    [HttpGet("me")]
+    public async Task<ActionResult<LoggedUserContextDto>> GetLoggedUserContext()
+    {
+        try
+        {
+            var currentUserContextDto = await _userService.GetLoggedUserContextAsync();
+            return Ok(currentUserContextDto);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpGet("me/organization-id")]

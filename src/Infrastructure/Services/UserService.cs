@@ -1,4 +1,5 @@
 ﻿using Application.Services;
+using Contracts.Dtos.Authentication;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -32,6 +33,17 @@ public class UserService : IUserService
         _userManager = userManager;
         _httpContextAccessor = httpContextAccessor;
         _configuration = configuration;
+    }
+
+    public async Task<LoggedUserContextDto> GetLoggedUserContextAsync()
+    {
+        AppUser appUser = await GetLoggedUserAsync();
+        LoggedUserContextDto loggedUserContextDto = new();
+        loggedUserContextDto.UserId = appUser.Id;
+        loggedUserContextDto.UserEmail = appUser.Email ?? "";
+        loggedUserContextDto.OrganizationId = appUser.OrganizationId;
+        loggedUserContextDto.OrganizationName = appUser.Organization.Name;
+        return loggedUserContextDto;
     }
 
     /// <summary>

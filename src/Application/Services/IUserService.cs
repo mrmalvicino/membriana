@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Contracts.Dtos.Authentication;
+using Domain.Entities;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace Application.Services;
@@ -9,6 +10,11 @@ namespace Application.Services;
 /// </summary>
 public interface IUserService
 {
+    /// <summary>
+    /// Obtiene un DTO con información relevante del usuario autenticado.
+    /// </summary>
+    Task<LoggedUserContextDto> GetLoggedUserContextAsync();
+
     /// <summary>
     /// Obtiene el usuario actualmente autenticado en el contexto HTTP actual.
     /// </summary>

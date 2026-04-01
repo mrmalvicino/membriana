@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Mvc.Areas.Admin.ViewModels;
 using Mvc.Filters;
+using Mvc.Services.Api.Interfaces;
 
 namespace Mvc.Areas.Admin.Controllers;
 
@@ -11,14 +12,23 @@ namespace Mvc.Areas.Admin.Controllers;
 [JwtAuthorizationFilter]
 public class DashboardController : Controller
 {
+    private readonly IUserApiService _userApi;
+
+    public DashboardController(IUserApiService userService)
+    {
+        _userApi = userService;
+    }
+
     /// <summary>
     /// Muestra el Dashboard.
     /// </summary>
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
+        var loggedUserContext = await _userApi.GetLoggedUserContextAsync();
+
         var dashboard = new DashboardViewModel
         {
-            OrganizationName = "Gimnasio FitLife",
+            OrganizationName = loggedUserContext.OrganizationName,
             ActiveMembersCount = 342,
             ActiveMembersVariationPercent = 4.9m,
             InactiveMembersCount = 58,
