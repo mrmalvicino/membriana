@@ -7,6 +7,7 @@ public interface IUnitOfWork
     IIdentityService IdentityService { get; }
     IEmployeeRepository EmployeeRepository { get; }
     IMemberRepository MemberRepository { get; }
+    IMemberStatusEventRepository MemberStatusEventRepository { get; }
     IOrganizationRepository OrganizationRepository { get; }
     Task BeginTransactionAsync();
     Task CommitAsync();

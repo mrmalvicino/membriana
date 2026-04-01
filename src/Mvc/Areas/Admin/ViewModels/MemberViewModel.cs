@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Contracts.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Mvc.Areas.Admin.ViewModels;
 
@@ -17,4 +18,8 @@ public class MemberViewModel : PersonViewModel
 
     [Required]
     public int OrganizationId { get; set; }
+
+    [Required(ErrorMessage = "Debe seleccionar un estado.")]
+    [Display(Name = "Estado")]
+    public MemberStatus MemberStatus { get; set; } = MemberStatus.Active;
 }

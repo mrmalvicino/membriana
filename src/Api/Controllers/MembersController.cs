@@ -18,16 +18,35 @@ public class MembersController : BaseController<
     MemberUpdateDto
 >
 {
+    private readonly IMemberService _memberService;
+
     /// <summary>
     /// Constructor principal.
     /// </summary>
     public MembersController(
         IMemberRepository repository,
+        IMemberService memberService,
         IUserService userService,
         IMapper mapper
     ) : base(repository, userService, mapper)
     {
-        
+        _memberService = memberService;
+    }
+
+    public override async Task<ActionResult<MemberReadDto>> Create([FromBody] MemberCreateDto createDto)
+    {
+        int userOrgId = await _userService.GetOrganizationIdAsync();
+
+        if (createDto.OrganizationId != userOrgId)
+        {
+            return Forbid();
+        }
+
+        var entity = _mapper.Map<Member>(createDto);
+        var created = await _memberService.AddAsync(entity);
+        var readDto = _mapper.Map<MemberReadDto>(created);
+
+        return CreatedAtAction(nameof(Get), new { id = readDto.Id }, readDto);
     }
 
     [ServiceFilter(typeof(TenancyRouteFilter<Member, IMemberRepository>))]
@@ -42,7 +61,16 @@ public class MembersController : BaseController<
         [FromBody] MemberUpdateDto updateDto
     )
     {
-        return await base.Update(id, updateDto);
+        if (id != updateDto.Id)
+        {
+            return BadRequest();
+        }
+
+        var entity = _mapper.Map<Member>(updateDto);
+        var updated = await _memberService.UpdateAsync(entity);
+        var readDto = _mapper.Map<MemberReadDto>(updated);
+
+        return Ok(readDto);
     }
 
     [ServiceFilter(typeof(TenancyRouteFilter<Member, IMemberRepository>))]

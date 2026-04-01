@@ -12,6 +12,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly IIdentityService _identityService;
     private readonly IEmployeeRepository _employeeRepository;
     private readonly IMemberRepository _memberRepository;
+    private readonly IMemberStatusEventRepository _memberStatusEventRepository;
     private readonly IOrganizationRepository _organizationRepository;
 
     public UnitOfWork(
@@ -19,6 +20,7 @@ public class UnitOfWork : IUnitOfWork
         IIdentityService identityService,
         IEmployeeRepository employeeRepository,
         IMemberRepository memberRepository,
+        IMemberStatusEventRepository memberStatusEventRepository,
         IOrganizationRepository organizationRepository
     )
     {
@@ -26,12 +28,14 @@ public class UnitOfWork : IUnitOfWork
         _identityService = identityService;
         _employeeRepository = employeeRepository;
         _memberRepository = memberRepository;
+        _memberStatusEventRepository = memberStatusEventRepository;
         _organizationRepository = organizationRepository;
     }
 
     public IIdentityService IdentityService => _identityService;
     public IEmployeeRepository EmployeeRepository => _employeeRepository;
     public IMemberRepository MemberRepository => _memberRepository;
+    public IMemberStatusEventRepository MemberStatusEventRepository => _memberStatusEventRepository;
     public IOrganizationRepository OrganizationRepository => _organizationRepository;
 
     public async Task BeginTransactionAsync()

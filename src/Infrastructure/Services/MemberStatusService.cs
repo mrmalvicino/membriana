@@ -54,8 +54,8 @@ public class MemberStatusService : IMemberStatusService
 
         foreach (var m in members)
         {
-            var actualStatus = lastStatusByMemberId.TryGetValue(m.Id, out var s)
-                ? s
+            var actualStatus = lastStatusByMemberId.TryGetValue(m.Id, out var memberStatus)
+                ? memberStatus
                 : m.MemberStatus;
 
             if (MatchesDashboardStatus(actualStatus, targetStatus))
