@@ -1,4 +1,5 @@
-﻿using Application.Services;
+﻿using Application.Repositories;
+using Application.Services;
 using Contracts.Dtos.Authentication;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
@@ -20,6 +21,7 @@ public class UserService : IUserService
     private readonly UserManager<AppUser> _userManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IConfiguration _configuration;
+    private readonly IOrganizationRepository _organizationRepository;
 
     /// <summary>
     /// Constructor principal.
@@ -27,23 +29,48 @@ public class UserService : IUserService
     public UserService(
         UserManager<AppUser> userManager,
         IHttpContextAccessor httpContextAccessor,
-        IConfiguration configuration
+        IConfiguration configuration,
+        IOrganizationRepository organizationRepository
     )
     {
         _userManager = userManager;
         _httpContextAccessor = httpContextAccessor;
         _configuration = configuration;
+        _organizationRepository = organizationRepository;
     }
 
+    /// <summary>
+    /// Obtiene un DTO con información relevante del usuario autenticado.
+    /// </summary>
     public async Task<LoggedUserContextDto> GetLoggedUserContextAsync()
     {
         AppUser appUser = await GetLoggedUserAsync();
+        Organization organization = await GetLoggedOrganizationAsync();
+
         LoggedUserContextDto loggedUserContextDto = new();
+
         loggedUserContextDto.UserId = appUser.Id;
         loggedUserContextDto.UserEmail = appUser.Email ?? "";
-        loggedUserContextDto.OrganizationId = appUser.OrganizationId;
-        loggedUserContextDto.OrganizationName = appUser.Organization.Name;
+        loggedUserContextDto.OrganizationId = organization.Id;
+        loggedUserContextDto.OrganizationName = organization.Name;
+        
         return loggedUserContextDto;
+    }
+
+    /// <summary>
+    /// Obtiene la organización a la que pertenece el usuario autenticado en el contexto HTTP actual.
+    /// </summary>
+    public async Task<Organization> GetLoggedOrganizationAsync()
+    {
+        int organizationId = await GetOrganizationIdAsync();
+        var organization = await _organizationRepository.GetByIdAsync(organizationId);
+
+        if (organization == null)
+        {
+            throw new Exception("No se encontró la organización del usuario.");
+        }
+
+        return organization;
     }
 
     /// <summary>

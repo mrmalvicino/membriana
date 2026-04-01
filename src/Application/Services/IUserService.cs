@@ -16,6 +16,11 @@ public interface IUserService
     Task<LoggedUserContextDto> GetLoggedUserContextAsync();
 
     /// <summary>
+    /// Obtiene la organización a la que pertenece el usuario autenticado en el contexto HTTP actual.
+    /// </summary>
+    Task<Organization> GetLoggedOrganizationAsync();
+
+    /// <summary>
     /// Obtiene el usuario actualmente autenticado en el contexto HTTP actual.
     /// </summary>
     /// <remarks>
