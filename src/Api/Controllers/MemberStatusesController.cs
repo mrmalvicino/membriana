@@ -28,7 +28,7 @@ public class MemberStatusesController : ControllerBase
     [HttpGet("count-members-with-status")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ServiceFilter(typeof(TenancyQueryFilter))]
-    public virtual async Task<ActionResult<IEnumerable<AmountResponse>>> CountMembersWithStatus(
+    public async Task<ActionResult<IEnumerable<AmountResponse>>> CountMembersWithStatus(
         [FromQuery] int organizationId,
         [FromQuery] int year,
         [FromQuery] int month,
@@ -46,7 +46,7 @@ public class MemberStatusesController : ControllerBase
     [HttpGet("count-first-time-signups")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ServiceFilter(typeof(TenancyQueryFilter))]
-    public virtual async Task<ActionResult<IEnumerable<AmountResponse>>> CountFirstTimeSignups(
+    public async Task<ActionResult<IEnumerable<AmountResponse>>> CountFirstTimeSignups(
         [FromQuery] int organizationId,
         [FromQuery] int year,
         [FromQuery] int month
@@ -63,7 +63,7 @@ public class MemberStatusesController : ControllerBase
     [HttpGet("count-first-time-cancellations")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ServiceFilter(typeof(TenancyQueryFilter))]
-    public virtual async Task<ActionResult<IEnumerable<AmountResponse>>> CountFirstTimeCancellations(
+    public async Task<ActionResult<IEnumerable<AmountResponse>>> CountFirstTimeCancellations(
         [FromQuery] int organizationId,
         [FromQuery] int year,
         [FromQuery] int month
