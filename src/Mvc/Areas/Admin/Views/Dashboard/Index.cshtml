@@ -109,6 +109,23 @@
     <div class="mb-3">
         <div class="row g-3">
 
+            <!-- Facturación -->
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <div class="fw-semibold">Facturación</div>
+                                <div class="text-muted small">Total mensual de pagos</div>
+                            </div>
+                        </div>
+                        <div style="height: 280px;">
+                            <canvas id="monthlyIncomeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Miembros activos -->
             <div class="col-12 col-lg-6">
                 <div class="card h-100 shadow-sm">
@@ -116,7 +133,7 @@
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <div>
                                 <div class="fw-semibold">Miembros activos</div>
-                                <div class="text-muted small">Evolución mensual del año en curso</div>
+                                <div class="text-muted small">Evolución mensual de socios activos</div>
                             </div>
                         </div>
                         <div style="height: 260px;">
@@ -133,7 +150,7 @@
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <div>
                                 <div class="fw-semibold">Altas vs. bajas</div>
-                                <div class="text-muted small">Comparación mensual del año en curso</div>
+                                <div class="text-muted small">Cantidad de socios que se dieron de alta/baja por primera vez</div>
                             </div>
                         </div>
                         <div style="height: 260px;">
@@ -151,9 +168,34 @@
 @section Scripts {
     <script>
         const months = @Html.Raw(Json.Serialize(Model.Months));
+        const monthlyIncomeData = @Html.Raw(Json.Serialize(Model.MonthlyIncomeByMonth));
         const activeMembersData = @Html.Raw(Json.Serialize(Model.ActiveMembersByMonth));
         const signupsData = @Html.Raw(Json.Serialize(Model.SignupsByMonth));
         const cancellationsData = @Html.Raw(Json.Serialize(Model.CancellationsByMonth));
+
+        // Facturación mensual
+        new Chart(document.getElementById('monthlyIncomeChart'), {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Facturación',
+                    data: monthlyIncomeData,
+                    borderColor: '#198754',
+                    backgroundColor: 'rgba(25, 135, 84, 0.15)',
+                    borderWidth: 2,
+                    tension: 0.35,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
 
         // Miembros activos
         new Chart(document.getElementById('activeMembersChart'), {

@@ -70,6 +70,7 @@ public class DashboardController : Controller
             MonthlyCancellationsCount = firstTimeCancellationsByMonth[^1],
             MonthlyCancellationsVariationPercent = CalculateVariationPercent(firstTimeCancellationsByMonth),
             Months = months.Select(GetMonthLabel).ToList(),
+            MonthlyIncomeByMonth = new() { 1_360_000m, 1_415_000m, 1_385_000m, 1_470_000m, 1_425_000m, 1_250_000m },
             ActiveMembersByMonth = activeMembersByMonth,
             SignupsByMonth = firstTimeSignupsByMonth,
             CancellationsByMonth = firstTimeCancellationsByMonth

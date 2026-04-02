@@ -20,6 +20,7 @@ public class DashboardViewModel
     public decimal MonthlyCancellationsVariationPercent { get; set; }
 
     public List<string> Months { get; set; } = new();
+    public List<decimal> MonthlyIncomeByMonth { get; set; } = new();
     public List<int> ActiveMembersByMonth { get; set; } = new();
     public List<int> SignupsByMonth { get; set; } = new();
     public List<int> CancellationsByMonth { get; set; } = new();
