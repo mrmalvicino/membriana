@@ -4,6 +4,7 @@ using Mvc.Areas.Admin.ViewModels;
 using Mvc.Filters;
 using Mvc.Services.Api.Interfaces;
 using System.Globalization;
+using System.Numerics;
 
 namespace Mvc.Areas.Admin.Controllers;
 
@@ -32,14 +33,20 @@ public class DashboardController : Controller
     public async Task<IActionResult> Index()
     {
         var loggedUserContext = await _userApi.GetLoggedUserContextAsync();
+
         var months = GetLastSixMonths(DateTime.Today);
+
+        var totalIncomeByMonth = await GetTotalIncomeByMonthAsync(
+            loggedUserContext.OrganizationId,
+            months
+        );
 
         var activeMembersByMonth = await GetMemberCountsByMonthAsync(
             loggedUserContext.OrganizationId,
             months,
             MemberStatus.Active
         );
-        
+
         var inactiveMembersByMonth = await GetMemberCountsByMonthAsync(
             loggedUserContext.OrganizationId,
             months,
@@ -59,8 +66,8 @@ public class DashboardController : Controller
         var dashboard = new DashboardViewModel
         {
             OrganizationName = loggedUserContext.OrganizationName,
-            MonthlyIncome = 1_250_000m,
-            MonthlyIncomeVariationPercent = -12.3m,
+            MonthlyIncome = totalIncomeByMonth[^1],
+            MonthlyIncomeVariationPercent = CalculateVariationPercent(totalIncomeByMonth),
             ActiveMembersCount = activeMembersByMonth[^1],
             ActiveMembersVariationPercent = CalculateVariationPercent(activeMembersByMonth),
             InactiveMembersCount = inactiveMembersByMonth[^1],
@@ -70,13 +77,30 @@ public class DashboardController : Controller
             MonthlyCancellationsCount = firstTimeCancellationsByMonth[^1],
             MonthlyCancellationsVariationPercent = CalculateVariationPercent(firstTimeCancellationsByMonth),
             Months = months.Select(GetMonthLabel).ToList(),
-            MonthlyIncomeByMonth = new() { 1_360_000m, 1_415_000m, 1_385_000m, 1_470_000m, 1_425_000m, 1_250_000m },
+            TotalIncomeByMonth = totalIncomeByMonth,
             ActiveMembersByMonth = activeMembersByMonth,
             SignupsByMonth = firstTimeSignupsByMonth,
             CancellationsByMonth = firstTimeCancellationsByMonth
         };
 
         return View(dashboard);
+    }
+
+    private async Task<List<decimal>> GetTotalIncomeByMonthAsync(
+        int organizationId,
+        List<DateTime> months
+    )
+    {
+        var payments = new List<decimal>(months.Count);
+
+        foreach (var month in months)
+        {
+            payments.Add(
+                69000
+            );
+        }
+
+        return payments;
     }
 
     private async Task<List<int>> GetMemberCountsByMonthAsync(
@@ -161,21 +185,25 @@ public class DashboardController : Controller
         return culture.TextInfo.ToTitleCase(abbreviatedMonth);
     }
 
-    private static decimal CalculateVariationPercent(IReadOnlyList<int> counts)
+    private static decimal CalculateVariationPercent<T>(IReadOnlyList<T> values)
+        where T : INumber<T>
     {
-        if (counts.Count < 2)
+        if (values.Count < 2)
         {
-            return 0;
+            return 0m;
         }
 
-        var current = counts[^1];
-        var previous = counts[^2];
+        var current = values[^1];
+        var previous = values[^2];
 
-        if (previous == 0)
+        if (previous == T.Zero)
         {
-            return current == 0 ? 0 : 100;
+            return current == T.Zero ? 0m : 100m;
         }
 
-        return Math.Round(((decimal)(current - previous) / previous) * 100, 1);
+        decimal currentDec = decimal.CreateChecked(current);
+        decimal previousDec = decimal.CreateChecked(previous);
+
+        return Math.Round(((currentDec - previousDec) / previousDec) * 100m, 1);
     }
 }
