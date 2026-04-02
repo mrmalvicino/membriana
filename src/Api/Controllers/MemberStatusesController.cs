@@ -35,7 +35,7 @@ public class MemberStatusesController : ControllerBase
         [FromQuery] MemberStatus status
     )
     {
-        int count = await _memberStatusService.CountMembersWithStatusAsync(year, month, status);
+        int count = await _memberStatusService.CountMembersWithStatusAsync(organizationId, year, month, status);
         var response = new List<AmountResponse> { new AmountResponse(count) };
         return Ok(response);
     }
@@ -52,7 +52,7 @@ public class MemberStatusesController : ControllerBase
         [FromQuery] int month
     )
     {
-        int count = await _memberStatusService.CountFirstTimeSignupsAsync(year, month);
+        int count = await _memberStatusService.CountFirstTimeSignupsAsync(organizationId, year, month);
         var response = new List<AmountResponse> { new AmountResponse(count) };
         return Ok(response);
     }
@@ -69,7 +69,7 @@ public class MemberStatusesController : ControllerBase
         [FromQuery] int month
     )
     {
-        int count = await _memberStatusService.CountFirstTimeCancellationsAsync(year, month);
+        int count = await _memberStatusService.CountFirstTimeCancellationsAsync(organizationId, year, month);
         var response = new List<AmountResponse> { new AmountResponse(count) };
         return Ok(response);
     }

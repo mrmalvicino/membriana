@@ -34,19 +34,18 @@ public class MemberStatusService : IMemberStatusService
     /// a los socios en estado <see cref="MemberStatus.Debtor"/>.
     /// </remarks>
     public async Task<int> CountMembersWithStatusAsync(
+        int organizationId,
         int year,
         int month,
         MemberStatus targetStatus
     )
     {
-        int orgId = await _userService.GetOrganizationIdAsync();
-
         var endOfMonth = new DateTime(year, month, 1)
             .AddMonths(1)
             .AddTicks(-1);
 
-        var members = await _memberRepository.GetAllAsync(orgId);
-        var events = await _memberStatusEventRepository.GetAllAsync(orgId);
+        var members = await _memberRepository.GetAllAsync(organizationId);
+        var events = await _memberStatusEventRepository.GetAllAsync(organizationId);
         var lastStatusByMemberId = new Dictionary<int, MemberStatus>();
 
         // Recorre los eventos en orden cronológico para que el diccionario tenga el último
@@ -87,21 +86,29 @@ public class MemberStatusService : IMemberStatusService
     }
 
     public async Task<int> CountFirstTimeSignupsAsync(
+        int organizationId,
         int year,
         int month
     )
     {
         int count = 0;
-        return 3;
+
+        var events = await _memberStatusEventRepository.GetAllAsync(organizationId);
+
+        return count;
     }
 
     public async Task<int> CountFirstTimeCancellationsAsync(
+        int organizationId,
         int year,
         int month
     )
     {
         int count = 0;
-        return 7;
+
+        var events = await _memberStatusEventRepository.GetAllAsync(organizationId);
+
+        return count;
     }
 
     private bool MatchesDashboardStatus(
