@@ -46,23 +46,33 @@ public class DashboardController : Controller
             MemberStatus.Inactive
         );
 
+        var firstTimeSignupsByMonth = await GetFirstTimeSignupsByMonthAsync(
+            loggedUserContext.OrganizationId,
+            months
+        );
+
+        var firstTimeCancellationsByMonth = await GetFirstTimeCancellationsByMonthAsync(
+            loggedUserContext.OrganizationId,
+            months
+        );
+
         var dashboard = new DashboardViewModel
         {
             OrganizationName = loggedUserContext.OrganizationName,
+            MonthlyIncome = 1_250_000m,
+            MonthlyIncomeVariationPercent = -12.3m,
             ActiveMembersCount = activeMembersByMonth[^1],
             ActiveMembersVariationPercent = CalculateVariationPercent(activeMembersByMonth),
             InactiveMembersCount = inactiveMembersByMonth[^1],
             InactiveMembersVariationPercent = CalculateVariationPercent(inactiveMembersByMonth),
-            MonthlySignupsCount = 18,
+            MonthlySignupsCount = firstTimeSignupsByMonth[^1],
             MonthlySignupsVariationPercent = 20m,
-            MonthlyCancellationsCount = 7,
+            MonthlyCancellationsCount = firstTimeCancellationsByMonth[^1],
             MonthlyCancellationsVariationPercent = 75m,
-            MonthlyIncome = 1_250_000m,
-            MonthlyIncomeVariationPercent = -12.3m,
             Months = months.Select(GetMonthLabel).ToList(),
             ActiveMembersByMonth = activeMembersByMonth,
-            SignupsByMonth = new() { 12, 18, 22, 15, 19, 18 },
-            CancellationsByMonth = new() { 5, 7, 6, 9, 8, 7 }
+            SignupsByMonth = firstTimeSignupsByMonth,
+            CancellationsByMonth = firstTimeCancellationsByMonth
         };
 
         return View(dashboard);
@@ -88,6 +98,47 @@ public class DashboardController : Controller
             );
         }
 
+        return counts;
+    }
+
+    private async Task<List<int>> GetFirstTimeSignupsByMonthAsync(
+        int organizationId,
+        List<DateTime> months
+    )
+    {
+        var counts = new List<int>(months.Count);
+
+        foreach (var month in months)
+        {
+            counts.Add(
+                await _memberStatusApi.CountFirstTimeSignupsAsync(
+                    organizationId,
+                    month.Year,
+                    month.Month
+                )
+            );
+        }
+
+        return counts;
+    }
+
+    private async Task<List<int>> GetFirstTimeCancellationsByMonthAsync(
+        int organizationId,
+        List<DateTime> months
+    )
+    {
+        var counts = new List<int>(months.Count);
+
+        foreach (var month in months)
+        {
+            counts.Add(
+                await _memberStatusApi.CountFirstTimeCancellationsAsync(
+                    organizationId,
+                    month.Year,
+                    month.Month
+                )
+            );
+        }
         return counts;
     }
 

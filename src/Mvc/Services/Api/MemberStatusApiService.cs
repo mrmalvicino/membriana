@@ -25,8 +25,54 @@ public class MemberStatusApiService : IMemberStatusApiService
         MemberStatus status
     )
     {
-        var url =
-            $"{_apiBaseUrl}api/memberstatuses?organizationId={organizationId}&year={year}&month={month}&status={status}";
+        var url = $"{_apiBaseUrl}api/memberstatuses/count-members-with-status" +
+            $"?organizationId={organizationId}&year={year}&month={month}&status={status}";
+
+        var response = await _httpClient.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+
+        var amounts = await response.Content.ReadFromJsonAsync<List<AmountResponse>>();
+        var amount = amounts?.FirstOrDefault();
+
+        if (amount is null)
+        {
+            throw new InvalidOperationException($"Respuesta vacía de {url}");
+        }
+
+        return amount.Amount;
+    }
+
+    public async Task<int> CountFirstTimeSignupsAsync(
+        int organizationId,
+        int year,
+        int month
+    )
+    {
+        var url = $"{_apiBaseUrl}api/memberstatuses/count-first-time-signups" +
+            $"?organizationId={organizationId}&year={year}&month={month}";
+
+        var response = await _httpClient.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+
+        var amounts = await response.Content.ReadFromJsonAsync<List<AmountResponse>>();
+        var amount = amounts?.FirstOrDefault();
+
+        if (amount is null)
+        {
+            throw new InvalidOperationException($"Respuesta vacía de {url}");
+        }
+
+        return amount.Amount;
+    }
+
+    public async Task<int> CountFirstTimeCancellationsAsync(
+        int organizationId,
+        int year,
+        int month
+    )
+    {
+        var url = $"{_apiBaseUrl}api/memberstatuses/count-first-time-cancellations" +
+            $"?organizationId={organizationId}&year={year}&month={month}";
 
         var response = await _httpClient.GetAsync(url);
         response.EnsureSuccessStatusCode();

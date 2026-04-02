@@ -4,6 +4,9 @@ public class DashboardViewModel
 {
     public string OrganizationName { get; set; } = string.Empty;
 
+    public decimal MonthlyIncome { get; set; }
+    public decimal MonthlyIncomeVariationPercent { get; set; }
+
     public int ActiveMembersCount { get; set; }
     public decimal ActiveMembersVariationPercent { get; set; }
 
@@ -15,9 +18,6 @@ public class DashboardViewModel
 
     public int MonthlyCancellationsCount { get; set; }
     public decimal MonthlyCancellationsVariationPercent { get; set; }
-
-    public decimal MonthlyIncome { get; set; }
-    public decimal MonthlyIncomeVariationPercent { get; set; }
 
     public List<string> Months { get; set; } = new();
     public List<int> ActiveMembersByMonth { get; set; } = new();

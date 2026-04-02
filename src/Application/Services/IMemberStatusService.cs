@@ -9,4 +9,14 @@ public interface IMemberStatusService
         int month,
         MemberStatus targetStatus
     );
+
+    Task<int> CountFirstTimeSignupsAsync(
+        int year,
+        int month
+    );
+
+    Task<int> CountFirstTimeCancellationsAsync(
+        int year,
+        int month
+    );
 }

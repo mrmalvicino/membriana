@@ -86,6 +86,24 @@ public class MemberStatusService : IMemberStatusService
         return count;
     }
 
+    public async Task<int> CountFirstTimeSignupsAsync(
+        int year,
+        int month
+    )
+    {
+        int count = 0;
+        return 3;
+    }
+
+    public async Task<int> CountFirstTimeCancellationsAsync(
+        int year,
+        int month
+    )
+    {
+        int count = 0;
+        return 7;
+    }
+
     private bool MatchesDashboardStatus(
         MemberStatus actualStatus,
         MemberStatus targetStatus
