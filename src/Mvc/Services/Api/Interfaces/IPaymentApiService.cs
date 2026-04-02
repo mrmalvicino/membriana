@@ -9,4 +9,5 @@ public interface IPaymentApiService
     Task<PaymentViewModel?> CreateAsync(PaymentViewModel payment);
     Task<PaymentViewModel?> UpdateAsync(PaymentViewModel payment);
     Task<bool> DeleteAsync(int id);
+    Task<decimal> GetMonthlyIncomeAsync(int organizationId, int year, int month);
 }

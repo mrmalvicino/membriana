@@ -15,14 +15,17 @@ namespace Mvc.Areas.Admin.Controllers;
 [JwtAuthorizationFilter]
 public class DashboardController : Controller
 {
+    private readonly IPaymentApiService _paymentApi;
     private readonly IMemberStatusApiService _memberStatusApi;
     private readonly IUserApiService _userApi;
 
     public DashboardController(
+        IPaymentApiService paymentApi,
         IUserApiService userService,
         IMemberStatusApiService memberStatusApi
     )
     {
+        _paymentApi = paymentApi;
         _userApi = userService;
         _memberStatusApi = memberStatusApi;
     }
@@ -96,7 +99,11 @@ public class DashboardController : Controller
         foreach (var month in months)
         {
             payments.Add(
-                69000
+                await _paymentApi.GetMonthlyIncomeAsync(
+                    organizationId,
+                    month.Year,
+                    month.Year
+                )
             );
         }
 

@@ -1,8 +1,8 @@
-﻿using Api.Filters;
-using Contracts.Dtos.Payment;
+using Api.Filters;
 using Application.Repositories;
 using Application.Services;
 using AutoMapper;
+using Contracts.Dtos.Payment;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,16 +21,19 @@ public class PaymentsController : BaseController<
     PaymentUpdateDto
 >
 {
+    private readonly IPaymentService _paymentService;
+
     /// <summary>
     /// Constructor principal.
     /// </summary>
     public PaymentsController(
         IPaymentRepository repository,
+        IPaymentService paymentService,
         IUserService userService,
         IMapper mapper
     ) : base(repository, userService, mapper)
     {
-
+        _paymentService = paymentService;
     }
 
     /// <summary>
@@ -61,5 +64,21 @@ public class PaymentsController : BaseController<
     public override async Task<IActionResult> Delete(int id)
     {
         return await base.Delete(id);
+    }
+
+    /// <summary>
+    /// Endpoint para obtener los pagos que una organización recibió durante un mes de cierto año.
+    /// </summary>
+    [HttpGet("get-monthly-income")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ServiceFilter(typeof(TenancyQueryFilter))]
+    public async Task<ActionResult<MonthlyIncomeResponseDto>> GetMonthlyIncome(
+        [FromQuery] int organizationId,
+        [FromQuery] int year,
+        [FromQuery] int month
+    )
+    {
+        var payments = await _paymentService.GetMonthlyIncomeAsync(organizationId, year, month);
+        return Ok(new MonthlyIncomeResponseDto(payments));
     }
 }

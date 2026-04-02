@@ -7,5 +7,5 @@ namespace Application.Repositories;
 /// </summary>
 public interface IPaymentRepository : IBaseRepository<Payment>
 {
-
+    Task<decimal> GetMonthlyIncomeAsync(int organizationId, int year, int month);
 }

@@ -87,4 +87,21 @@ public class PaymentApiService : IPaymentApiService
         var response = await _httpClient.DeleteAsync(url);
         return response.IsSuccessStatusCode;
     }
+
+    public async Task<decimal> GetMonthlyIncomeAsync(int organizationId, int year, int month)
+    {
+        var url = $"{_apiBaseUrl}api/payments/get-monthly-income" +
+            $"?organizationId={organizationId}&year={year}&month={month}";
+
+        var response = await _httpClient.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+        var dto = await response.Content.ReadFromJsonAsync<MonthlyIncomeResponseDto>();
+
+        if (dto is null)
+        {
+            throw new InvalidOperationException($"Respuesta vacía de {url}");
+        }
+
+        return dto.Amount;
+    }
 }
