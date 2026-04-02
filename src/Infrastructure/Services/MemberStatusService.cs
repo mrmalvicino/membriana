@@ -85,30 +85,45 @@ public class MemberStatusService : IMemberStatusService
         return count;
     }
 
+    /// <summary>
+    /// Obtiene la cantidad de miembros que se dieron de alta por primera vez en un mes.
+    /// </summary>
     public async Task<int> CountFirstTimeSignupsAsync(
         int organizationId,
         int year,
         int month
     )
     {
-        int count = 0;
-
         var events = await _memberStatusEventRepository.GetAllAsync(organizationId);
-
-        return count;
+        return CountFirstStatusTransitionsInMonth(events, year, month, MemberStatus.Active);
     }
 
+    /// <summary>
+    /// Obtiene la cantidad de miembros que se dieron de baja por primera vez en un mes.
+    /// </summary>
     public async Task<int> CountFirstTimeCancellationsAsync(
         int organizationId,
         int year,
         int month
     )
     {
-        int count = 0;
-
         var events = await _memberStatusEventRepository.GetAllAsync(organizationId);
 
-        return count;
+        return CountFirstStatusTransitionsInMonth(events, year, month, MemberStatus.Inactive);
+    }
+
+    private static int CountFirstStatusTransitionsInMonth(
+        IEnumerable<Domain.Entities.MemberStatusEvent> events,
+        int year,
+        int month,
+        MemberStatus targetStatus
+    )
+    {
+        return events
+            .Where(e => e.NewStatus == targetStatus)
+            .GroupBy(e => e.MemberId)
+            .Select(group => group.OrderBy(e => e.ChangedAtDateTime).First())
+            .Count(e => e.ChangedAtDateTime.Year == year && e.ChangedAtDateTime.Month == month);
     }
 
     private bool MatchesDashboardStatus(
