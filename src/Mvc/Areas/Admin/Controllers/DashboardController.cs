@@ -102,7 +102,7 @@ public class DashboardController : Controller
                 await _paymentApi.GetMonthlyIncomeAsync(
                     organizationId,
                     month.Year,
-                    month.Year
+                    month.Month
                 )
             );
         }
