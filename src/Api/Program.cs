@@ -13,15 +13,11 @@ using System.Text;
 namespace Api;
 
 /// <summary>
-/// Punto de entrada de la aplicación y bootstrapper de la API.
+/// Punto de entrada de la aplicaciï¿½n y bootstrapper de la API.
 /// Configura el contenedor de dependencias (DI), middleware pipeline y endpoints.
 /// </summary>
 public class Program
 {
-    /// <summary>
-    /// Método principal que inicializa y ejecuta la aplicación web.
-    /// </summary>
-    /// <param name="args">Argumentos de línea de comandos.</param>
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
@@ -205,6 +201,7 @@ public class Program
             app.UseSwaggerUI();
         }
 
+        app.UseSerilogRequestLogging();
         app.UseHttpsRedirection();
         app.UseCors("AllowMvc");
         app.UseAuthentication();
