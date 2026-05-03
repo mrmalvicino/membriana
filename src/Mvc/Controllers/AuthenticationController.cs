@@ -33,17 +33,25 @@ public class AuthenticationController : Controller
             return View(loginViewModel);
         }
 
-        var loginResponse = await _authenticationApi.LoginAsync(loginViewModel);
-
-        if (loginResponse is null || string.IsNullOrWhiteSpace(loginResponse.Token))
+        try
         {
-            ModelState.AddModelError("", "Credenciales inválidas.");
+            var loginResponse = await _authenticationApi.LoginAsync(loginViewModel);
+
+            if (loginResponse is null || string.IsNullOrWhiteSpace(loginResponse.Token))
+            {
+                ModelState.AddModelError("", "No se recibió una respuesta válida.");
+                return View(loginViewModel);
+            }
+
+            _cookieService.SetJwtCookie(loginResponse.Token);
+
+            return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+        }
+        catch (ApplicationException ex)
+        {
+            ModelState.AddModelError("", ex.Message);
             return View(loginViewModel);
         }
-
-        _cookieService.SetJwtCookie(loginResponse.Token);
-
-        return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
     }
 
     [HttpPost]

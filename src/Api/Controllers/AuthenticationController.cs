@@ -1,6 +1,7 @@
 ﻿using Application.Repositories;
 using Application.Services;
 using Contracts.Dtos.Authentication;
+using Contracts.Dtos.Common;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -35,17 +36,20 @@ public class AuthenticationController : ControllerBase
 
         if (user == null)
         {
-            return Unauthorized("Mail inválido.");
+            return Unauthorized(CreateErrorResponse("Credenciales inválidas."));
         }
 
         if (!await _unitOfWork.IdentityService.PasswordIsValid(user, dto.Password))
         {
-            return Unauthorized("Contraseña inválida.");
+            return Unauthorized(CreateErrorResponse("Credenciales inválidas."));
         }
 
         if (!user.EmailConfirmed)
         {
-            return Forbid("Cuenta no confirmada.");
+            return StatusCode(
+                StatusCodes.Status403Forbidden,
+                CreateErrorResponse("Cuenta no confirmada.")
+            );
         }
 
         var token = await _userService.GenerateTokenAsync(user);
@@ -64,7 +68,7 @@ public class AuthenticationController : ControllerBase
     {
         if (await _unitOfWork.IdentityService.FindByEmail(dto.UserEmail) != null)
         {
-            return Unauthorized("Mail de usuario en uso.");
+            return Conflict(CreateErrorResponse("Mail de usuario en uso."));
         }
 
         await _unitOfWork.BeginTransactionAsync();
@@ -97,8 +101,8 @@ public class AuthenticationController : ControllerBase
             if (!result.Succeeded)
             {
                 await _unitOfWork.RollbackAsync();
-                var errors = result.Errors.Select(e => e.Description);
-                return BadRequest(new { errors });
+                var errors = result.Errors.Select(e => e.Description).ToArray();
+                return BadRequest(CreateErrorResponse(errors));
             }
 
             await _unitOfWork.IdentityService.AddToRole(user, Domain.Enums.AppRole.Admin);
@@ -126,10 +130,14 @@ public class AuthenticationController : ControllerBase
                 }
             );
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             await _unitOfWork.RollbackAsync();
-            return StatusCode(500, ex.Message);
+
+            return StatusCode(
+                StatusCodes.Status500InternalServerError,
+                CreateErrorResponse("Ocurrió un error inesperado al registrar la cuenta.")
+            );
         }
     }
 
@@ -251,5 +259,13 @@ public class AuthenticationController : ControllerBase
                 Message = "Email confirmado correctamente."
             }
         );
+    }
+
+    private static ErrorResponseDto CreateErrorResponse(params string[] errors)
+    {
+        return new ErrorResponseDto
+        {
+            Errors = errors.ToList()
+        };
     }
 }
