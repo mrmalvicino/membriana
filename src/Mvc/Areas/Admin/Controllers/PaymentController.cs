@@ -65,9 +65,16 @@ public class PaymentController : Controller
     {
         if (ModelState.IsValid)
         {
-            payment.OrganizationId = await _userApi.GetOrganizationIdAsync();
-            await _paymentApi.CreateAsync(payment);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                payment.OrganizationId = await _userApi.GetOrganizationIdAsync();
+                await _paymentApi.CreateAsync(payment);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (ApplicationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
         }
 
         var organizationId = await _userApi.GetOrganizationIdAsync();
@@ -103,8 +110,15 @@ public class PaymentController : Controller
 
         if (ModelState.IsValid)
         {
-            await _paymentApi.UpdateAsync(payment);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await _paymentApi.UpdateAsync(payment);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (ApplicationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
         }
 
         await SetViewBagMembers(payment.OrganizationId, payment.MemberId);

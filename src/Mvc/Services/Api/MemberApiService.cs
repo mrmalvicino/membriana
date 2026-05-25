@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.Member;
 using Mvc.Areas.Admin.ViewModels;
+using Mvc.Services.Api.Helpers;
 using Mvc.Services.Api.Interfaces;
 
 namespace Mvc.Services.Api;
@@ -38,7 +39,9 @@ public class MemberApiService : IMemberApiService
 
         if (!response.IsSuccessStatusCode)
         {
-            return null;
+            throw new ApplicationException(
+                await ApiErrorMessageReader.ReadAsync(response, "No se pudo crear el socio.")
+            );
         }
 
         var readDto = await response.Content.ReadFromJsonAsync<MemberReadDto>();
@@ -59,7 +62,9 @@ public class MemberApiService : IMemberApiService
 
         if (!response.IsSuccessStatusCode)
         {
-            return null;
+            throw new ApplicationException(
+                await ApiErrorMessageReader.ReadAsync(response, "No se pudo actualizar el socio.")
+            );
         }
 
         var readDto = await response.Content.ReadFromJsonAsync<MemberReadDto>();

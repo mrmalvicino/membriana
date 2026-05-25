@@ -67,9 +67,16 @@ public class MemberController : Controller
     {
         if (ModelState.IsValid)
         {
-            member.OrganizationId = await _userApi.GetOrganizationIdAsync();
-            await _memberApi.CreateAsync(member);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                member.OrganizationId = await _userApi.GetOrganizationIdAsync();
+                await _memberApi.CreateAsync(member);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (ApplicationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
         }
 
         var userOrgId = await _userApi.GetOrganizationIdAsync();
@@ -106,8 +113,15 @@ public class MemberController : Controller
 
         if (ModelState.IsValid)
         {
-            await _memberApi.UpdateAsync(member);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await _memberApi.UpdateAsync(member);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (ApplicationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
         }
 
         await SetViewBagMembershipPlans(member.OrganizationId, member.MembershipPlan?.Id);

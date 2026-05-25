@@ -1,6 +1,6 @@
 using AutoMapper;
 using Contracts.Dtos.Authentication;
-using Contracts.Dtos.Common;
+using Mvc.Services.Api.Helpers;
 using Mvc.Services.Api.Interfaces;
 using Mvc.ViewModels;
 using System.Text;
@@ -39,7 +39,9 @@ public class AuthenticationApiService : IAuthenticationApiService
 
         if (!response.IsSuccessStatusCode)
         {
-            throw new ApplicationException(await ReadErrorMessageAsync(response, "Credenciales inválidas."));
+            throw new ApplicationException(
+                await ApiErrorMessageReader.ReadAsync(response, "Credenciales inválidas.")
+            );
         }
 
         var json = await response.Content.ReadAsStringAsync();
@@ -69,7 +71,9 @@ public class AuthenticationApiService : IAuthenticationApiService
 
         if (!response.IsSuccessStatusCode)
         {
-            throw new ApplicationException(await ReadErrorMessageAsync(response, "Datos inválidos"));
+            throw new ApplicationException(
+                await ApiErrorMessageReader.ReadAsync(response, "Datos inválidos")
+            );
         }
 
         var json = await response.Content.ReadAsStringAsync();
@@ -166,37 +170,4 @@ public class AuthenticationApiService : IAuthenticationApiService
         };
     }
 
-    private async Task<string> ReadErrorMessageAsync(
-        HttpResponseMessage response,
-        string fallbackMessage
-    )
-    {
-        var errorContent = await response.Content.ReadAsStringAsync();
-
-        if (string.IsNullOrWhiteSpace(errorContent))
-        {
-            return fallbackMessage;
-        }
-
-        try
-        {
-            var errorResponse = JsonSerializer.Deserialize<ErrorResponseDto>(
-                errorContent,
-                new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                }
-            );
-
-            if (errorResponse?.Errors is { Count: > 0 })
-            {
-                return string.Join(", ", errorResponse.Errors);
-            }
-        }
-        catch (JsonException)
-        {
-        }
-
-        return errorContent;
-    }
 }

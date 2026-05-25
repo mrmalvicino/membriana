@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.Payment;
 using Mvc.Areas.Admin.ViewModels;
+using Mvc.Services.Api.Helpers;
 using Mvc.Services.Api.Interfaces;
 
 namespace Mvc.Services.Api;
@@ -38,7 +39,9 @@ public class PaymentApiService : IPaymentApiService
 
         if (!response.IsSuccessStatusCode)
         {
-            return null;
+            throw new ApplicationException(
+                await ApiErrorMessageReader.ReadAsync(response, "No se pudo registrar el pago.")
+            );
         }
 
         var readDto = await response.Content.ReadFromJsonAsync<PaymentReadDto>();
@@ -59,7 +62,9 @@ public class PaymentApiService : IPaymentApiService
 
         if (!response.IsSuccessStatusCode)
         {
-            return null;
+            throw new ApplicationException(
+                await ApiErrorMessageReader.ReadAsync(response, "No se pudo actualizar el pago.")
+            );
         }
 
         var readDto = await response.Content.ReadFromJsonAsync<PaymentReadDto>();

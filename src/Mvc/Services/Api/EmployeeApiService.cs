@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.Employee;
 using Mvc.Areas.Admin.ViewModels;
+using Mvc.Services.Api.Helpers;
 using Mvc.Services.Api.Interfaces;
 
 namespace Mvc.Services.Api;
@@ -38,7 +39,9 @@ public class EmployeeApiService : IEmployeeApiService
 
         if (!response.IsSuccessStatusCode)
         {
-            return null;
+            throw new ApplicationException(
+                await ApiErrorMessageReader.ReadAsync(response, "No se pudo crear el empleado.")
+            );
         }
 
         var readDto = await response.Content.ReadFromJsonAsync<EmployeeReadDto>();
@@ -59,7 +62,9 @@ public class EmployeeApiService : IEmployeeApiService
 
         if (!response.IsSuccessStatusCode)
         {
-            return null;
+            throw new ApplicationException(
+                await ApiErrorMessageReader.ReadAsync(response, "No se pudo actualizar el empleado.")
+            );
         }
 
         var readDto = await response.Content.ReadFromJsonAsync<EmployeeReadDto>();

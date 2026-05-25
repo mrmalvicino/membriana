@@ -60,12 +60,17 @@ public class EmployeeController : Controller
     {
         if (ModelState.IsValid)
         {
-            employee.OrganizationId = await _userApi.GetOrganizationIdAsync();
-            await _employeeApi.CreateAsync(employee);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                employee.OrganizationId = await _userApi.GetOrganizationIdAsync();
+                await _employeeApi.CreateAsync(employee);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (ApplicationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
         }
-
-        var userOrgId = await _userApi.GetOrganizationIdAsync();
 
         return View(employee);
     }
@@ -96,8 +101,15 @@ public class EmployeeController : Controller
 
         if (ModelState.IsValid)
         {
-            await _employeeApi.UpdateAsync(employee);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await _employeeApi.UpdateAsync(employee);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (ApplicationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
         }
 
         return View(employee);
