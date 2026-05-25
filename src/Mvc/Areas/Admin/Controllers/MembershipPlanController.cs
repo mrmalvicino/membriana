@@ -2,7 +2,7 @@
 using Mvc.Areas.Admin.ViewModels;
 using Mvc.Exceptions;
 using Mvc.Filters;
-using Mvc.Services.Api.Interfaces;
+using Mvc.Clients.Interfaces;
 
 namespace Mvc.Areas.Admin.Controllers;
 
@@ -10,20 +10,20 @@ namespace Mvc.Areas.Admin.Controllers;
 [JwtAuthorizationFilter]
 public class MembershipPlanController : Controller
 {
-    private readonly IMembershipPlanApiService _membershipPlanApi;
-    private readonly IUserApiService _userApi;
+    private readonly IMembershipPlanClient _membershipPlanClient;
+    private readonly IUserClient _userClient;
 
-    public MembershipPlanController(IMembershipPlanApiService membershipPlanService, IUserApiService userService)
+    public MembershipPlanController(IMembershipPlanClient membershipPlanClient, IUserClient userClient)
     {
-        _membershipPlanApi = membershipPlanService;
-        _userApi = userService;
+        _membershipPlanClient = membershipPlanClient;
+        _userClient = userClient;
     }
 
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        int organizationId = await _userApi.GetOrganizationIdAsync();
-        var membershipPlans = await _membershipPlanApi.GetAllAsync(organizationId);
+        int organizationId = await _userClient.GetOrganizationIdAsync();
+        var membershipPlans = await _membershipPlanClient.GetAllAsync(organizationId);
         return View(membershipPlans);
     }
 
@@ -35,14 +35,14 @@ public class MembershipPlanController : Controller
             return NotFound();
         }
 
-        var membershipPlan = await _membershipPlanApi.GetByIdAsync(id.Value);
+        var membershipPlan = await _membershipPlanClient.GetByIdAsync(id.Value);
 
         if (membershipPlan == null)
         {
             return NotFound();
         }
 
-        if (membershipPlan.OrganizationId != await _userApi.GetOrganizationIdAsync())
+        if (membershipPlan.OrganizationId != await _userClient.GetOrganizationIdAsync())
         {
             return NotFound();
         }
@@ -61,8 +61,8 @@ public class MembershipPlanController : Controller
     {
         if (ModelState.IsValid)
         {
-            membershipPlan.OrganizationId = await _userApi.GetOrganizationIdAsync();
-            await _membershipPlanApi.CreateAsync(membershipPlan);
+            membershipPlan.OrganizationId = await _userClient.GetOrganizationIdAsync();
+            await _membershipPlanClient.CreateAsync(membershipPlan);
             return RedirectToAction(nameof(Index));
         }
 
@@ -77,14 +77,14 @@ public class MembershipPlanController : Controller
             return NotFound();
         }
 
-        var membershipPlan = await _membershipPlanApi.GetByIdAsync(id.Value);
+        var membershipPlan = await _membershipPlanClient.GetByIdAsync(id.Value);
 
         if (membershipPlan == null)
         {
             return NotFound();
         }
 
-        if (membershipPlan.OrganizationId != await _userApi.GetOrganizationIdAsync())
+        if (membershipPlan.OrganizationId != await _userClient.GetOrganizationIdAsync())
         {
             return NotFound();
         }
@@ -98,8 +98,8 @@ public class MembershipPlanController : Controller
     {
         if (ModelState.IsValid)
         {
-            membershipPlan.OrganizationId = await _userApi.GetOrganizationIdAsync();
-            await _membershipPlanApi.UpdateAsync(membershipPlan);
+            membershipPlan.OrganizationId = await _userClient.GetOrganizationIdAsync();
+            await _membershipPlanClient.UpdateAsync(membershipPlan);
             return RedirectToAction(nameof(Index));
         }
 
@@ -114,14 +114,14 @@ public class MembershipPlanController : Controller
             return NotFound();
         }
 
-        var membershipPlan = await _membershipPlanApi.GetByIdAsync(id.Value);
+        var membershipPlan = await _membershipPlanClient.GetByIdAsync(id.Value);
 
         if (membershipPlan == null)
         {
             return NotFound();
         }
 
-        if (membershipPlan.OrganizationId != await _userApi.GetOrganizationIdAsync())
+        if (membershipPlan.OrganizationId != await _userClient.GetOrganizationIdAsync())
         {
             return NotFound();
         }
@@ -135,7 +135,7 @@ public class MembershipPlanController : Controller
     {
         try
         {
-            await _membershipPlanApi.DeleteAsync(id);
+            await _membershipPlanClient.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
         catch (BusinessRuleException ex)

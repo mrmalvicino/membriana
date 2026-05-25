@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Mvc.Areas.Admin.ViewModels;
 using Mvc.Filters;
-using Mvc.Services.Api.Interfaces;
+using Mvc.Clients.Interfaces;
 
 namespace Mvc.Areas.Admin.Controllers;
 
@@ -10,45 +10,45 @@ namespace Mvc.Areas.Admin.Controllers;
 [JwtAuthorizationFilter]
 public class MemberController : Controller
 {
-    private readonly IMemberApiService _memberApi;
-    private readonly IMembershipPlanApiService _membershipPlanApi;
-    private readonly IUserApiService _userApi;
+    private readonly IMemberClient _memberClient;
+    private readonly IMembershipPlanClient _membershipPlanClient;
+    private readonly IUserClient _userClient;
 
     public MemberController(
-        IMemberApiService memberService,
-        IMembershipPlanApiService membershipPlanService,
-        IUserApiService userService
+        IMemberClient memberClient,
+        IMembershipPlanClient membershipPlanClient,
+        IUserClient userClient
     )
     {
-        _memberApi = memberService;
-        _membershipPlanApi = membershipPlanService;
-        _userApi = userService;
+        _memberClient = memberClient;
+        _membershipPlanClient = membershipPlanClient;
+        _userClient = userClient;
     }
 
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var organizationId = await _userApi.GetOrganizationIdAsync();
-        var members = await _memberApi.GetAllAsync(organizationId);
+        var organizationId = await _userClient.GetOrganizationIdAsync();
+        var members = await _memberClient.GetAllAsync(organizationId);
         return View(members);
     }
 
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
-        var member = await _memberApi.GetByIdAsync(id);
+        var member = await _memberClient.GetByIdAsync(id);
 
         if (member == null)
         {
             return NotFound();
         }
 
-        if (member.OrganizationId != await _userApi.GetOrganizationIdAsync())
+        if (member.OrganizationId != await _userClient.GetOrganizationIdAsync())
         {
             return NotFound();
         }
 
-        member.MembershipPlan = await _membershipPlanApi.GetByIdAsync(member.MembershipPlanId);
+        member.MembershipPlan = await _membershipPlanClient.GetByIdAsync(member.MembershipPlanId);
 
         return View(member);
     }
@@ -56,7 +56,7 @@ public class MemberController : Controller
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        var userOrgId = await _userApi.GetOrganizationIdAsync();
+        var userOrgId = await _userClient.GetOrganizationIdAsync();
         await SetViewBagMembershipPlans(userOrgId);
         return View();
     }
@@ -69,8 +69,8 @@ public class MemberController : Controller
         {
             try
             {
-                member.OrganizationId = await _userApi.GetOrganizationIdAsync();
-                await _memberApi.CreateAsync(member);
+                member.OrganizationId = await _userClient.GetOrganizationIdAsync();
+                await _memberClient.CreateAsync(member);
                 return RedirectToAction(nameof(Index));
             }
             catch (ApplicationException ex)
@@ -79,7 +79,7 @@ public class MemberController : Controller
             }
         }
 
-        var userOrgId = await _userApi.GetOrganizationIdAsync();
+        var userOrgId = await _userClient.GetOrganizationIdAsync();
         await SetViewBagMembershipPlans(userOrgId);
 
         return View(member);
@@ -88,14 +88,14 @@ public class MemberController : Controller
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
-        var member = await _memberApi.GetByIdAsync(id);
+        var member = await _memberClient.GetByIdAsync(id);
 
         if (member == null)
         {
             return NotFound();
         }
 
-        if (member.OrganizationId != await _userApi.GetOrganizationIdAsync())
+        if (member.OrganizationId != await _userClient.GetOrganizationIdAsync())
         {
             return NotFound();
         }
@@ -109,13 +109,13 @@ public class MemberController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(MemberViewModel member)
     {
-        member.OrganizationId = await _userApi.GetOrganizationIdAsync();
+        member.OrganizationId = await _userClient.GetOrganizationIdAsync();
 
         if (ModelState.IsValid)
         {
             try
             {
-                await _memberApi.UpdateAsync(member);
+                await _memberClient.UpdateAsync(member);
                 return RedirectToAction(nameof(Index));
             }
             catch (ApplicationException ex)
@@ -132,14 +132,14 @@ public class MemberController : Controller
     [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
-        var member = await _memberApi.GetByIdAsync(id);
+        var member = await _memberClient.GetByIdAsync(id);
 
         if (member == null)
         {
             return NotFound();
         }
 
-        if (member.OrganizationId != await _userApi.GetOrganizationIdAsync())
+        if (member.OrganizationId != await _userClient.GetOrganizationIdAsync())
         {
             return NotFound();
         }
@@ -151,13 +151,13 @@ public class MemberController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        await _memberApi.DeleteAsync(id);
+        await _memberClient.DeleteAsync(id);
         return RedirectToAction(nameof(Index));
     }
 
     private async Task SetViewBagMembershipPlans(int organizationId, int? selectedPlanId = null)
     {
-        var membershipPlans = await _membershipPlanApi.GetAllAsync(organizationId);
+        var membershipPlans = await _membershipPlanClient.GetAllAsync(organizationId);
         ViewBag.MembershipPlans = new SelectList(membershipPlans, "Id", "Name", selectedPlanId);
     }
 }

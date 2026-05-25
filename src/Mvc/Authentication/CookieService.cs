@@ -1,6 +1,6 @@
-﻿using Mvc.Services.Utilities.Interfaces;
+using Mvc.Authentication.Interfaces;
 
-namespace Mvc.Services.Utilities;
+namespace Mvc.Authentication;
 
 public class CookieService : ICookieService
 {

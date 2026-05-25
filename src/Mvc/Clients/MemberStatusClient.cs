@@ -1,15 +1,15 @@
 ﻿using Contracts.Dtos.MemberStatus;
 using Contracts.Enums;
-using Mvc.Services.Api.Interfaces;
+using Mvc.Clients.Interfaces;
 
-namespace Mvc.Services.Api;
+namespace Mvc.Clients;
 
-public class MemberStatusApiService : IMemberStatusApiService
+public class MemberStatusClient : IMemberStatusClient
 {
     private readonly string _apiBaseUrl;
     private readonly HttpClient _httpClient;
 
-    public MemberStatusApiService(
+    public MemberStatusClient(
         IConfiguration configuration,
         HttpClient httpClient
     )

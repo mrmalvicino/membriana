@@ -1,18 +1,18 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.Employee;
 using Mvc.Areas.Admin.ViewModels;
-using Mvc.Services.Api.Helpers;
-using Mvc.Services.Api.Interfaces;
+using Mvc.Clients.Helpers;
+using Mvc.Clients.Interfaces;
 
-namespace Mvc.Services.Api;
+namespace Mvc.Clients;
 
-public class EmployeeApiService : IEmployeeApiService
+public class EmployeeClient : IEmployeeClient
 {
     private readonly string _apiBaseUrl;
     private readonly HttpClient _httpClient;
     private readonly IMapper _mapper;
 
-    public EmployeeApiService(
+    public EmployeeClient(
         IConfiguration configuration,
         HttpClient httpClient,
         IMapper mapper

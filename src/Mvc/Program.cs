@@ -1,22 +1,21 @@
-using Mvc.Services.Api;
-using Mvc.Services.Api.Interfaces;
-using Mvc.Services.Handlers;
-using Mvc.Services.Utilities;
-using Mvc.Services.Utilities.Interfaces;
+using Mvc.Authentication;
+using Mvc.Authentication.Interfaces;
+using Mvc.Clients;
+using Mvc.Clients.Interfaces;
 using System.Globalization;
 
 namespace Mvc;
 
 /// <summary>
-/// Punto de entrada de la aplicación y bootstrapper del frontend MVC.
+/// Punto de entrada de la aplicaciï¿½n y bootstrapper del frontend MVC.
 /// Configura el contenedor de dependencias (DI), middleware pipeline y rutas.
 /// </summary>
 public class Program
 {
     /// <summary>
-    /// Método principal que inicializa y ejecuta la aplicación web.
+    /// Mï¿½todo principal que inicializa y ejecuta la aplicaciï¿½n web.
     /// </summary>
-    /// <param name="args">Argumentos de línea de comandos.</param>
+    /// <param name="args">Argumentos de lï¿½nea de comandos.</param>
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
@@ -26,7 +25,7 @@ public class Program
         #region Authentication
 
         builder.Services.AddHttpContextAccessor();
-        builder.Services.AddHttpClient<IAuthenticationApiService, AuthenticationApiService>();
+        builder.Services.AddHttpClient<IAuthenticationClient, AuthenticationClient>();
         builder.Services.AddScoped<ICookieService, CookieService>();
 
         builder.Services.ConfigureApplicationCookie(
@@ -43,22 +42,22 @@ public class Program
 
         builder.Services.AddTransient<JwtCookieHandler>();
 
-        builder.Services.AddHttpClient<IEmployeeApiService, EmployeeApiService>()
+        builder.Services.AddHttpClient<IEmployeeClient, EmployeeClient>()
             .AddHttpMessageHandler<JwtCookieHandler>();
 
-        builder.Services.AddHttpClient<IMemberApiService, MemberApiService>()
+        builder.Services.AddHttpClient<IMemberClient, MemberClient>()
             .AddHttpMessageHandler<JwtCookieHandler>();
 
-        builder.Services.AddHttpClient<IMembershipPlanApiService, MembershipPlanApiService>()
+        builder.Services.AddHttpClient<IMembershipPlanClient, MembershipPlanClient>()
             .AddHttpMessageHandler<JwtCookieHandler>();
 
-        builder.Services.AddHttpClient<IPaymentApiService, PaymentApiService>()
+        builder.Services.AddHttpClient<IPaymentClient, PaymentClient>()
             .AddHttpMessageHandler<JwtCookieHandler>();
 
-        builder.Services.AddHttpClient<IMemberStatusApiService, MemberStatusApiService>()
+        builder.Services.AddHttpClient<IMemberStatusClient, MemberStatusClient>()
             .AddHttpMessageHandler<JwtCookieHandler>();
 
-        builder.Services.AddHttpClient<IUserApiService, UserApiService>()
+        builder.Services.AddHttpClient<IUserClient, UserClient>()
             .AddHttpMessageHandler<JwtCookieHandler>();
 
         #endregion

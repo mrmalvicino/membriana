@@ -1,20 +1,20 @@
 using AutoMapper;
 using Contracts.Dtos.Authentication;
-using Mvc.Services.Api.Helpers;
-using Mvc.Services.Api.Interfaces;
+using Mvc.Clients.Helpers;
+using Mvc.Clients.Interfaces;
 using Mvc.ViewModels;
 using System.Text;
 using System.Text.Json;
 
-namespace Mvc.Services.Api;
+namespace Mvc.Clients;
 
-public class AuthenticationApiService : IAuthenticationApiService
+public class AuthenticationClient : IAuthenticationClient
 {
     private readonly string _apiBaseUrl;
     private readonly HttpClient _httpClient;
     private readonly IMapper _mapper;
 
-    public AuthenticationApiService(
+    public AuthenticationClient(
         IConfiguration configuration,
         HttpClient httpClient,
         IMapper mapper

@@ -1,21 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Mvc.Services.Api.Interfaces;
-using Mvc.Services.Utilities.Interfaces;
+using Mvc.Authentication.Interfaces;
+using Mvc.Clients.Interfaces;
 using Mvc.ViewModels;
 
 namespace Mvc.Controllers;
 
 public class AuthenticationController : Controller
 {
-    private readonly IAuthenticationApiService _authenticationApi;
+    private readonly IAuthenticationClient _authenticationClient;
     private readonly ICookieService _cookieService;
 
     public AuthenticationController(
-        IAuthenticationApiService authenticationApi,
+        IAuthenticationClient authenticationClient,
         ICookieService cookieService
     )
     {
-        _authenticationApi = authenticationApi;
+        _authenticationClient = authenticationClient;
         _cookieService = cookieService;
     }
 
@@ -35,7 +35,7 @@ public class AuthenticationController : Controller
 
         try
         {
-            var loginResponse = await _authenticationApi.LoginAsync(loginViewModel);
+            var loginResponse = await _authenticationClient.LoginAsync(loginViewModel);
 
             if (loginResponse is null || string.IsNullOrWhiteSpace(loginResponse.Token))
             {
@@ -78,7 +78,7 @@ public class AuthenticationController : Controller
 
         try
         {
-            var registerResponseDto = await _authenticationApi.RegisterAsync(registerViewModel);
+            var registerResponseDto = await _authenticationClient.RegisterAsync(registerViewModel);
 
             if (registerResponseDto is null)
             {
@@ -109,7 +109,7 @@ public class AuthenticationController : Controller
 
         try
         {
-            var response = await _authenticationApi.ResendConfirmationAsync(resendConfirmationViewModel);
+            var response = await _authenticationClient.ResendConfirmationAsync(resendConfirmationViewModel);
 
             TempData["EmailSendIsSuccess"] = true;
             TempData["EmailSendMessage"] = response?.Message ?? "Te reenviamos el correo de confirmación.";
@@ -156,7 +156,7 @@ public class AuthenticationController : Controller
 
         try
         {
-            var response = await _authenticationApi.ConfirmEmailAsync(
+            var response = await _authenticationClient.ConfirmEmailAsync(
                 new ConfirmEmailViewModel
                 {
                     UserId = userId,

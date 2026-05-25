@@ -1,8 +1,8 @@
 ﻿using Mvc.Areas.Admin.ViewModels;
 
-namespace Mvc.Services.Api.Interfaces;
+namespace Mvc.Clients.Interfaces;
 
-public interface IEmployeeApiService
+public interface IEmployeeClient
 {
     Task<List<EmployeeViewModel>> GetAllAsync(int organizationId);
     Task<EmployeeViewModel?> GetByIdAsync(int id);

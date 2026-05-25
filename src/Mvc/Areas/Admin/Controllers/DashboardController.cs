@@ -2,7 +2,7 @@ using Contracts.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Mvc.Areas.Admin.ViewModels;
 using Mvc.Filters;
-using Mvc.Services.Api.Interfaces;
+using Mvc.Clients.Interfaces;
 using System.Globalization;
 using System.Numerics;
 
@@ -15,19 +15,19 @@ namespace Mvc.Areas.Admin.Controllers;
 [JwtAuthorizationFilter]
 public class DashboardController : Controller
 {
-    private readonly IPaymentApiService _paymentApi;
-    private readonly IMemberStatusApiService _memberStatusApi;
-    private readonly IUserApiService _userApi;
+    private readonly IPaymentClient _paymentClient;
+    private readonly IMemberStatusClient _memberStatusClient;
+    private readonly IUserClient _userClient;
 
     public DashboardController(
-        IPaymentApiService paymentApi,
-        IUserApiService userService,
-        IMemberStatusApiService memberStatusApi
+        IPaymentClient paymentClient,
+        IUserClient userClient,
+        IMemberStatusClient memberStatusClient
     )
     {
-        _paymentApi = paymentApi;
-        _userApi = userService;
-        _memberStatusApi = memberStatusApi;
+        _paymentClient = paymentClient;
+        _userClient = userClient;
+        _memberStatusClient = memberStatusClient;
     }
 
     /// <summary>
@@ -35,7 +35,7 @@ public class DashboardController : Controller
     /// </summary>
     public async Task<IActionResult> Index()
     {
-        var loggedUserContext = await _userApi.GetLoggedUserContextAsync();
+        var loggedUserContext = await _userClient.GetLoggedUserContextAsync();
 
         var months = GetLastSixMonths(DateTime.Today);
 
@@ -99,7 +99,7 @@ public class DashboardController : Controller
         foreach (var month in months)
         {
             payments.Add(
-                await _paymentApi.GetMonthlyIncomeAsync(
+                await _paymentClient.GetMonthlyIncomeAsync(
                     organizationId,
                     month.Year,
                     month.Month
@@ -121,7 +121,7 @@ public class DashboardController : Controller
         foreach (var month in months)
         {
             counts.Add(
-                await _memberStatusApi.CountMembersWithStatusAsync(
+                await _memberStatusClient.CountMembersWithStatusAsync(
                     organizationId,
                     month.Year,
                     month.Month,
@@ -143,7 +143,7 @@ public class DashboardController : Controller
         foreach (var month in months)
         {
             counts.Add(
-                await _memberStatusApi.CountFirstTimeSignupsAsync(
+                await _memberStatusClient.CountFirstTimeSignupsAsync(
                     organizationId,
                     month.Year,
                     month.Month
@@ -164,7 +164,7 @@ public class DashboardController : Controller
         foreach (var month in months)
         {
             counts.Add(
-                await _memberStatusApi.CountFirstTimeCancellationsAsync(
+                await _memberStatusClient.CountFirstTimeCancellationsAsync(
                     organizationId,
                     month.Year,
                     month.Month

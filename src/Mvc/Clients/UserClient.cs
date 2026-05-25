@@ -1,14 +1,14 @@
 ﻿using Contracts.Dtos.Authentication;
-using Mvc.Services.Api.Interfaces;
+using Mvc.Clients.Interfaces;
 
-namespace Mvc.Services.Api;
+namespace Mvc.Clients;
 
-public class UserApiService : IUserApiService
+public class UserClient : IUserClient
 {
     private readonly string _apiBaseUrl;
     private readonly HttpClient _httpClient;
 
-    public UserApiService(
+    public UserClient(
         IConfiguration configuration,
         HttpClient httpClient
     )

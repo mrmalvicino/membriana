@@ -1,8 +1,8 @@
 ﻿using Mvc.Areas.Admin.ViewModels;
 
-namespace Mvc.Services.Api.Interfaces;
+namespace Mvc.Clients.Interfaces;
 
-public interface IMembershipPlanApiService
+public interface IMembershipPlanClient
 {
     Task<List<MembershipPlanViewModel>> GetAllAsync(int organizationId);
     Task<MembershipPlanViewModel?> GetByIdAsync(int id);

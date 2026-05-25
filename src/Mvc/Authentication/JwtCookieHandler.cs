@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Headers;
 
-namespace Mvc.Services.Handlers;
+namespace Mvc.Authentication;
 
 public class JwtCookieHandler : DelegatingHandler
 {

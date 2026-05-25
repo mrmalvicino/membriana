@@ -2,20 +2,20 @@
 using Microsoft.AspNetCore.Mvc;
 using Contracts.Dtos.MembershipPlan;
 using Mvc.Exceptions;
-using Mvc.Services.Api.Interfaces;
+using Mvc.Clients.Interfaces;
 using System.Net;
 using System.Text.Json;
 using Mvc.Areas.Admin.ViewModels;
 
-namespace Mvc.Services.Api;
+namespace Mvc.Clients;
 
-public class MembershipPlanApiService : IMembershipPlanApiService
+public class MembershipPlanClient : IMembershipPlanClient
 {
     private readonly string _apiBaseUrl;
     private readonly HttpClient _httpClient;
     private readonly IMapper _mapper;
 
-    public MembershipPlanApiService(
+    public MembershipPlanClient(
         IConfiguration configuration,
         HttpClient httpClient,
         IMapper mapper

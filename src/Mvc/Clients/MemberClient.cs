@@ -1,18 +1,18 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.Member;
 using Mvc.Areas.Admin.ViewModels;
-using Mvc.Services.Api.Helpers;
-using Mvc.Services.Api.Interfaces;
+using Mvc.Clients.Helpers;
+using Mvc.Clients.Interfaces;
 
-namespace Mvc.Services.Api;
+namespace Mvc.Clients;
 
-public class MemberApiService : IMemberApiService
+public class MemberClient : IMemberClient
 {
     private readonly string _apiBaseUrl;
     private readonly HttpClient _httpClient;
     private readonly IMapper _mapper;
 
-    public MemberApiService(
+    public MemberClient(
         IConfiguration configuration,
         HttpClient httpClient,
         IMapper mapper

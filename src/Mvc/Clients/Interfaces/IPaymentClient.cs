@@ -1,8 +1,8 @@
 ﻿using Mvc.Areas.Admin.ViewModels;
 
-namespace Mvc.Services.Api.Interfaces;
+namespace Mvc.Clients.Interfaces;
 
-public interface IPaymentApiService
+public interface IPaymentClient
 {
     Task<List<PaymentViewModel>> GetAllAsync(int organizationId);
     Task<PaymentViewModel?> GetByIdAsync(int id);

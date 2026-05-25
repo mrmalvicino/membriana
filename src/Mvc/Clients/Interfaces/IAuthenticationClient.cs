@@ -1,9 +1,9 @@
 ﻿using Contracts.Dtos.Authentication;
 using Mvc.ViewModels;
 
-namespace Mvc.Services.Api.Interfaces;
+namespace Mvc.Clients.Interfaces;
 
-public interface IAuthenticationApiService
+public interface IAuthenticationClient
 {
     Task<LoginResponseDto?> LoginAsync(LoginViewModel loginViewModel);
 

@@ -1,8 +1,8 @@
 ﻿using Contracts.Dtos.Authentication;
 
-namespace Mvc.Services.Api.Interfaces;
+namespace Mvc.Clients.Interfaces;
 
-public interface IUserApiService
+public interface IUserClient
 {
     Task<LoggedUserContextDto> GetLoggedUserContextAsync();
     Task<int> GetOrganizationIdAsync();

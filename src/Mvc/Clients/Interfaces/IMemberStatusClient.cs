@@ -1,8 +1,8 @@
 ﻿using Contracts.Enums;
 
-namespace Mvc.Services.Api.Interfaces;
+namespace Mvc.Clients.Interfaces;
 
-public interface IMemberStatusApiService
+public interface IMemberStatusClient
 {
     Task<int> CountMembersWithStatusAsync(
         int organizationId,

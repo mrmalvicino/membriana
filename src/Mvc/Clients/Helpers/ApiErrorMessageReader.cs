@@ -2,7 +2,7 @@ using Contracts.Dtos.Common;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
-namespace Mvc.Services.Api.Helpers;
+namespace Mvc.Clients.Helpers;
 
 internal static class ApiErrorMessageReader
 {

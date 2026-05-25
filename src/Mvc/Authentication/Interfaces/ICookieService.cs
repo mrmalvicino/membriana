@@ -1,4 +1,4 @@
-﻿namespace Mvc.Services.Utilities.Interfaces;
+namespace Mvc.Authentication.Interfaces;
 
 public interface ICookieService
 {

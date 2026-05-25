@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Mvc.Areas.Admin.ViewModels;
 using Mvc.Filters;
-using Mvc.Services.Api.Interfaces;
+using Mvc.Clients.Interfaces;
 
 namespace Mvc.Areas.Admin.Controllers;
 
@@ -9,37 +9,37 @@ namespace Mvc.Areas.Admin.Controllers;
 [JwtAuthorizationFilter]
 public class EmployeeController : Controller
 {
-    private readonly IEmployeeApiService _employeeApi;
-    private readonly IUserApiService _userApi;
+    private readonly IEmployeeClient _employeeClient;
+    private readonly IUserClient _userClient;
 
     public EmployeeController(
-        IEmployeeApiService employeeService,
-        IUserApiService userService
+        IEmployeeClient employeeClient,
+        IUserClient userClient
     )
     {
-        _employeeApi = employeeService;
-        _userApi = userService;
+        _employeeClient = employeeClient;
+        _userClient = userClient;
     }
 
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var organizationId = await _userApi.GetOrganizationIdAsync();
-        var employees = await _employeeApi.GetAllAsync(organizationId);
+        var organizationId = await _userClient.GetOrganizationIdAsync();
+        var employees = await _employeeClient.GetAllAsync(organizationId);
         return View(employees);
     }
 
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
-        var employee = await _employeeApi.GetByIdAsync(id);
+        var employee = await _employeeClient.GetByIdAsync(id);
 
         if (employee == null)
         {
             return NotFound();
         }
 
-        if (employee.OrganizationId != await _userApi.GetOrganizationIdAsync())
+        if (employee.OrganizationId != await _userClient.GetOrganizationIdAsync())
         {
             return NotFound();
         }
@@ -50,7 +50,7 @@ public class EmployeeController : Controller
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        var userOrgId = await _userApi.GetOrganizationIdAsync();
+        var userOrgId = await _userClient.GetOrganizationIdAsync();
         return View();
     }
 
@@ -62,8 +62,8 @@ public class EmployeeController : Controller
         {
             try
             {
-                employee.OrganizationId = await _userApi.GetOrganizationIdAsync();
-                await _employeeApi.CreateAsync(employee);
+                employee.OrganizationId = await _userClient.GetOrganizationIdAsync();
+                await _employeeClient.CreateAsync(employee);
                 return RedirectToAction(nameof(Index));
             }
             catch (ApplicationException ex)
@@ -78,14 +78,14 @@ public class EmployeeController : Controller
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
-        var employee = await _employeeApi.GetByIdAsync(id);
+        var employee = await _employeeClient.GetByIdAsync(id);
 
         if (employee == null)
         {
             return NotFound();
         }
 
-        if (employee.OrganizationId != await _userApi.GetOrganizationIdAsync())
+        if (employee.OrganizationId != await _userClient.GetOrganizationIdAsync())
         {
             return NotFound();
         }
@@ -97,13 +97,13 @@ public class EmployeeController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(EmployeeViewModel employee)
     {
-        employee.OrganizationId = await _userApi.GetOrganizationIdAsync();
+        employee.OrganizationId = await _userClient.GetOrganizationIdAsync();
 
         if (ModelState.IsValid)
         {
             try
             {
-                await _employeeApi.UpdateAsync(employee);
+                await _employeeClient.UpdateAsync(employee);
                 return RedirectToAction(nameof(Index));
             }
             catch (ApplicationException ex)
@@ -118,14 +118,14 @@ public class EmployeeController : Controller
     [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
-        var employee = await _employeeApi.GetByIdAsync(id);
+        var employee = await _employeeClient.GetByIdAsync(id);
 
         if (employee == null)
         {
             return NotFound();
         }
 
-        if (employee.OrganizationId != await _userApi.GetOrganizationIdAsync())
+        if (employee.OrganizationId != await _userClient.GetOrganizationIdAsync())
         {
             return NotFound();
         }
@@ -137,7 +137,7 @@ public class EmployeeController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        await _employeeApi.DeleteAsync(id);
+        await _employeeClient.DeleteAsync(id);
         return RedirectToAction(nameof(Index));
     }
 }

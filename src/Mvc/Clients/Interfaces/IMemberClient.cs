@@ -1,8 +1,8 @@
 ﻿using Mvc.Areas.Admin.ViewModels;
 
-namespace Mvc.Services.Api.Interfaces;
+namespace Mvc.Clients.Interfaces;
 
-public interface IMemberApiService
+public interface IMemberClient
 {
     Task<List<MemberViewModel>> GetAllAsync(int organizationId);
     Task<MemberViewModel?> GetByIdAsync(int id);
