@@ -1,4 +1,5 @@
-﻿using Contracts.Dtos.Authentication;
+using Contracts.Dtos.Authentication;
+using Mvc.Clients.Helpers;
 using Mvc.Clients.Interfaces;
 
 namespace Mvc.Clients;
@@ -21,7 +22,8 @@ public class UserClient : IUserClient
     {
         var url = $"{_apiBaseUrl}api/users/me";
         var response = await _httpClient.GetAsync(url);
-        response.EnsureSuccessStatusCode();
+
+        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener el usuario autenticado.");
 
         var dto = await response.Content.ReadFromJsonAsync<LoggedUserContextDto>();
         
@@ -37,7 +39,9 @@ public class UserClient : IUserClient
     {
         var url = $"{_apiBaseUrl}api/users/me/organization-id";
         var response = await _httpClient.GetAsync(url);
-        response.EnsureSuccessStatusCode();
+
+        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener la organización del usuario.");
+
         var orgId = await response.Content.ReadFromJsonAsync<int?>();
 
         if (!orgId.HasValue)

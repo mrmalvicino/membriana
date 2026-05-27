@@ -1,4 +1,5 @@
-﻿using Api.Filters;
+using Api.Filters;
+using Api.Helpers;
 using Application.Repositories;
 using Application.Services;
 using AutoMapper;
@@ -95,7 +96,10 @@ public abstract class BaseController
 
         if (createDto.OrganizationId != userOrgId)
         {
-            return Forbid();
+            return StatusCode(
+                StatusCodes.Status403Forbidden,
+                ErrorResponseFactory.Create("No tenés permisos para crear recursos en otra organización.")
+            );
         }
 
         var entity = _mapper.Map<TEntity>(createDto);
@@ -122,7 +126,7 @@ public abstract class BaseController
     {
         if (id != updateDto.Id)
         {
-            return BadRequest();
+            return BadRequest(ErrorResponseFactory.Create("El ID de la ruta no coincide con el ID del recurso."));
         }
 
         var entity = _mapper.Map<TEntity>(updateDto);
@@ -149,20 +153,14 @@ public abstract class BaseController
 
             if (!deleted)
             {
-                return NotFound();
+                return NotFound(ErrorResponseFactory.Create("El recurso no existe."));
             }
 
             return NoContent();
         }
         catch (DbUpdateException)
         {
-            return Conflict(
-                new ProblemDetails
-                {
-                    Title = "No es posible eliminar recurso",
-                    Detail = "El recurso está en uso y no puede ser eliminado."
-                }
-            );
+            return Conflict(ErrorResponseFactory.Create("El recurso está en uso y no puede ser eliminado."));
         }
     }
 }

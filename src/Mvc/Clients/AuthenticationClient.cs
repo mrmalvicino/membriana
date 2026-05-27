@@ -105,18 +105,11 @@ public class AuthenticationClient : IAuthenticationClient
 
         if (!response.IsSuccessStatusCode)
         {
-            var errorContent = await response.Content.ReadAsStringAsync();
-
-            var errorResponse = JsonSerializer.Deserialize<ResendConfirmationResponseDto>(
-                errorContent,
-                new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                }
-            );
-
             throw new ApplicationException(
-                errorResponse?.Message ?? "No pudimos reenviar el correo. Intenta nuevamente."
+                await ApiErrorMessageReader.ReadAsync(
+                    response,
+                    "No pudimos reenviar el correo. Intenta nuevamente."
+                )
             );
         }
 
@@ -160,7 +153,7 @@ public class AuthenticationClient : IAuthenticationClient
         if (!response.IsSuccessStatusCode)
         {
             throw new ApplicationException(
-                confirmEmailResponseDto?.Message ?? "No se pudo confirmar el email."
+                await ApiErrorMessageReader.ReadAsync(response, "No se pudo confirmar el email.")
             );
         }
 

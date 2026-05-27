@@ -13,6 +13,13 @@
                     <h4 class="card-title mb-0">Cancelar pago</h4>
                 </div>
                 <div class="card-body">
+                    @if (TempData["BusinessError"] is string error && !string.IsNullOrWhiteSpace(error))
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @error
+                        </div>
+                    }
+
                     <dl class="row">
                         <dt class="col-sm-4">
                             @Html.DisplayNameFor(model => model.DateTime)

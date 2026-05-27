@@ -1,4 +1,5 @@
-﻿using Api.Filters;
+using Api.Filters;
+using Api.Helpers;
 using Contracts.Dtos.Member;
 using Application.Repositories;
 using Application.Services;
@@ -39,7 +40,10 @@ public class MembersController : BaseController<
 
         if (createDto.OrganizationId != userOrgId)
         {
-            return Forbid();
+            return StatusCode(
+                StatusCodes.Status403Forbidden,
+                ErrorResponseFactory.Create("No tenés permisos para crear recursos en otra organización.")
+            );
         }
 
         var entity = _mapper.Map<Member>(createDto);
@@ -63,7 +67,7 @@ public class MembersController : BaseController<
     {
         if (id != updateDto.Id)
         {
-            return BadRequest();
+            return BadRequest(ErrorResponseFactory.Create("El ID de la ruta no coincide con el ID del recurso."));
         }
 
         var entity = _mapper.Map<Member>(updateDto);

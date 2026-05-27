@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Mvc.Areas.Admin.ViewModels;
+using Mvc.Exceptions;
 using Mvc.Filters;
 using Mvc.Clients.Interfaces;
 
@@ -71,6 +72,10 @@ public class PaymentController : Controller
                 await _paymentClient.CreateAsync(payment);
                 return RedirectToAction(nameof(Index));
             }
+            catch (BusinessRuleException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
             catch (ApplicationException ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
@@ -115,6 +120,14 @@ public class PaymentController : Controller
                 await _paymentClient.UpdateAsync(payment);
                 return RedirectToAction(nameof(Index));
             }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (BusinessRuleException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
             catch (ApplicationException ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
@@ -147,8 +160,25 @@ public class PaymentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        await _paymentClient.DeleteAsync(id);
-        return RedirectToAction(nameof(Index));
+        try
+        {
+            await _paymentClient.DeleteAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (BusinessRuleException ex)
+        {
+            TempData["BusinessError"] = ex.Message;
+            return RedirectToAction(nameof(Delete), new { id });
+        }
+        catch (ApplicationException ex)
+        {
+            TempData["BusinessError"] = ex.Message;
+            return RedirectToAction(nameof(Delete), new { id });
+        }
     }
 
     private async Task SetViewBagMembers(int organizationId, int? selectedMemberId = null)

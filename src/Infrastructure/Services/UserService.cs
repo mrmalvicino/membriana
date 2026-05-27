@@ -67,7 +67,7 @@ public class UserService : IUserService
 
         if (organization == null)
         {
-            throw new Exception("No se encontró la organización del usuario.");
+            throw new InvalidOperationException("No se encontró la organización del usuario.");
         }
 
         return organization;
@@ -90,7 +90,7 @@ public class UserService : IUserService
 
         if (user == null)
         {
-            throw new Exception("No hay usuario en sesión.");
+            throw new UnauthorizedAccessException("No hay usuario en sesión.");
         }
 
         return user;
@@ -110,7 +110,7 @@ public class UserService : IUserService
 
         if (user.OrganizationId == 0)
         {
-            throw new Exception("No se encontró la organización del usuario.");
+            throw new InvalidOperationException("No se encontró la organización del usuario.");
         }
 
         return user.OrganizationId;

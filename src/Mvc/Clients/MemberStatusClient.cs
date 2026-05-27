@@ -1,5 +1,6 @@
-﻿using Contracts.Dtos.MemberStatus;
+using Contracts.Dtos.MemberStatus;
 using Contracts.Enums;
+using Mvc.Clients.Helpers;
 using Mvc.Clients.Interfaces;
 
 namespace Mvc.Clients;
@@ -29,7 +30,8 @@ public class MemberStatusClient : IMemberStatusClient
             $"?organizationId={organizationId}&year={year}&month={month}&status={status}";
 
         var response = await _httpClient.GetAsync(url);
-        response.EnsureSuccessStatusCode();
+
+        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener la cantidad de socios por estado.");
 
         var amounts = await response.Content.ReadFromJsonAsync<List<AmountResponse>>();
         var amount = amounts?.FirstOrDefault();
@@ -52,7 +54,8 @@ public class MemberStatusClient : IMemberStatusClient
             $"?organizationId={organizationId}&year={year}&month={month}";
 
         var response = await _httpClient.GetAsync(url);
-        response.EnsureSuccessStatusCode();
+
+        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener la cantidad de altas del período.");
 
         var amounts = await response.Content.ReadFromJsonAsync<List<AmountResponse>>();
         var amount = amounts?.FirstOrDefault();
@@ -75,7 +78,8 @@ public class MemberStatusClient : IMemberStatusClient
             $"?organizationId={organizationId}&year={year}&month={month}";
 
         var response = await _httpClient.GetAsync(url);
-        response.EnsureSuccessStatusCode();
+
+        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener la cantidad de bajas del período.");
 
         var amounts = await response.Content.ReadFromJsonAsync<List<AmountResponse>>();
         var amount = amounts?.FirstOrDefault();

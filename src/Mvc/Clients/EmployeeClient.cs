@@ -27,7 +27,7 @@ public class EmployeeClient : IEmployeeClient
     {
         var url = $"{_apiBaseUrl}api/employees?organizationId={organizationId}";
         var response = await _httpClient.GetAsync(url);
-        response.EnsureSuccessStatusCode();
+        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener la lista de empleados.");
         var readDtos = await response.Content.ReadFromJsonAsync<List<EmployeeReadDto>>() ?? new();
         return _mapper.Map<List<EmployeeViewModel>>(readDtos);
     }
@@ -37,18 +37,18 @@ public class EmployeeClient : IEmployeeClient
         var url = $"{_apiBaseUrl}api/employees/{id}";
         var response = await _httpClient.GetAsync(url);
 
-        if (!response.IsSuccessStatusCode)
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
-            throw new ApplicationException(
-                await ApiErrorMessageReader.ReadAsync(response, "No se pudo crear el empleado.")
-            );
+            return null;
         }
+
+        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener el empleado.");
 
         var readDto = await response.Content.ReadFromJsonAsync<EmployeeReadDto>();
 
         if (readDto == null)
         {
-            return null;
+            throw new InvalidOperationException("La API devolvió una respuesta vacía al obtener el empleado.");
         }
 
         return _mapper.Map<EmployeeViewModel>(readDto);
@@ -60,15 +60,16 @@ public class EmployeeClient : IEmployeeClient
         var url = $"{_apiBaseUrl}api/employees";
         var response = await _httpClient.PostAsJsonAsync(url, createDto);
 
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new ApplicationException(
-                await ApiErrorMessageReader.ReadAsync(response, "No se pudo actualizar el empleado.")
-            );
-        }
+        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo crear el empleado.");
 
         var readDto = await response.Content.ReadFromJsonAsync<EmployeeReadDto>();
-        return readDto == null ? null : _mapper.Map<EmployeeViewModel>(readDto);
+
+        if (readDto == null)
+        {
+            throw new InvalidOperationException("La API devolvió una respuesta vacía al crear el empleado.");
+        }
+
+        return _mapper.Map<EmployeeViewModel>(readDto);
     }
 
     public async Task<EmployeeViewModel?> UpdateAsync(EmployeeViewModel viewModel)
@@ -77,19 +78,22 @@ public class EmployeeClient : IEmployeeClient
         var url = $"{_apiBaseUrl}api/employees/{viewModel.Id}";
         var response = await _httpClient.PutAsJsonAsync(url, updateDto);
 
-        if (!response.IsSuccessStatusCode)
-        {
-            return null;
-        }
+        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo actualizar el empleado.");
 
         var readDto = await response.Content.ReadFromJsonAsync<EmployeeReadDto>();
-        return readDto == null ? null : _mapper.Map<EmployeeViewModel>(readDto);
+
+        if (readDto == null)
+        {
+            throw new InvalidOperationException("La API devolvió una respuesta vacía al actualizar el empleado.");
+        }
+
+        return _mapper.Map<EmployeeViewModel>(readDto);
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
         var url = $"{_apiBaseUrl}api/employees/{id}";
         var response = await _httpClient.DeleteAsync(url);
-        return response.IsSuccessStatusCode;
+        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo eliminar el empleado.");
     }
 }

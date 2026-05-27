@@ -8,5 +8,5 @@ public interface IMemberClient
     Task<MemberViewModel?> GetByIdAsync(int id);
     Task<MemberViewModel?> CreateAsync(MemberViewModel member);
     Task<MemberViewModel?> UpdateAsync(MemberViewModel member);
-    Task<bool> DeleteAsync(int id);
+    Task DeleteAsync(int id);
 }

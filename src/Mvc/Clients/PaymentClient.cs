@@ -27,7 +27,7 @@ public class PaymentClient : IPaymentClient
     {
         var url = $"{_apiBaseUrl}api/payments?organizationId={organizationId}";
         var response = await _httpClient.GetAsync(url);
-        response.EnsureSuccessStatusCode();
+        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener la lista de pagos.");
         var readDtos = await response.Content.ReadFromJsonAsync<List<PaymentReadDto>>() ?? new();
         return _mapper.Map<List<PaymentViewModel>>(readDtos);
     }
@@ -37,18 +37,18 @@ public class PaymentClient : IPaymentClient
         var url = $"{_apiBaseUrl}api/payments/{id}";
         var response = await _httpClient.GetAsync(url);
 
-        if (!response.IsSuccessStatusCode)
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
-            throw new ApplicationException(
-                await ApiErrorMessageReader.ReadAsync(response, "No se pudo registrar el pago.")
-            );
+            return null;
         }
+
+        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener el pago.");
 
         var readDto = await response.Content.ReadFromJsonAsync<PaymentReadDto>();
 
         if (readDto == null)
         {
-            return null;
+            throw new InvalidOperationException("La API devolvió una respuesta vacía al obtener el pago.");
         }
 
         return _mapper.Map<PaymentViewModel>(readDto);
@@ -60,15 +60,16 @@ public class PaymentClient : IPaymentClient
         var url = $"{_apiBaseUrl}api/payments";
         var response = await _httpClient.PostAsJsonAsync(url, createDto);
 
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new ApplicationException(
-                await ApiErrorMessageReader.ReadAsync(response, "No se pudo actualizar el pago.")
-            );
-        }
+        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo registrar el pago.");
 
         var readDto = await response.Content.ReadFromJsonAsync<PaymentReadDto>();
-        return readDto == null ? null : _mapper.Map<PaymentViewModel>(readDto);
+
+        if (readDto == null)
+        {
+            throw new InvalidOperationException("La API devolvió una respuesta vacía al registrar el pago.");
+        }
+
+        return _mapper.Map<PaymentViewModel>(readDto);
     }
 
     public async Task<PaymentViewModel?> UpdateAsync(PaymentViewModel viewModel)
@@ -77,20 +78,23 @@ public class PaymentClient : IPaymentClient
         var url = $"{_apiBaseUrl}api/payments/{viewModel.Id}";
         var response = await _httpClient.PutAsJsonAsync(url, updateDto);
 
-        if (!response.IsSuccessStatusCode)
-        {
-            return null;
-        }
+        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo actualizar el pago.");
 
         var readDto = await response.Content.ReadFromJsonAsync<PaymentReadDto>();
-        return readDto == null ? null : _mapper.Map<PaymentViewModel>(readDto);
+
+        if (readDto == null)
+        {
+            throw new InvalidOperationException("La API devolvió una respuesta vacía al actualizar el pago.");
+        }
+
+        return _mapper.Map<PaymentViewModel>(readDto);
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
         var url = $"{_apiBaseUrl}api/payments/{id}";
         var response = await _httpClient.DeleteAsync(url);
-        return response.IsSuccessStatusCode;
+        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo eliminar el pago.");
     }
 
     public async Task<decimal> GetMonthlyIncomeAsync(int organizationId, int year, int month)
@@ -99,7 +103,7 @@ public class PaymentClient : IPaymentClient
             $"?organizationId={organizationId}&year={year}&month={month}";
 
         var response = await _httpClient.GetAsync(url);
-        response.EnsureSuccessStatusCode();
+        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener el ingreso mensual.");
         var dto = await response.Content.ReadFromJsonAsync<MonthlyIncomeResponseDto>();
 
         if (dto is null)

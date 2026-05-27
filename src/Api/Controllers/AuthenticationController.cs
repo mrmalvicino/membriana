@@ -1,7 +1,7 @@
-﻿using Application.Repositories;
+using Application.Repositories;
 using Application.Services;
+using Api.Helpers;
 using Contracts.Dtos.Authentication;
-using Contracts.Dtos.Common;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -36,19 +36,19 @@ public class AuthenticationController : ControllerBase
 
         if (user == null)
         {
-            return Unauthorized(CreateErrorResponse("Credenciales inválidas."));
+            return Unauthorized(ErrorResponseFactory.Create("Credenciales inválidas."));
         }
 
         if (!await _unitOfWork.IdentityService.PasswordIsValid(user, dto.Password))
         {
-            return Unauthorized(CreateErrorResponse("Credenciales inválidas."));
+            return Unauthorized(ErrorResponseFactory.Create("Credenciales inválidas."));
         }
 
         if (!user.EmailConfirmed)
         {
             return StatusCode(
                 StatusCodes.Status403Forbidden,
-                CreateErrorResponse("Cuenta no confirmada.")
+                ErrorResponseFactory.Create("Cuenta no confirmada.")
             );
         }
 
@@ -68,7 +68,7 @@ public class AuthenticationController : ControllerBase
     {
         if (await _unitOfWork.IdentityService.FindByEmail(dto.UserEmail) != null)
         {
-            return Conflict(CreateErrorResponse("Mail de usuario en uso."));
+            return Conflict(ErrorResponseFactory.Create("Mail de usuario en uso."));
         }
 
         await _unitOfWork.BeginTransactionAsync();
@@ -102,7 +102,7 @@ public class AuthenticationController : ControllerBase
             {
                 await _unitOfWork.RollbackAsync();
                 var errors = result.Errors.Select(e => e.Description).ToArray();
-                return BadRequest(CreateErrorResponse(errors));
+                return BadRequest(ErrorResponseFactory.Create(errors));
             }
 
             await _unitOfWork.IdentityService.AddToRole(user, Domain.Enums.AppRole.Admin);
@@ -136,7 +136,7 @@ public class AuthenticationController : ControllerBase
 
             return StatusCode(
                 StatusCodes.Status500InternalServerError,
-                CreateErrorResponse("Ocurrió un error inesperado al registrar la cuenta.")
+                ErrorResponseFactory.Create("Ocurrió un error inesperado al registrar la cuenta.")
             );
         }
     }
@@ -146,12 +146,7 @@ public class AuthenticationController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(dto.Email))
         {
-            return BadRequest(
-                new ResendConfirmationResponseDto
-                {
-                    Message = "Email inválido."
-                }
-            );
+            return BadRequest(ErrorResponseFactory.Create("Email inválido."));
         }
 
         var user = await _unitOfWork.IdentityService.FindByEmail(dto.Email);
@@ -191,12 +186,7 @@ public class AuthenticationController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(dto.UserId) || string.IsNullOrWhiteSpace(dto.Token))
         {
-            return BadRequest(
-                new ConfirmEmailResponseDto
-                {
-                    Message = "Parámetros inválidos."
-                }
-            );
+            return BadRequest(ErrorResponseFactory.Create("Parámetros inválidos."));
         }
 
         // Buscar usuario
@@ -204,12 +194,7 @@ public class AuthenticationController : ControllerBase
 
         if (user == null)
         {
-            return BadRequest(
-                new ConfirmEmailResponseDto
-                {
-                    Message = "Usuario no encontrado."
-                }
-            );
+            return BadRequest(ErrorResponseFactory.Create("Usuario no encontrado."));
         }
 
         if (user.EmailConfirmed)
@@ -232,12 +217,7 @@ public class AuthenticationController : ControllerBase
         }
         catch
         {
-            return BadRequest(
-                new ConfirmEmailResponseDto
-                {
-                    Message = "Token inválido."
-                }
-            );
+            return BadRequest(ErrorResponseFactory.Create("Token inválido."));
         }
 
         // Confirmar email
@@ -245,12 +225,7 @@ public class AuthenticationController : ControllerBase
 
         if (!result.Succeeded)
         {
-            return BadRequest(
-                new ConfirmEmailResponseDto
-                {
-                    Message = "No se pudo confirmar el email."
-                }
-            );
+            return BadRequest(ErrorResponseFactory.Create("No se pudo confirmar el email."));
         }
 
         return Ok(
@@ -261,11 +236,4 @@ public class AuthenticationController : ControllerBase
         );
     }
 
-    private static ErrorResponseDto CreateErrorResponse(params string[] errors)
-    {
-        return new ErrorResponseDto
-        {
-            Errors = errors.ToList()
-        };
-    }
 }

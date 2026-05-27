@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Mvc.Areas.Admin.ViewModels;
+using Mvc.Exceptions;
 using Mvc.Filters;
 using Mvc.Clients.Interfaces;
 
@@ -66,6 +67,10 @@ public class EmployeeController : Controller
                 await _employeeClient.CreateAsync(employee);
                 return RedirectToAction(nameof(Index));
             }
+            catch (BusinessRuleException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
             catch (ApplicationException ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
@@ -106,6 +111,14 @@ public class EmployeeController : Controller
                 await _employeeClient.UpdateAsync(employee);
                 return RedirectToAction(nameof(Index));
             }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (BusinessRuleException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
             catch (ApplicationException ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
@@ -137,7 +150,24 @@ public class EmployeeController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        await _employeeClient.DeleteAsync(id);
-        return RedirectToAction(nameof(Index));
+        try
+        {
+            await _employeeClient.DeleteAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (BusinessRuleException ex)
+        {
+            TempData["BusinessError"] = ex.Message;
+            return RedirectToAction(nameof(Delete), new { id });
+        }
+        catch (ApplicationException ex)
+        {
+            TempData["BusinessError"] = ex.Message;
+            return RedirectToAction(nameof(Delete), new { id });
+        }
     }
 }

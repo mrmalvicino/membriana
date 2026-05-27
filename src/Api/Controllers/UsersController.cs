@@ -1,4 +1,5 @@
-﻿using Application.Services;
+using Application.Services;
+using Api.Helpers;
 using Contracts.Dtos.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,9 +26,13 @@ public class UsersController : ControllerBase
             var currentUserContextDto = await _userService.GetLoggedUserContextAsync();
             return Ok(currentUserContextDto);
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            return BadRequest(ex.Message);
+            return Unauthorized(ErrorResponseFactory.Create(ex.Message));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ErrorResponseFactory.Create(ex.Message));
         }
     }
 
@@ -39,9 +44,13 @@ public class UsersController : ControllerBase
             var organizationId = await _userService.GetOrganizationIdAsync();
             return Ok(organizationId);
         }
-        catch (Exception ex)
+        catch (UnauthorizedAccessException ex)
         {
-            return BadRequest(ex.Message);
+            return Unauthorized(ErrorResponseFactory.Create(ex.Message));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ErrorResponseFactory.Create(ex.Message));
         }
     }
 }

@@ -8,6 +8,6 @@ public interface IPaymentClient
     Task<PaymentViewModel?> GetByIdAsync(int id);
     Task<PaymentViewModel?> CreateAsync(PaymentViewModel payment);
     Task<PaymentViewModel?> UpdateAsync(PaymentViewModel payment);
-    Task<bool> DeleteAsync(int id);
+    Task DeleteAsync(int id);
     Task<decimal> GetMonthlyIncomeAsync(int organizationId, int year, int month);
 }

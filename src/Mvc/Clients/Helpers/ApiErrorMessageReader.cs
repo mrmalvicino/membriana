@@ -1,11 +1,46 @@
 using Contracts.Dtos.Common;
+using Mvc.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using System.Text.Json;
 
 namespace Mvc.Clients.Helpers;
 
 internal static class ApiErrorMessageReader
 {
+    public static async Task EnsureSuccessAsync(
+        HttpResponseMessage response,
+        string fallbackMessage
+    )
+    {
+        if (response.IsSuccessStatusCode)
+        {
+            return;
+        }
+
+        throw await CreateExceptionAsync(response, fallbackMessage);
+    }
+
+    public static async Task<Exception> CreateExceptionAsync(
+        HttpResponseMessage response,
+        string fallbackMessage
+    )
+    {
+        var message = await ReadAsync(response, fallbackMessage);
+
+        switch (response.StatusCode)
+        {
+            case HttpStatusCode.NotFound:
+                return new KeyNotFoundException(message);
+
+            case HttpStatusCode.Conflict:
+                return new BusinessRuleException(message);
+
+            default:
+                return new ApplicationException(message);
+        }
+    }
+
     public static async Task<string> ReadAsync(
         HttpResponseMessage response,
         string fallbackMessage

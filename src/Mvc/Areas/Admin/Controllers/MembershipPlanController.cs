@@ -61,9 +61,20 @@ public class MembershipPlanController : Controller
     {
         if (ModelState.IsValid)
         {
-            membershipPlan.OrganizationId = await _userClient.GetOrganizationIdAsync();
-            await _membershipPlanClient.CreateAsync(membershipPlan);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                membershipPlan.OrganizationId = await _userClient.GetOrganizationIdAsync();
+                await _membershipPlanClient.CreateAsync(membershipPlan);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (BusinessRuleException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
+            catch (ApplicationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
         }
 
         return View(membershipPlan);
@@ -98,9 +109,24 @@ public class MembershipPlanController : Controller
     {
         if (ModelState.IsValid)
         {
-            membershipPlan.OrganizationId = await _userClient.GetOrganizationIdAsync();
-            await _membershipPlanClient.UpdateAsync(membershipPlan);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                membershipPlan.OrganizationId = await _userClient.GetOrganizationIdAsync();
+                await _membershipPlanClient.UpdateAsync(membershipPlan);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (BusinessRuleException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
+            catch (ApplicationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
         }
 
         return View(membershipPlan);
@@ -139,6 +165,11 @@ public class MembershipPlanController : Controller
             return RedirectToAction(nameof(Index));
         }
         catch (BusinessRuleException ex)
+        {
+            TempData["BusinessError"] = ex.Message;
+            return RedirectToAction(nameof(Delete), new { id });
+        }
+        catch (ApplicationException ex)
         {
             TempData["BusinessError"] = ex.Message;
             return RedirectToAction(nameof(Delete), new { id });

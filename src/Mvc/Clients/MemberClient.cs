@@ -27,7 +27,7 @@ public class MemberClient : IMemberClient
     {
         var url = $"{_apiBaseUrl}api/members?organizationId={organizationId}";
         var response = await _httpClient.GetAsync(url);
-        response.EnsureSuccessStatusCode();
+        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener la lista de socios.");
         var readDtos = await response.Content.ReadFromJsonAsync<List<MemberReadDto>>() ?? new();
         return _mapper.Map<List<MemberViewModel>>(readDtos);
     }
@@ -37,18 +37,18 @@ public class MemberClient : IMemberClient
         var url = $"{_apiBaseUrl}api/members/{id}";
         var response = await _httpClient.GetAsync(url);
 
-        if (!response.IsSuccessStatusCode)
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
-            throw new ApplicationException(
-                await ApiErrorMessageReader.ReadAsync(response, "No se pudo crear el socio.")
-            );
+            return null;
         }
+
+        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener el socio.");
 
         var readDto = await response.Content.ReadFromJsonAsync<MemberReadDto>();
 
         if (readDto == null)
         {
-            return null;
+            throw new InvalidOperationException("La API devolvió una respuesta vacía al obtener el socio.");
         }
 
         return _mapper.Map<MemberViewModel>(readDto);
@@ -60,15 +60,16 @@ public class MemberClient : IMemberClient
         var url = $"{_apiBaseUrl}api/members";
         var response = await _httpClient.PostAsJsonAsync(url, createDto);
 
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new ApplicationException(
-                await ApiErrorMessageReader.ReadAsync(response, "No se pudo actualizar el socio.")
-            );
-        }
+        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo crear el socio.");
 
         var readDto = await response.Content.ReadFromJsonAsync<MemberReadDto>();
-        return readDto == null ? null : _mapper.Map<MemberViewModel>(readDto);
+
+        if (readDto == null)
+        {
+            throw new InvalidOperationException("La API devolvió una respuesta vacía al crear el socio.");
+        }
+
+        return _mapper.Map<MemberViewModel>(readDto);
     }
 
     public async Task<MemberViewModel?> UpdateAsync(MemberViewModel viewModel)
@@ -77,19 +78,22 @@ public class MemberClient : IMemberClient
         var url = $"{_apiBaseUrl}api/members/{viewModel.Id}";
         var response = await _httpClient.PutAsJsonAsync(url, updateDto);
 
-        if (!response.IsSuccessStatusCode)
-        {
-            return null;
-        }
+        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo actualizar el socio.");
 
         var readDto = await response.Content.ReadFromJsonAsync<MemberReadDto>();
-        return readDto == null ? null : _mapper.Map<MemberViewModel>(readDto);
+
+        if (readDto == null)
+        {
+            throw new InvalidOperationException("La API devolvió una respuesta vacía al actualizar el socio.");
+        }
+
+        return _mapper.Map<MemberViewModel>(readDto);
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
         var url = $"{_apiBaseUrl}api/members/{id}";
         var response = await _httpClient.DeleteAsync(url);
-        return response.IsSuccessStatusCode;
+        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo eliminar el socio.");
     }
 }

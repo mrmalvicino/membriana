@@ -8,5 +8,5 @@ public interface IEmployeeClient
     Task<EmployeeViewModel?> GetByIdAsync(int id);
     Task<EmployeeViewModel?> CreateAsync(EmployeeViewModel employee);
     Task<EmployeeViewModel?> UpdateAsync(EmployeeViewModel employee);
-    Task<bool> DeleteAsync(int id);
+    Task DeleteAsync(int id);
 }
