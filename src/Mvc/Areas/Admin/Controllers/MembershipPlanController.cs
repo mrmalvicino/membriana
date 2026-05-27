@@ -1,14 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Mvc.Areas.Admin.ViewModels;
 using Mvc.Authentication;
-using Mvc.Exceptions;
 using Mvc.Clients.Interfaces;
 
 namespace Mvc.Areas.Admin.Controllers;
 
 [Area("Admin")]
 [JwtAuthorizationFilter]
-public class MembershipPlanController : Controller
+public class MembershipPlanController : AdminControllerBase
 {
     private readonly IMembershipPlanClient _membershipPlanClient;
     private readonly IUserClient _userClient;
@@ -67,13 +66,8 @@ public class MembershipPlanController : Controller
                 await _membershipPlanClient.CreateAsync(membershipPlan);
                 return RedirectToAction(nameof(Index));
             }
-            catch (BusinessRuleException ex)
+            catch (Exception ex) when (TryAddModelError(ex))
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
-            }
-            catch (ApplicationException ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
             }
         }
 
@@ -119,13 +113,8 @@ public class MembershipPlanController : Controller
             {
                 return NotFound();
             }
-            catch (BusinessRuleException ex)
+            catch (Exception ex) when (TryAddModelError(ex))
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
-            }
-            catch (ApplicationException ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
             }
         }
 
@@ -164,14 +153,8 @@ public class MembershipPlanController : Controller
             await _membershipPlanClient.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
-        catch (BusinessRuleException ex)
+        catch (Exception ex) when (TrySetDeleteError(ex))
         {
-            TempData["BusinessError"] = ex.Message;
-            return RedirectToAction(nameof(Delete), new { id });
-        }
-        catch (ApplicationException ex)
-        {
-            TempData["BusinessError"] = ex.Message;
             return RedirectToAction(nameof(Delete), new { id });
         }
         catch (KeyNotFoundException)

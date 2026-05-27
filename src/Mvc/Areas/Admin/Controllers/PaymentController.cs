@@ -2,14 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Mvc.Areas.Admin.ViewModels;
 using Mvc.Authentication;
-using Mvc.Exceptions;
 using Mvc.Clients.Interfaces;
 
 namespace Mvc.Areas.Admin.Controllers;
 
 [Area("Admin")]
 [JwtAuthorizationFilter]
-public class PaymentController : Controller
+public class PaymentController : AdminControllerBase
 {
     private readonly IPaymentClient _paymentClient;
     private readonly IMemberClient _memberClient;
@@ -72,13 +71,8 @@ public class PaymentController : Controller
                 await _paymentClient.CreateAsync(payment);
                 return RedirectToAction(nameof(Index));
             }
-            catch (BusinessRuleException ex)
+            catch (Exception ex) when (TryAddModelError(ex))
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
-            }
-            catch (ApplicationException ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
             }
         }
 
@@ -124,13 +118,8 @@ public class PaymentController : Controller
             {
                 return NotFound();
             }
-            catch (BusinessRuleException ex)
+            catch (Exception ex) when (TryAddModelError(ex))
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
-            }
-            catch (ApplicationException ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
             }
         }
 
@@ -169,14 +158,8 @@ public class PaymentController : Controller
         {
             return NotFound();
         }
-        catch (BusinessRuleException ex)
+        catch (Exception ex) when (TrySetDeleteError(ex))
         {
-            TempData["BusinessError"] = ex.Message;
-            return RedirectToAction(nameof(Delete), new { id });
-        }
-        catch (ApplicationException ex)
-        {
-            TempData["BusinessError"] = ex.Message;
             return RedirectToAction(nameof(Delete), new { id });
         }
     }

@@ -1,14 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Mvc.Areas.Admin.ViewModels;
 using Mvc.Authentication;
-using Mvc.Exceptions;
 using Mvc.Clients.Interfaces;
 
 namespace Mvc.Areas.Admin.Controllers;
 
 [Area("Admin")]
 [JwtAuthorizationFilter]
-public class EmployeeController : Controller
+public class EmployeeController : AdminControllerBase
 {
     private readonly IEmployeeClient _employeeClient;
     private readonly IUserClient _userClient;
@@ -67,13 +66,8 @@ public class EmployeeController : Controller
                 await _employeeClient.CreateAsync(employee);
                 return RedirectToAction(nameof(Index));
             }
-            catch (BusinessRuleException ex)
+            catch (Exception ex) when (TryAddModelError(ex))
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
-            }
-            catch (ApplicationException ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
             }
         }
 
@@ -115,13 +109,8 @@ public class EmployeeController : Controller
             {
                 return NotFound();
             }
-            catch (BusinessRuleException ex)
+            catch (Exception ex) when (TryAddModelError(ex))
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
-            }
-            catch (ApplicationException ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
             }
         }
 
@@ -159,14 +148,8 @@ public class EmployeeController : Controller
         {
             return NotFound();
         }
-        catch (BusinessRuleException ex)
+        catch (Exception ex) when (TrySetDeleteError(ex))
         {
-            TempData["BusinessError"] = ex.Message;
-            return RedirectToAction(nameof(Delete), new { id });
-        }
-        catch (ApplicationException ex)
-        {
-            TempData["BusinessError"] = ex.Message;
             return RedirectToAction(nameof(Delete), new { id });
         }
     }
