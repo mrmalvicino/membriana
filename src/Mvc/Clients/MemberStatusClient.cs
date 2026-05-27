@@ -31,7 +31,7 @@ public class MemberStatusClient : IMemberStatusClient
 
         var response = await _httpClient.GetAsync(url);
 
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener la cantidad de socios por estado.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener la cantidad de socios por estado.");
 
         var amounts = await response.Content.ReadFromJsonAsync<List<AmountResponse>>();
         var amount = amounts?.FirstOrDefault();
@@ -55,7 +55,7 @@ public class MemberStatusClient : IMemberStatusClient
 
         var response = await _httpClient.GetAsync(url);
 
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener la cantidad de altas del período.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener la cantidad de altas del período.");
 
         var amounts = await response.Content.ReadFromJsonAsync<List<AmountResponse>>();
         var amount = amounts?.FirstOrDefault();
@@ -79,7 +79,7 @@ public class MemberStatusClient : IMemberStatusClient
 
         var response = await _httpClient.GetAsync(url);
 
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener la cantidad de bajas del período.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener la cantidad de bajas del período.");
 
         var amounts = await response.Content.ReadFromJsonAsync<List<AmountResponse>>();
         var amount = amounts?.FirstOrDefault();

@@ -40,7 +40,7 @@ public class AuthenticationClient : IAuthenticationClient
         if (!response.IsSuccessStatusCode)
         {
             throw new ApplicationException(
-                await ApiErrorMessageReader.ReadAsync(response, "Credenciales inválidas.")
+                await ApiErrorResponseHandler.ReadAsync(response, "Credenciales inválidas.")
             );
         }
 
@@ -72,7 +72,7 @@ public class AuthenticationClient : IAuthenticationClient
         if (!response.IsSuccessStatusCode)
         {
             throw new ApplicationException(
-                await ApiErrorMessageReader.ReadAsync(response, "Datos inválidos")
+                await ApiErrorResponseHandler.ReadAsync(response, "Datos inválidos")
             );
         }
 
@@ -106,7 +106,7 @@ public class AuthenticationClient : IAuthenticationClient
         if (!response.IsSuccessStatusCode)
         {
             throw new ApplicationException(
-                await ApiErrorMessageReader.ReadAsync(
+                await ApiErrorResponseHandler.ReadAsync(
                     response,
                     "No pudimos reenviar el correo. Intenta nuevamente."
                 )
@@ -153,7 +153,7 @@ public class AuthenticationClient : IAuthenticationClient
         if (!response.IsSuccessStatusCode)
         {
             throw new ApplicationException(
-                await ApiErrorMessageReader.ReadAsync(response, "No se pudo confirmar el email.")
+                await ApiErrorResponseHandler.ReadAsync(response, "No se pudo confirmar el email.")
             );
         }
 

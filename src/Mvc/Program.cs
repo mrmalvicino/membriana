@@ -1,5 +1,4 @@
 using Mvc.Authentication;
-using Mvc.Authentication.Interfaces;
 using Mvc.Clients;
 using Mvc.Clients.Interfaces;
 using System.Globalization;

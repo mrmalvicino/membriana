@@ -27,7 +27,7 @@ public class MembershipPlanClient : IMembershipPlanClient
     {
         var url = $"{_apiBaseUrl}api/membershipplans?organizationId={organizationId}";
         var response = await _httpClient.GetAsync(url);
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener la lista de planes de membresía.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener la lista de planes de membresía.");
         var dtos = await response.Content.ReadFromJsonAsync<List<MembershipPlanReadDto>>() ?? new();
         return _mapper.Map<List<MembershipPlanViewModel>>(dtos);
     }
@@ -42,7 +42,7 @@ public class MembershipPlanClient : IMembershipPlanClient
             return null;
         }
 
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener el plan de membresía.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener el plan de membresía.");
 
         var dto = await response.Content.ReadFromJsonAsync<MembershipPlanReadDto>();
 
@@ -60,7 +60,7 @@ public class MembershipPlanClient : IMembershipPlanClient
         var url = $"{_apiBaseUrl}api/membershipplans";
         var response = await _httpClient.PostAsJsonAsync(url, createDto);
 
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo crear el plan de membresía.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo crear el plan de membresía.");
 
         var readDto = await response.Content.ReadFromJsonAsync<MembershipPlanReadDto>();
 
@@ -78,7 +78,7 @@ public class MembershipPlanClient : IMembershipPlanClient
         var url = $"{_apiBaseUrl}api/membershipplans/{viewModel.Id}";
         var response = await _httpClient.PutAsJsonAsync(url, updateDto);
 
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo actualizar el plan de membresía.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo actualizar el plan de membresía.");
 
         var readDto = await response.Content.ReadFromJsonAsync<MembershipPlanReadDto>();
 
@@ -95,6 +95,6 @@ public class MembershipPlanClient : IMembershipPlanClient
         var url = $"{_apiBaseUrl}api/membershipplans/{id}";
         var response = await _httpClient.DeleteAsync(url);
 
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo eliminar el plan de membresía.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo eliminar el plan de membresía.");
     }
 }

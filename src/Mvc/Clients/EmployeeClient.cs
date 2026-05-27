@@ -27,7 +27,7 @@ public class EmployeeClient : IEmployeeClient
     {
         var url = $"{_apiBaseUrl}api/employees?organizationId={organizationId}";
         var response = await _httpClient.GetAsync(url);
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener la lista de empleados.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener la lista de empleados.");
         var readDtos = await response.Content.ReadFromJsonAsync<List<EmployeeReadDto>>() ?? new();
         return _mapper.Map<List<EmployeeViewModel>>(readDtos);
     }
@@ -42,7 +42,7 @@ public class EmployeeClient : IEmployeeClient
             return null;
         }
 
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener el empleado.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener el empleado.");
 
         var readDto = await response.Content.ReadFromJsonAsync<EmployeeReadDto>();
 
@@ -60,7 +60,7 @@ public class EmployeeClient : IEmployeeClient
         var url = $"{_apiBaseUrl}api/employees";
         var response = await _httpClient.PostAsJsonAsync(url, createDto);
 
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo crear el empleado.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo crear el empleado.");
 
         var readDto = await response.Content.ReadFromJsonAsync<EmployeeReadDto>();
 
@@ -78,7 +78,7 @@ public class EmployeeClient : IEmployeeClient
         var url = $"{_apiBaseUrl}api/employees/{viewModel.Id}";
         var response = await _httpClient.PutAsJsonAsync(url, updateDto);
 
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo actualizar el empleado.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo actualizar el empleado.");
 
         var readDto = await response.Content.ReadFromJsonAsync<EmployeeReadDto>();
 
@@ -94,6 +94,6 @@ public class EmployeeClient : IEmployeeClient
     {
         var url = $"{_apiBaseUrl}api/employees/{id}";
         var response = await _httpClient.DeleteAsync(url);
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo eliminar el empleado.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo eliminar el empleado.");
     }
 }

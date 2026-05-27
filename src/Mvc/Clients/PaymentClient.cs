@@ -27,7 +27,7 @@ public class PaymentClient : IPaymentClient
     {
         var url = $"{_apiBaseUrl}api/payments?organizationId={organizationId}";
         var response = await _httpClient.GetAsync(url);
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener la lista de pagos.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener la lista de pagos.");
         var readDtos = await response.Content.ReadFromJsonAsync<List<PaymentReadDto>>() ?? new();
         return _mapper.Map<List<PaymentViewModel>>(readDtos);
     }
@@ -42,7 +42,7 @@ public class PaymentClient : IPaymentClient
             return null;
         }
 
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener el pago.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener el pago.");
 
         var readDto = await response.Content.ReadFromJsonAsync<PaymentReadDto>();
 
@@ -60,7 +60,7 @@ public class PaymentClient : IPaymentClient
         var url = $"{_apiBaseUrl}api/payments";
         var response = await _httpClient.PostAsJsonAsync(url, createDto);
 
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo registrar el pago.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo registrar el pago.");
 
         var readDto = await response.Content.ReadFromJsonAsync<PaymentReadDto>();
 
@@ -78,7 +78,7 @@ public class PaymentClient : IPaymentClient
         var url = $"{_apiBaseUrl}api/payments/{viewModel.Id}";
         var response = await _httpClient.PutAsJsonAsync(url, updateDto);
 
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo actualizar el pago.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo actualizar el pago.");
 
         var readDto = await response.Content.ReadFromJsonAsync<PaymentReadDto>();
 
@@ -94,7 +94,7 @@ public class PaymentClient : IPaymentClient
     {
         var url = $"{_apiBaseUrl}api/payments/{id}";
         var response = await _httpClient.DeleteAsync(url);
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo eliminar el pago.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo eliminar el pago.");
     }
 
     public async Task<decimal> GetMonthlyIncomeAsync(int organizationId, int year, int month)
@@ -103,7 +103,7 @@ public class PaymentClient : IPaymentClient
             $"?organizationId={organizationId}&year={year}&month={month}";
 
         var response = await _httpClient.GetAsync(url);
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener el ingreso mensual.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener el ingreso mensual.");
         var dto = await response.Content.ReadFromJsonAsync<MonthlyIncomeResponseDto>();
 
         if (dto is null)

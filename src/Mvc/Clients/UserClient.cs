@@ -23,7 +23,7 @@ public class UserClient : IUserClient
         var url = $"{_apiBaseUrl}api/users/me";
         var response = await _httpClient.GetAsync(url);
 
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener el usuario autenticado.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener el usuario autenticado.");
 
         var dto = await response.Content.ReadFromJsonAsync<LoggedUserContextDto>();
         
@@ -40,7 +40,7 @@ public class UserClient : IUserClient
         var url = $"{_apiBaseUrl}api/users/me/organization-id";
         var response = await _httpClient.GetAsync(url);
 
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener la organización del usuario.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener la organización del usuario.");
 
         var orgId = await response.Content.ReadFromJsonAsync<int?>();
 

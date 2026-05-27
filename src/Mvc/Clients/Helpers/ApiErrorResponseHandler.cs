@@ -6,7 +6,7 @@ using System.Text.Json;
 
 namespace Mvc.Clients.Helpers;
 
-internal static class ApiErrorMessageReader
+internal static class ApiErrorResponseHandler
 {
     public static async Task EnsureSuccessAsync(
         HttpResponseMessage response,

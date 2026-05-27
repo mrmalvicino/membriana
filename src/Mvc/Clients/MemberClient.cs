@@ -27,7 +27,7 @@ public class MemberClient : IMemberClient
     {
         var url = $"{_apiBaseUrl}api/members?organizationId={organizationId}";
         var response = await _httpClient.GetAsync(url);
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener la lista de socios.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener la lista de socios.");
         var readDtos = await response.Content.ReadFromJsonAsync<List<MemberReadDto>>() ?? new();
         return _mapper.Map<List<MemberViewModel>>(readDtos);
     }
@@ -42,7 +42,7 @@ public class MemberClient : IMemberClient
             return null;
         }
 
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo obtener el socio.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener el socio.");
 
         var readDto = await response.Content.ReadFromJsonAsync<MemberReadDto>();
 
@@ -60,7 +60,7 @@ public class MemberClient : IMemberClient
         var url = $"{_apiBaseUrl}api/members";
         var response = await _httpClient.PostAsJsonAsync(url, createDto);
 
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo crear el socio.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo crear el socio.");
 
         var readDto = await response.Content.ReadFromJsonAsync<MemberReadDto>();
 
@@ -78,7 +78,7 @@ public class MemberClient : IMemberClient
         var url = $"{_apiBaseUrl}api/members/{viewModel.Id}";
         var response = await _httpClient.PutAsJsonAsync(url, updateDto);
 
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo actualizar el socio.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo actualizar el socio.");
 
         var readDto = await response.Content.ReadFromJsonAsync<MemberReadDto>();
 
@@ -94,6 +94,6 @@ public class MemberClient : IMemberClient
     {
         var url = $"{_apiBaseUrl}api/members/{id}";
         var response = await _httpClient.DeleteAsync(url);
-        await ApiErrorMessageReader.EnsureSuccessAsync(response, "No se pudo eliminar el socio.");
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo eliminar el socio.");
     }
 }

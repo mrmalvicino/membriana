@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Mvc.Authentication.Interfaces;
 using Mvc.Clients.Interfaces;
 using Mvc.ViewModels;
 
