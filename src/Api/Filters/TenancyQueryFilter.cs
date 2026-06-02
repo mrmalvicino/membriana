@@ -1,4 +1,5 @@
-﻿using Application.Services;
+using Api.Helpers;
+using Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -50,7 +51,9 @@ public class TenancyQueryFilter : IAsyncActionFilter
 
         if (queryOrgId != userOrgId)
         {
-            filterContext.Result = new NotFoundResult();
+            filterContext.Result = new NotFoundObjectResult(
+                ErrorResponseFactory.Create("El recurso no existe.")
+            );
             return;
         }
 

@@ -1,4 +1,5 @@
-﻿using Application.Repositories;
+using Api.Helpers;
+using Application.Repositories;
 using Application.Services;
 using Contracts.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -67,7 +68,9 @@ public class TenancyRouteFilter<T, R> : IAsyncActionFilter
 
         if (entity == null)
         {
-            filterContext.Result = new NotFoundResult();
+            filterContext.Result = new NotFoundObjectResult(
+                ErrorResponseFactory.Create("El recurso no existe.")
+            );
             return;
         }
 
@@ -75,7 +78,9 @@ public class TenancyRouteFilter<T, R> : IAsyncActionFilter
 
         if (entity.OrganizationId != userOrgId)
         {
-            filterContext.Result = new NotFoundResult();
+            filterContext.Result = new NotFoundObjectResult(
+                ErrorResponseFactory.Create("El recurso no existe.")
+            );
             return;
         }
 

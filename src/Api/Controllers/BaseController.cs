@@ -74,7 +74,7 @@ public abstract class BaseController
 
         if (entity == null)
         {
-            return NotFound();
+            return NotFound(ErrorResponseFactory.Create("El recurso no existe."));
         }
 
         var readDto = _mapper.Map<TReadDto>(entity);
