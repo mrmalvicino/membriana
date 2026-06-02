@@ -3,8 +3,6 @@ using Contracts.Dtos.Authentication;
 using Mvc.Clients.Helpers;
 using Mvc.Clients.Interfaces;
 using Mvc.ViewModels;
-using System.Text;
-using System.Text.Json;
 
 namespace Mvc.Clients;
 
@@ -29,64 +27,30 @@ public class AuthenticationClient : IAuthenticationClient
     {
         var loginRequestDto = _mapper.Map<LoginRequestDto>(loginViewModel);
 
-        var content = new StringContent(
-            JsonSerializer.Serialize(loginRequestDto),
-            Encoding.UTF8, "application/json"
-        );
-
         var url = $"{_apiBaseUrl}api/authentication/login";
-        var response = await _httpClient.PostAsync(url, content);
+        var response = await _httpClient.PostAsJsonAsync(url, loginRequestDto);
 
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new ApplicationException(
-                await ApiErrorResponseHandler.ReadAsync(response, "Credenciales inválidas.")
-            );
-        }
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "Credenciales inválidas.");
 
-        var json = await response.Content.ReadAsStringAsync();
-
-        var loginResponseDto = JsonSerializer.Deserialize<LoginResponseDto>(
-            json,
-            new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            }
+        return await ReadRequiredAsync<LoginResponseDto>(
+            response,
+            "La API devolvió una respuesta vacía al iniciar sesión."
         );
-
-        return loginResponseDto;
     }
 
     public async Task<RegisterResponseDto?> RegisterAsync(RegisterViewModel registerViewModel)
     {
         var registerRequestDto = _mapper.Map<RegisterRequestDto>(registerViewModel);
 
-        var content = new StringContent(
-            JsonSerializer.Serialize(registerRequestDto),
-            Encoding.UTF8, "application/json"
-        );
-
         var url = $"{_apiBaseUrl}api/authentication/register";
-        var response = await _httpClient.PostAsync(url, content);
+        var response = await _httpClient.PostAsJsonAsync(url, registerRequestDto);
 
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new ApplicationException(
-                await ApiErrorResponseHandler.ReadAsync(response, "Datos inválidos")
-            );
-        }
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "Datos inválidos.");
 
-        var json = await response.Content.ReadAsStringAsync();
-
-        var registerResponseDto = JsonSerializer.Deserialize<RegisterResponseDto>(
-            json,
-            new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            }
+        return await ReadRequiredAsync<RegisterResponseDto>(
+            response,
+            "La API devolvió una respuesta vacía al registrar la cuenta."
         );
-
-        return registerResponseDto;
     }
 
     public async Task<ResendConfirmationResponseDto?> ResendConfirmationAsync(
@@ -95,35 +59,18 @@ public class AuthenticationClient : IAuthenticationClient
     {
         var resendConfirmationRequestDto = _mapper.Map<ResendConfirmationRequestDto>(resendConfirmationViewModel);
 
-        var content = new StringContent(
-            JsonSerializer.Serialize(resendConfirmationRequestDto),
-            Encoding.UTF8, "application/json"
-        );
-
         var url = $"{_apiBaseUrl}api/authentication/resend-confirmation";
-        var response = await _httpClient.PostAsync(url, content);
+        var response = await _httpClient.PostAsJsonAsync(url, resendConfirmationRequestDto);
 
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new ApplicationException(
-                await ApiErrorResponseHandler.ReadAsync(
-                    response,
-                    "No pudimos reenviar el correo. Intenta nuevamente."
-                )
-            );
-        }
-
-        var json = await response.Content.ReadAsStringAsync();
-
-        var resendConfirmationResponseDto = JsonSerializer.Deserialize<ResendConfirmationResponseDto>(
-            json,
-            new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            }
+        await ApiErrorResponseHandler.EnsureSuccessAsync(
+            response,
+            "No pudimos reenviar el correo. Intenta nuevamente."
         );
 
-        return resendConfirmationResponseDto;
+        return await ReadRequiredAsync<ResendConfirmationResponseDto>(
+            response,
+            "La API devolvió una respuesta vacía al reenviar la confirmación."
+        );
     }
 
     public async Task<ConfirmEmailResponseDto> ConfirmEmailAsync(
@@ -132,35 +79,30 @@ public class AuthenticationClient : IAuthenticationClient
     {
         var confirmEmailRequestDto = _mapper.Map<ConfirmEmailRequestDto>(confirmEmailViewModel);
 
-        var content = new StringContent(
-            JsonSerializer.Serialize(confirmEmailRequestDto),
-            Encoding.UTF8,
-            "application/json"
-        );
-
         var url = $"{_apiBaseUrl}api/authentication/confirm-email";
-        var response = await _httpClient.PostAsync(url, content);
-        var json = await response.Content.ReadAsStringAsync();
+        var response = await _httpClient.PostAsJsonAsync(url, confirmEmailRequestDto);
 
-        var confirmEmailResponseDto = JsonSerializer.Deserialize<ConfirmEmailResponseDto>(
-            json,
-            new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            }
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo confirmar el email.");
+
+        return await ReadRequiredAsync<ConfirmEmailResponseDto>(
+            response,
+            "La API devolvió una respuesta vacía al confirmar el email."
         );
+    }
 
-        if (!response.IsSuccessStatusCode)
+    private static async Task<T> ReadRequiredAsync<T>(
+        HttpResponseMessage response,
+        string emptyResponseMessage
+    ) where T : class
+    {
+        var dto = await response.Content.ReadFromJsonAsync<T>();
+
+        if (dto == null)
         {
-            throw new ApplicationException(
-                await ApiErrorResponseHandler.ReadAsync(response, "No se pudo confirmar el email.")
-            );
+            throw new InvalidOperationException(emptyResponseMessage);
         }
 
-        return confirmEmailResponseDto ?? new ConfirmEmailResponseDto
-        {
-            Message = "Email confirmado correctamente."
-        };
+        return dto;
     }
 
 }

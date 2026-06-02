@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Mvc.Authentication;
 using Mvc.Clients.Interfaces;
+using Mvc.Exceptions;
 using Mvc.ViewModels;
 
 namespace Mvc.Controllers;
@@ -47,6 +48,11 @@ public class AuthenticationController : Controller
 
             return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
         }
+        catch (BusinessRuleException ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+            return View(loginViewModel);
+        }
         catch (ApplicationException ex)
         {
             ModelState.AddModelError("", ex.Message);
@@ -91,6 +97,11 @@ public class AuthenticationController : Controller
             TempData["EmailSendMessage"] = registerResponseDto.Message;
 
             return RedirectToAction(nameof(RegisterConfirmation));
+        }
+        catch (BusinessRuleException ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+            return View(registerViewModel);
         }
         catch (ApplicationException ex)
         {
