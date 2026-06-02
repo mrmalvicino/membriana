@@ -5,6 +5,7 @@ using Contracts.Dtos.Authentication;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
@@ -130,6 +131,13 @@ public class AuthenticationController : ControllerBase
                 }
             );
         }
+        catch (DbUpdateException ex) when (
+            DbUpdateExceptionHelper.TryCreateConflictMessage(ex, out var message)
+        )
+        {
+            await _unitOfWork.RollbackAsync();
+            return Conflict(ErrorResponseFactory.Create(message));
+        }
         catch (Exception)
         {
             await _unitOfWork.RollbackAsync();
@@ -142,7 +150,9 @@ public class AuthenticationController : ControllerBase
     }
 
     [HttpPost("resend-confirmation")]
-    public async Task<IActionResult> ResendConfirmation([FromBody] ResendConfirmationRequestDto dto)
+    public async Task<IActionResult> ResendConfirmation(
+        [FromBody] ResendConfirmationRequestDto dto
+    )
     {
         if (string.IsNullOrWhiteSpace(dto.Email))
         {

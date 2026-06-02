@@ -7,6 +7,7 @@ using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers;
 
@@ -47,10 +48,18 @@ public class MembersController : BaseController<
         }
 
         var entity = _mapper.Map<Member>(createDto);
-        var created = await _memberService.AddAsync(entity);
-        var readDto = _mapper.Map<MemberReadDto>(created);
 
-        return CreatedAtAction(nameof(Get), new { id = readDto.Id }, readDto);
+        try
+        {
+            var created = await _memberService.AddAsync(entity);
+            var readDto = _mapper.Map<MemberReadDto>(created);
+
+            return CreatedAtAction(nameof(Get), new { id = readDto.Id }, readDto);
+        }
+        catch (DbUpdateException ex) when (DbUpdateExceptionHelper.TryCreateConflictMessage(ex, out var message))
+        {
+            return Conflict(ErrorResponseFactory.Create(message));
+        }
     }
 
     [ServiceFilter(typeof(TenancyRouteFilter<Member, IMemberRepository>))]
@@ -71,10 +80,17 @@ public class MembersController : BaseController<
         }
 
         var entity = _mapper.Map<Member>(updateDto);
-        var updated = await _memberService.UpdateAsync(entity);
-        var readDto = _mapper.Map<MemberReadDto>(updated);
+        try
+        {
+            var updated = await _memberService.UpdateAsync(entity);
+            var readDto = _mapper.Map<MemberReadDto>(updated);
 
-        return Ok(readDto);
+            return Ok(readDto);
+        }
+        catch (DbUpdateException ex) when (DbUpdateExceptionHelper.TryCreateConflictMessage(ex, out var message))
+        {
+            return Conflict(ErrorResponseFactory.Create(message));
+        }
     }
 
     [ServiceFilter(typeof(TenancyRouteFilter<Member, IMemberRepository>))]

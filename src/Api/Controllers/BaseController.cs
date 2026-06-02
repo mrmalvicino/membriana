@@ -103,10 +103,19 @@ public abstract class BaseController
         }
 
         var entity = _mapper.Map<TEntity>(createDto);
-        var created = await _repository.AddAsync(entity);
-        var readDto = _mapper.Map<TReadDto>(created);
 
-        return CreatedAtAction(nameof(Get), new { id = readDto.Id }, readDto);
+        try
+        {
+            var created = await _repository.AddAsync(entity);
+            var readDto = _mapper.Map<TReadDto>(created);
+            return CreatedAtAction(nameof(Get), new { id = readDto.Id }, readDto);
+        }
+        catch (DbUpdateException ex) when (
+            DbUpdateExceptionHelper.TryCreateConflictMessage(ex, out var message)
+        )
+        {
+            return Conflict(ErrorResponseFactory.Create(message));
+        }
     }
 
     /// <summary>
@@ -130,10 +139,19 @@ public abstract class BaseController
         }
 
         var entity = _mapper.Map<TEntity>(updateDto);
-        var updated = await _repository.UpdateAsync(entity);
-        var readDto = _mapper.Map<TReadDto>(updated);
 
-        return Ok(readDto);
+        try
+        {
+            var updated = await _repository.UpdateAsync(entity);
+            var readDto = _mapper.Map<TReadDto>(updated);
+            return Ok(readDto);
+        }
+        catch (DbUpdateException ex) when (
+            DbUpdateExceptionHelper.TryCreateConflictMessage(ex, out var message)
+        )
+        {
+            return Conflict(ErrorResponseFactory.Create(message));
+        }
     }
 
     /// <summary>
