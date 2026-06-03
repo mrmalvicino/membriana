@@ -7,6 +7,9 @@ public class PaymentViewModel
     [Display(Name = "ID")]
     public int Id { get; set; }
 
+    [Display(Name = "Código")]
+    public string ReferenceCode { get; set; } = string.Empty;
+
     [Display(Name = "Fecha de pago")]
     [DataType(DataType.Date)]
     public DateTime DateTime { get; set; } = DateTime.Now;

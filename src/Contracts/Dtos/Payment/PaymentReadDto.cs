@@ -9,6 +9,7 @@ namespace Contracts.Dtos.Payment;
 public class PaymentReadDto : IIdentifiable
 {
     public int Id { get; set; }
+    public string ReferenceCode { get; set; } = null!;
     public bool Active { get; set; }
     public DateTime DateTime { get; set; }
     public decimal Amount { get; set; }

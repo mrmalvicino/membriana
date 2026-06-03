@@ -1,4 +1,5 @@
-﻿using Contracts.Interfaces;
+using Contracts.Interfaces;
+using Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 
@@ -7,10 +8,16 @@ namespace Domain.Entities;
 /// <summary>
 /// Representa un pago realizado por un socio.
 /// </summary>
-public class Payment : IIdentifiable, ITenantable
+public class Payment : IIdentifiable, ITenantable, IReferenceable
 {
     #region Id
     public int Id { get; set; }
+    #endregion
+
+    #region ReferenceCode
+    [Display(Name = "Código")]
+    [Required]
+    public string ReferenceCode { get; set; } = GenerateReferenceCode();
     #endregion
 
     #region Active
@@ -44,4 +51,9 @@ public class Payment : IIdentifiable, ITenantable
     [ValidateNever]
     public virtual Organization Organization { get; set; } = null!;
     #endregion
+
+    private static string GenerateReferenceCode()
+    {
+        return $"PAY-{Guid.NewGuid():N}".ToUpperInvariant();
+    }
 }
