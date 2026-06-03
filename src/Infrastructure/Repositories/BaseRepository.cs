@@ -1,5 +1,6 @@
-﻿using Application.Repositories;
+using Application.Repositories;
 using Contracts.Interfaces;
+using Domain.Interfaces;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -80,10 +81,17 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : class, II
             throw new KeyNotFoundException("Categoria no encontrada.");
         }
 
+        if (existingEntity is IReferenceable existingReferenceable &&
+            entity is IReferenceable incomingReferenceable)
+        {
+            incomingReferenceable.ReferenceCode = existingReferenceable.ReferenceCode;
+        }
+
         _dbContext.Entry(existingEntity).CurrentValues.SetValues(entity);
         _dbContext.Entry(existingEntity).State = EntityState.Modified;
+
         await _dbContext.SaveChangesAsync();
-        return entity;
+        return await GetByIdAsync(entity.Id) ?? entity;
     }
 
     /// <summary>

@@ -12,6 +12,13 @@ public class PersonConfiguration : IEntityTypeConfiguration<Person>
 
         builder.HasKey(p => p.Id);
 
+        builder.Property(p => p.ReferenceCode)
+               .IsRequired()
+               .HasMaxLength(36);
+
+        builder.HasIndex(p => p.ReferenceCode)
+               .IsUnique();
+
         builder.Property(p => p.Active).IsRequired();
 
         builder.Property(p => p.Name)

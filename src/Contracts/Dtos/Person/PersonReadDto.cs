@@ -6,6 +6,7 @@ namespace Contracts.Dtos.Person;
 public class PersonReadDto : IIdentifiable
 {
     public int Id { get; set; }
+    public string ReferenceCode { get; set; } = null!;
     public bool Active { get; set; } = true;
     public string Name { get; set; } = null!;
     public string Email { get; set; } = null!;

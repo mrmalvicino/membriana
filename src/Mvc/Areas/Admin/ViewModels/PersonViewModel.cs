@@ -6,6 +6,9 @@ public class PersonViewModel
 {
     public int Id { get; set; }
 
+    [Display(Name = "Código")]
+    public string ReferenceCode { get; set; } = string.Empty;
+
     [Required]
     [Display(Name = "Estado")]
     public bool Active { get; set; } = true;

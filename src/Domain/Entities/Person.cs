@@ -1,4 +1,5 @@
-﻿using Contracts.Interfaces;
+using Contracts.Interfaces;
+using Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 
@@ -7,10 +8,16 @@ namespace Domain.Entities;
 /// <summary>
 /// Representa una persona.
 /// </summary>
-public class Person : IIdentifiable
+public class Person : IIdentifiable, IReferenceable
 {
     #region Id
     public int Id { get; set; }
+    #endregion
+
+    #region ReferenceCode
+    [Display(Name = "Código")]
+    [Required]
+    public string ReferenceCode { get; set; } = GenerateReferenceCode();
     #endregion
 
     #region Active
@@ -50,4 +57,9 @@ public class Person : IIdentifiable
     [ValidateNever]
     public virtual Image? ProfileImage { get; set; }
     #endregion
+
+    private static string GenerateReferenceCode()
+    {
+        return $"PER-{Guid.NewGuid():N}".ToUpperInvariant();
+    }
 }
