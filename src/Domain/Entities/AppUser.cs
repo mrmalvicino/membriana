@@ -1,4 +1,5 @@
-﻿using Contracts.Interfaces;
+using Contracts.Interfaces;
+using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
@@ -9,8 +10,14 @@ namespace Domain.Entities;
 /// Representa un usuario de la aplicación.
 /// Hereda de IdentityUser para la gestión de identidad y autenticación.
 /// </summary>
-public class AppUser : IdentityUser, ITenantable
+public class AppUser : IdentityUser, ITenantable, IReferenceable
 {
+    #region ReferenceCode
+    [Display(Name = "Código")]
+    [Required]
+    public string ReferenceCode { get; set; } = GenerateReferenceCode();
+    #endregion
+
     #region Organization
     [Required]
     public int OrganizationId { get; set; }
@@ -25,4 +32,9 @@ public class AppUser : IdentityUser, ITenantable
     #region Member
     public virtual Member? Member { get; set; }
     #endregion
+
+    private static string GenerateReferenceCode()
+    {
+        return $"USR-{Guid.NewGuid():N}".ToUpperInvariant();
+    }
 }

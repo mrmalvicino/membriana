@@ -8,6 +8,10 @@ public class AppUserConfiguration : IEntityTypeConfiguration<AppUser>
 {
     public void Configure(EntityTypeBuilder<AppUser> builder)
     {
+        builder.Property(u => u.ReferenceCode)
+               .IsRequired()
+               .HasMaxLength(36);
+
         builder.Property(u => u.OrganizationId)
                .IsRequired();
 
@@ -27,5 +31,7 @@ public class AppUserConfiguration : IEntityTypeConfiguration<AppUser>
                .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(u => u.OrganizationId);
+        builder.HasIndex(u => u.ReferenceCode)
+               .IsUnique();
     }
 }
