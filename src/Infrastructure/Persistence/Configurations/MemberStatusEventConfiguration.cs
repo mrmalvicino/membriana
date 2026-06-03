@@ -15,6 +15,10 @@ public class MemberStatusEventConfiguration : IEntityTypeConfiguration<MemberSta
         builder.Property(x => x.Id)
                .ValueGeneratedOnAdd();
 
+        builder.Property(x => x.ReferenceCode)
+               .IsRequired()
+               .HasMaxLength(36);
+
         builder.Property(x => x.OrganizationId)
                .IsRequired();
 
@@ -61,5 +65,7 @@ public class MemberStatusEventConfiguration : IEntityTypeConfiguration<MemberSta
         builder.HasIndex(x => new { x.OrganizationId, x.ChangedAtDateTime });
         builder.HasIndex(x => new { x.OrganizationId, x.NewStatus, x.ChangedAtDateTime });
         builder.HasIndex(x => new { x.OrganizationId, x.MemberId, x.ChangedAtDateTime });
+        builder.HasIndex(x => x.ReferenceCode)
+               .IsUnique();
     }
 }

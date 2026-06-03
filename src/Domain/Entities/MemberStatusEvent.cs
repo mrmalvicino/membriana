@@ -1,6 +1,7 @@
 ﻿using Contracts.Enums;
 using Contracts.Interfaces;
 using Domain.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entities;
 
@@ -9,10 +10,15 @@ namespace Domain.Entities;
 /// de una organización. Incluye información sobre el estado anterior, el nuevo estado, la
 /// fecha y hora del cambio, el usuario que realizó el cambio y otros detalles relevantes.
 /// </summary>
-public class MemberStatusEvent : IIdentifiable, ITenantable, IAuditable
+public class MemberStatusEvent : IIdentifiable, ITenantable, IAuditable, IReferenceable
 {
     #region Id
     public int Id { get; set; }
+    #endregion
+
+    #region ReferenceCode
+    [Required]
+    public string ReferenceCode { get; set; } = GenerateReferenceCode();
     #endregion
 
     #region Member
@@ -45,4 +51,9 @@ public class MemberStatusEvent : IIdentifiable, ITenantable, IAuditable
     #region Details
     public string? Details { get; set; }
     #endregion
+
+    private static string GenerateReferenceCode()
+    {
+        return $"MSE-{Guid.NewGuid():N}".ToUpperInvariant();
+    }
 }
