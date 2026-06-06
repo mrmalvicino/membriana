@@ -12,6 +12,13 @@ public class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
 
         builder.HasKey(o => o.Id);
 
+        builder.Property(o => o.ReferenceCode)
+               .IsRequired()
+               .HasMaxLength(36);
+
+        builder.HasIndex(o => o.ReferenceCode)
+               .IsUnique();
+
         builder.Property(o => o.Active).IsRequired();
 
         builder.Property(o => o.Name)
