@@ -1,6 +1,6 @@
+using Api.Helpers;
 using Application.Repositories;
 using Application.Services;
-using Api.Helpers;
 using Contracts.Dtos.Authentication;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -18,16 +18,19 @@ public class AuthenticationController : ControllerBase
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserService _userService;
     private readonly IAccountService _accountService;
+    private readonly IBusinessLogger _businessLogger;
 
     public AuthenticationController(
         IUnitOfWork unitOfWork,
         IUserService userService,
-        IAccountService accountService
+        IAccountService accountService,
+        IBusinessLogger businessLogger
     )
     {
         _unitOfWork = unitOfWork;
         _userService = userService;
         _accountService = accountService;
+        _businessLogger = businessLogger;
     }
 
     [HttpPost("login")]
@@ -121,6 +124,9 @@ public class AuthenticationController : ControllerBase
 
             // Confirmar transacción y enviar mail de confirmación
             await _unitOfWork.CommitAsync();
+
+            _businessLogger.LogUserRegistered(user, employee);
+
             await _accountService.SendConfirmationAsync(user);
 
             return Ok(
@@ -237,6 +243,8 @@ public class AuthenticationController : ControllerBase
         {
             return BadRequest(ErrorResponseFactory.Create("No se pudo confirmar el email."));
         }
+
+        _businessLogger.LogEmailConfirmed(user);
 
         return Ok(
             new ConfirmEmailResponseDto

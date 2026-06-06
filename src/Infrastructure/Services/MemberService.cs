@@ -8,11 +8,17 @@ public class MemberService : IMemberService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserService _userService;
+    private readonly IBusinessLogger _businessLogger;
 
-    public MemberService(IUnitOfWork unitOfWork, IUserService userService)
+    public MemberService(
+        IUnitOfWork unitOfWork,
+        IUserService userService,
+        IBusinessLogger businessLogger
+    )
     {
         _unitOfWork = unitOfWork;
         _userService = userService;
+        _businessLogger = businessLogger;
     }
 
     public async Task<Member> AddAsync(Member member)
@@ -25,7 +31,7 @@ public class MemberService : IMemberService
         {
             var createdMember = await _unitOfWork.MemberRepository.AddAsync(member);
 
-            await _unitOfWork.MemberStatusEventRepository.AddAsync(
+            var createdMemberStatusEvent = await _unitOfWork.MemberStatusEventRepository.AddAsync(
                 new MemberStatusEvent
                 {
                     MemberId = createdMember.Id,
@@ -38,6 +44,8 @@ public class MemberService : IMemberService
             );
 
             await _unitOfWork.CommitAsync();
+
+            _businessLogger.LogMemberStatusEventCreated(createdMemberStatusEvent, createdMember, loggedUser);
 
             return createdMember;
         }
@@ -66,7 +74,7 @@ public class MemberService : IMemberService
         {
             var updatedMember = await _unitOfWork.MemberRepository.UpdateAsync(member);
 
-            await _unitOfWork.MemberStatusEventRepository.AddAsync(
+            var createdMemberStatusEvent = await _unitOfWork.MemberStatusEventRepository.AddAsync(
                 new MemberStatusEvent
                 {
                     MemberId = updatedMember.Id,
@@ -79,6 +87,8 @@ public class MemberService : IMemberService
             );
 
             await _unitOfWork.CommitAsync();
+
+            _businessLogger.LogMemberStatusEventCreated(createdMemberStatusEvent, updatedMember, loggedUser);
 
             return updatedMember;
         }
