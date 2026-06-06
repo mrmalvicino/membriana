@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Sinks.MSSqlServer;
+using System.Collections.ObjectModel;
+using System.Data;
 using System.Text;
 
 namespace Api;
@@ -38,9 +40,23 @@ public class Program
 
         #region Logging
 
+        var columnOptions = new ColumnOptions
+        {
+            AdditionalColumns = new Collection<SqlColumn>
+            {
+                new()
+                {
+                    ColumnName = "LogSource",
+                    DataType = SqlDbType.NVarChar,
+                    DataLength = 64
+                }
+            }
+        };
+
         builder.Host.UseSerilog((context, services, configuration) =>
         {
             configuration
+                .Enrich.WithProperty("LogSource", "Serilog")
                 .WriteTo.Console()
                 .WriteTo.MSSqlServer(
                     connectionString: dbConnectionString,
@@ -48,13 +64,16 @@ public class Program
                     {
                         TableName = "Logs",
                         AutoCreateSqlTable = true
-                    });
+                    },
+                    columnOptions: columnOptions
+                );
         });
 
         #endregion
 
         #region Dependency Injection
 
+        builder.Services.AddSingleton<Serilog.ILogger>(_ => Log.Logger);
         builder.Services.AddInfrastructure(dbConnectionString);
         builder.Services.AddScoped<TenancyQueryFilter>();
         builder.Services.AddScoped(typeof(TenancyRouteFilter<,>));
