@@ -125,7 +125,7 @@ public class AuthenticationController : ControllerBase
             // Confirmar transacción y enviar mail de confirmación
             await _unitOfWork.CommitAsync();
 
-            _businessLogger.LogUserRegistered(user, employee);
+            _businessLogger.LogUserRegistered(user, employee, organization.ReferenceCode);
 
             await _accountService.SendConfirmationAsync(user);
 
@@ -244,7 +244,15 @@ public class AuthenticationController : ControllerBase
             return BadRequest(ErrorResponseFactory.Create("No se pudo confirmar el email."));
         }
 
-        _businessLogger.LogEmailConfirmed(user);
+        var organizationReferenceCode = await _unitOfWork.OrganizationRepository
+            .GetReferenceCodeByIdAsync(user.OrganizationId);
+
+        if (organizationReferenceCode == null)
+        {
+            return BadRequest(ErrorResponseFactory.Create("Organización no encontrada."));
+        }
+
+        _businessLogger.LogEmailConfirmed(user, organizationReferenceCode);
 
         return Ok(
             new ConfirmEmailResponseDto

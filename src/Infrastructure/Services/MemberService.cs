@@ -31,6 +31,15 @@ public class MemberService : IMemberService
         {
             var createdMember = await _unitOfWork.MemberRepository.AddAsync(member);
 
+            var organizationReferenceCode =
+                await _unitOfWork.OrganizationRepository
+                .GetReferenceCodeByIdAsync(createdMember.OrganizationId);
+
+            if (organizationReferenceCode == null)
+            {
+                throw new InvalidOperationException("Organización no encontrada.");
+            }
+
             var createdMemberStatusEvent = await _unitOfWork.MemberStatusEventRepository.AddAsync(
                 new MemberStatusEvent
                 {
@@ -45,7 +54,12 @@ public class MemberService : IMemberService
 
             await _unitOfWork.CommitAsync();
 
-            _businessLogger.LogMemberStatusEventCreated(createdMemberStatusEvent, createdMember, loggedUser);
+            _businessLogger.LogMemberStatusEventCreated(
+                createdMemberStatusEvent,
+                createdMember,
+                loggedUser,
+                organizationReferenceCode
+            );
 
             return createdMember;
         }
@@ -74,6 +88,15 @@ public class MemberService : IMemberService
         {
             var updatedMember = await _unitOfWork.MemberRepository.UpdateAsync(member);
 
+            var organizationReferenceCode =
+                await _unitOfWork.OrganizationRepository
+                .GetReferenceCodeByIdAsync(updatedMember.OrganizationId);
+
+            if (organizationReferenceCode == null)
+            {
+                throw new InvalidOperationException("Organización no encontrada.");
+            }
+
             var createdMemberStatusEvent = await _unitOfWork.MemberStatusEventRepository.AddAsync(
                 new MemberStatusEvent
                 {
@@ -88,7 +111,12 @@ public class MemberService : IMemberService
 
             await _unitOfWork.CommitAsync();
 
-            _businessLogger.LogMemberStatusEventCreated(createdMemberStatusEvent, updatedMember, loggedUser);
+            _businessLogger.LogMemberStatusEventCreated(
+                createdMemberStatusEvent,
+                updatedMember,
+                loggedUser,
+                organizationReferenceCode
+            );
 
             return updatedMember;
         }
