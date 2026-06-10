@@ -155,8 +155,9 @@ Install each of the following **NuGet Packages** for the respective projects acc
 | [Api](./src/Api/) | [JwtBearer](https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.JwtBearer/) | 8.0.16 | JWT Authentication. |
 | [Api](./src/Api/) | [Tokens.Jwt](https://www.nuget.org/packages/System.IdentityModel.Tokens.Jwt) | 8.11.0 | JWT Authentication. |
 | [Application](./src/Application/), [Mvc](./src/Mvc/) | [AutoMapper](https://www.nuget.org/packages/AutoMapper.Extensions.Microsoft.DependencyInjection/) | 12.0.1 | DTOs and Views mapping. |
-| [Api](./src/Api/), [Mvc](./src/Mvc/) | [Serilog.Sinks.MSSqlServer](https://www.nuget.org/packages/Serilog.Sinks.MSSqlServer/) | 9.0.3 | Writes the log event data to SQL table. |
-| [Api](./src/Api/), [Mvc](./src/Mvc/) | [Serilog.AspNetCore](https://www.nuget.org/packages/Serilog.AspNetCore) | 10.0.0 | Gets ILogger information. |
+| [Api](./src/Api/) | [Serilog.Sinks.MSSqlServer](https://www.nuget.org/packages/Serilog.Sinks.MSSqlServer/) | 9.0.3 | Writes the log event data to SQL table. |
+| [Api](./src/Api/) | [Serilog.AspNetCore](https://www.nuget.org/packages/Serilog.AspNetCore) | 10.0.0 | Connects ASP.NET Core logging abstractions to Serilog. |
+| [Infrastructure](./src/Infrastructure/) | [Serilog](https://www.nuget.org/packages/Serilog/) | 4.3.0 | Enables direct structured logging from BusinessLogger. |
 | [Infrastructure](./src/Infrastructure/) | [Microsoft.Extensions.Configuration](https://www.nuget.org/packages/Microsoft.Extensions.Configuration/) | 8.0.0 | Used by AppDbContextFactory. |
 | [Infrastructure](./src/Infrastructure/) | [Microsoft.Extensions.Configuration.Json](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Json/) | 8.0.0 | Used by AppDbContextFactory. |
 | [Infrastructure](./src/Infrastructure/) | [Microsoft.Extensions.Configuration.EnvironmentVariables](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.EnvironmentVariables/) | 8.0.0 | Used by AppDbContextFactory. |
