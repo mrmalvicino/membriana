@@ -138,7 +138,14 @@ public abstract class BaseController
             return BadRequest(ErrorResponseFactory.Create("El ID de la ruta no coincide con el ID del recurso."));
         }
 
-        var entity = _mapper.Map<TEntity>(updateDto);
+        var entity = await _repository.GetByIdAsync(id);
+
+        if (entity == null)
+        {
+            return NotFound(ErrorResponseFactory.Create("El recurso no existe."));
+        }
+
+        _mapper.Map(updateDto, entity);
 
         try
         {
