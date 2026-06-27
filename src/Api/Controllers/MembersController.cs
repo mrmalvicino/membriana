@@ -20,6 +20,7 @@ public class MembersController : BaseController<
     MemberUpdateDto
 >
 {
+    private readonly IMemberRepository _repository;
     private readonly IMemberService _memberService;
 
     /// <summary>
@@ -32,6 +33,7 @@ public class MembersController : BaseController<
         IMapper mapper
     ) : base(repository, userService, mapper)
     {
+        _repository = repository;
         _memberService = memberService;
     }
 
@@ -79,7 +81,15 @@ public class MembersController : BaseController<
             return BadRequest(ErrorResponseFactory.Create("El ID de la ruta no coincide con el ID del recurso."));
         }
 
-        var entity = _mapper.Map<Member>(updateDto);
+        var entity = await _repository.GetByIdAsync(id);
+
+        if (entity == null)
+        {
+            return NotFound(ErrorResponseFactory.Create("El recurso no existe."));
+        }
+
+        _mapper.Map(updateDto, entity);
+
         try
         {
             var updated = await _memberService.UpdateAsync(entity);
