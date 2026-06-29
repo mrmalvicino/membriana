@@ -1,4 +1,4 @@
-﻿using Application.Services;
+using Application.Services;
 using Domain.Entities;
 using Domain.Enums;
 using Microsoft.AspNetCore.Identity;
@@ -67,6 +67,14 @@ public class IdentityService : IIdentityService
     public async Task<IList<string>> GetRoles(AppUser user)
     {
         return await _userManager.GetRolesAsync(user);
+    }
+
+    /// <summary>
+    /// Elimina un usuario existente.
+    /// </summary>
+    public async Task<IdentityResult> DeleteUser(AppUser user)
+    {
+        return await _userManager.DeleteAsync(user);
     }
 
     /// <summary>

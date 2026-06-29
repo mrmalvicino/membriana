@@ -41,6 +41,11 @@ public interface IIdentityService
     Task<IList<string>> GetRoles(AppUser user);
 
     /// <summary>
+    /// Elimina un usuario existente.
+    /// </summary>
+    Task<IdentityResult> DeleteUser(AppUser user);
+
+    /// <summary>
     /// Genera un token que puede ser enviado por email para verificar su dirección.
     /// </summary>
     Task<string> GenerateEmailConfirmationToken(AppUser user);
