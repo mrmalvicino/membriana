@@ -1,6 +1,8 @@
 using Contracts.Dtos.Authentication;
+using Mvc.Areas.Admin.ViewModels;
 using Mvc.Clients.Helpers;
 using Mvc.Clients.Interfaces;
+using Contracts.Dtos.User;
 
 namespace Mvc.Clients;
 
@@ -50,5 +52,66 @@ public class UserClient : IUserClient
         }
 
         return orgId.Value;
+    }
+
+    public async Task<List<UserViewModel>> GetAllAsync()
+    {
+        var url = $"{_apiBaseUrl}api/users";
+        var response = await _httpClient.GetAsync(url);
+
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener la lista de usuarios.");
+
+        var dtos = await response.Content.ReadFromJsonAsync<List<UserReadDto>>() ?? new();
+
+        return dtos.Select(
+            dto => new UserViewModel
+            {
+                Id = dto.Id,
+                ReferenceCode = dto.ReferenceCode,
+                Email = dto.Email,
+                EmailConfirmed = dto.EmailConfirmed,
+                Role = dto.Role,
+                LinkedPersonName = dto.LinkedPersonName,
+                LinkedPersonType = dto.LinkedPersonType
+            }
+        ).ToList();
+    }
+
+    public async Task<UserViewModel?> GetByIdAsync(string id)
+    {
+        var url = $"{_apiBaseUrl}api/users/{id}";
+        var response = await _httpClient.GetAsync(url);
+
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener el usuario.");
+
+        var dto = await response.Content.ReadFromJsonAsync<UserReadDto>();
+
+        if (dto == null)
+        {
+            throw new InvalidOperationException("La API devolvió una respuesta vacía al obtener el usuario.");
+        }
+
+        return new UserViewModel
+        {
+            Id = dto.Id,
+            ReferenceCode = dto.ReferenceCode,
+            Email = dto.Email,
+            EmailConfirmed = dto.EmailConfirmed,
+            Role = dto.Role,
+            LinkedPersonName = dto.LinkedPersonName,
+            LinkedPersonType = dto.LinkedPersonType
+        };
+    }
+
+    public async Task DeleteAsync(string id)
+    {
+        var url = $"{_apiBaseUrl}api/users/{id}";
+        var response = await _httpClient.DeleteAsync(url);
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo eliminar el usuario.");
     }
 }
