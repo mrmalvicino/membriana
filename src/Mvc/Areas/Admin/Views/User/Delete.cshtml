@@ -1,0 +1,50 @@
+@model UserViewModel
+
+@{
+    ViewData["Title"] = "Eliminar usuario";
+}
+
+<h1 class="text-center">¿Estás seguro?</h1>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4 class="card-title mb-0">Eliminar usuario</h4>
+                </div>
+                <div class="card-body">
+                    @if (TempData["BusinessError"] is string error && !string.IsNullOrWhiteSpace(error))
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @error
+                        </div>
+                    }
+
+                    <dl class="row">
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.ReferenceCode)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.ReferenceCode)</dd>
+
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.LinkedPersonName)</dt>
+                        <dd class="col-sm-8">@(Model.LinkedPersonName ?? "-")</dd>
+
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Email)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Email)</dd>
+
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Role)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Role)</dd>
+                    </dl>
+
+                    <div class="form-group mt-4">
+                        <form asp-action="Delete">
+                            <input type="hidden" asp-for="Id" />
+                            <input type="submit" value="Eliminar" class="btn btn-danger w-100" />
+                        </form>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <a asp-action="Index" class="btn btn-secondary btn-sm">Volver al listado</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

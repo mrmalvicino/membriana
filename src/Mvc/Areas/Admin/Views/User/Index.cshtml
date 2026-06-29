@@ -1,0 +1,36 @@
+@model IEnumerable<UserViewModel>
+
+@{
+    ViewData["Title"] = "Usuarios";
+}
+
+<h1>Usuarios</h1>
+<p>Gestioná los usuarios de tu organización.</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.ReferenceCode)</th>
+            <th>@Html.DisplayNameFor(model => model.LinkedPersonName)</th>
+            <th>@Html.DisplayNameFor(model => model.LinkedPersonType)</th>
+            <th>@Html.DisplayNameFor(model => model.Role)</th>
+            <th>@Html.DisplayNameFor(model => model.EmailConfirmed)</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.ReferenceCode)</td>
+                <td>@(item.LinkedPersonName ?? "-")</td>
+                <td>@(item.LinkedPersonType ?? "-")</td>
+                <td>@Html.DisplayFor(modelItem => item.Role)</td>
+                <td>@Html.DisplayFor(modelItem => item.EmailConfirmed)</td>
+                <td>
+                    <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
