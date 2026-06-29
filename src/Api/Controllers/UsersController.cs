@@ -1,6 +1,7 @@
 using Application.Services;
 using Api.Helpers;
 using Contracts.Dtos.Authentication;
+using Contracts.Dtos.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,11 +12,13 @@ namespace Api.Controllers;
 [Authorize]
 public class UsersController : ControllerBase
 {
+    private readonly IUserManagementService _userManagementService;
     private readonly IUserService _userService;
 
-    public UsersController(IUserService userService)
+    public UsersController(IUserService userService, IUserManagementService userManagementService)
     {
         _userService = userService;
+        _userManagementService = userManagementService;
     }
 
     [HttpGet("me")]
@@ -49,6 +52,55 @@ public class UsersController : ControllerBase
             return Unauthorized(ErrorResponseFactory.Create(ex.Message));
         }
         catch (InvalidOperationException ex)
+        {
+            return BadRequest(ErrorResponseFactory.Create(ex.Message));
+        }
+    }
+
+    [HttpGet]
+    [Authorize(Policy = "Admin")]
+    public async Task<ActionResult<IEnumerable<UserReadDto>>> GetAll()
+    {
+        var organizationId = await _userService.GetOrganizationIdAsync();
+        return Ok(await _userManagementService.GetAllAsync(organizationId));
+    }
+
+    [HttpGet("{id}")]
+    [Authorize(Policy = "Admin")]
+    public async Task<ActionResult<UserReadDto>> GetById(string id)
+    {
+        var organizationId = await _userService.GetOrganizationIdAsync();
+        var user = await _userManagementService.GetByIdAsync(id, organizationId);
+
+        if (user == null)
+        {
+            return NotFound(ErrorResponseFactory.Create("El usuario no existe."));
+        }
+
+        return Ok(user);
+    }
+
+    [HttpDelete("{id}")]
+    [Authorize(Policy = "Admin")]
+    public async Task<IActionResult> Delete(string id)
+    {
+        var organizationId = await _userService.GetOrganizationIdAsync();
+        var loggedUser = await _userService.GetLoggedUserAsync();
+
+        try
+        {
+            await _userManagementService.DeleteAsync(id, organizationId, loggedUser.Id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ErrorResponseFactory.Create(ex.Message));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(ErrorResponseFactory.Create(ex.Message));
+        }
+        catch (ApplicationException ex)
         {
             return BadRequest(ErrorResponseFactory.Create(ex.Message));
         }

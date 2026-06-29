@@ -9,6 +9,7 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly AppDbContext _dbContext;
     private IDbContextTransaction? _transaction;
+    private readonly IAppUserRepository _appUserRepository;
     private readonly IIdentityService _identityService;
     private readonly IEmployeeRepository _employeeRepository;
     private readonly IMemberRepository _memberRepository;
@@ -17,6 +18,7 @@ public class UnitOfWork : IUnitOfWork
 
     public UnitOfWork(
         AppDbContext dbContext,
+        IAppUserRepository appUserRepository,
         IIdentityService identityService,
         IEmployeeRepository employeeRepository,
         IMemberRepository memberRepository,
@@ -25,6 +27,7 @@ public class UnitOfWork : IUnitOfWork
     )
     {
         _dbContext = dbContext;
+        _appUserRepository = appUserRepository;
         _identityService = identityService;
         _employeeRepository = employeeRepository;
         _memberRepository = memberRepository;
@@ -32,6 +35,7 @@ public class UnitOfWork : IUnitOfWork
         _organizationRepository = organizationRepository;
     }
 
+    public IAppUserRepository AppUserRepository => _appUserRepository;
     public IIdentityService IdentityService => _identityService;
     public IEmployeeRepository EmployeeRepository => _employeeRepository;
     public IMemberRepository MemberRepository => _memberRepository;

@@ -4,6 +4,7 @@ namespace Application.Repositories;
 
 public interface IUnitOfWork
 {
+    IAppUserRepository AppUserRepository { get; }
     IIdentityService IdentityService { get; }
     IEmployeeRepository EmployeeRepository { get; }
     IMemberRepository MemberRepository { get; }

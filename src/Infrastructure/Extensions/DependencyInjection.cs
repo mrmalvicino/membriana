@@ -44,6 +44,7 @@ public static class DependencyInjection
         );
 
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+        services.AddScoped<IAppUserRepository, AppUserRepository>();
         services.AddScoped<IMemberRepository, MemberRepository>();
         services.AddScoped<IMembershipPlanRepository, MembershipPlanRepository>();
         services.AddScoped<IMemberStatusEventRepository, MemberStatusEventRepository>();
@@ -58,6 +59,7 @@ public static class DependencyInjection
         services.AddScoped<IMemberStatusService, MemberStatusService>();
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IUserManagementService, UserManagementService>();
 
         return services;
     }
