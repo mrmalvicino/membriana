@@ -7,6 +7,20 @@
 <h1>Usuarios</h1>
 <p>Gestioná los usuarios de tu organización.</p>
 
+@if (TempData["UserInviteMessage"] is string inviteMessage && !string.IsNullOrWhiteSpace(inviteMessage))
+{
+    var alertClass = TempData["UserInviteIsSuccess"] is bool isSuccess && isSuccess
+        ? "alert-success"
+        : "alert-danger";
+
+    <div class="alert @alertClass">@inviteMessage</div>
+}
+
+<div class="mb-3 d-flex gap-2">
+    <a asp-action="CreateUserForMember" class="btn btn-primary">Crear usuario para socio</a>
+    <a asp-action="CreateUserForEmployee" class="btn btn-primary">Crear usuario para empleado</a>
+</div>
+
 <table class="table">
     <thead>
         <tr>

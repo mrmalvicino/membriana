@@ -1,0 +1,54 @@
+@model IEnumerable<UserCandidateViewModel>
+
+@{
+    ViewData["Title"] = "Crear usuario para empleado";
+}
+
+<h1>Crear usuario para empleado</h1>
+<p>Seleccioná un empleado sin acceso para crear su usuario y enviar el correo de confirmación.</p>
+
+@if (TempData["UserInviteMessage"] is string inviteMessage && !string.IsNullOrWhiteSpace(inviteMessage))
+{
+    var alertClass = TempData["UserInviteIsSuccess"] is bool isSuccess && isSuccess
+        ? "alert-success"
+        : "alert-danger";
+
+    <div class="alert @alertClass">@inviteMessage</div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No hay empleados disponibles para crear usuario.</div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.ReferenceCode)</th>
+                <th>@Html.DisplayNameFor(model => model.Name)</th>
+                <th>@Html.DisplayNameFor(model => model.Email)</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.ReferenceCode)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                    <td>
+                        <form asp-action="CreateUserForEmployee" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-primary btn-sm">Crear usuario</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<a asp-action="Index" class="btn btn-secondary btn-sm">Volver al listado</a>

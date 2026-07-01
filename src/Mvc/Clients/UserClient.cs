@@ -77,6 +77,54 @@ public class UserClient : IUserClient
         ).ToList();
     }
 
+    public async Task<List<UserCandidateViewModel>> GetEligibleMembersAsync()
+    {
+        var url = $"{_apiBaseUrl}api/users/eligible-members";
+        var response = await _httpClient.GetAsync(url);
+
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener la lista de socios disponibles.");
+
+        var dtos = await response.Content.ReadFromJsonAsync<List<UserCandidateDto>>() ?? new();
+
+        return dtos.Select(MapCandidate).ToList();
+    }
+
+    public async Task<List<UserCandidateViewModel>> GetEligibleEmployeesAsync()
+    {
+        var url = $"{_apiBaseUrl}api/users/eligible-employees";
+        var response = await _httpClient.GetAsync(url);
+
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener la lista de empleados disponibles.");
+
+        var dtos = await response.Content.ReadFromJsonAsync<List<UserCandidateDto>>() ?? new();
+
+        return dtos.Select(MapCandidate).ToList();
+    }
+
+    public async Task<string> CreateUserForMemberAsync(int memberId)
+    {
+        var url = $"{_apiBaseUrl}api/users/members/{memberId}";
+        var response = await _httpClient.PostAsync(url, null);
+
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo crear el usuario para el socio.");
+
+        var dto = await response.Content.ReadFromJsonAsync<RegisterResponseDto>();
+
+        return dto?.Message ?? "Se creó el usuario para el socio.";
+    }
+
+    public async Task<string> CreateUserForEmployeeAsync(int employeeId)
+    {
+        var url = $"{_apiBaseUrl}api/users/employees/{employeeId}";
+        var response = await _httpClient.PostAsync(url, null);
+
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo crear el usuario para el empleado.");
+
+        var dto = await response.Content.ReadFromJsonAsync<RegisterResponseDto>();
+
+        return dto?.Message ?? "Se creó el usuario para el empleado.";
+    }
+
     public async Task<UserViewModel?> GetByIdAsync(string id)
     {
         var url = $"{_apiBaseUrl}api/users/{id}";
@@ -113,5 +161,16 @@ public class UserClient : IUserClient
         var url = $"{_apiBaseUrl}api/users/{id}";
         var response = await _httpClient.DeleteAsync(url);
         await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo eliminar el usuario.");
+    }
+
+    private static UserCandidateViewModel MapCandidate(UserCandidateDto dto)
+    {
+        return new UserCandidateViewModel
+        {
+            Id = dto.Id,
+            ReferenceCode = dto.ReferenceCode,
+            Name = dto.Name,
+            Email = dto.Email
+        };
     }
 }

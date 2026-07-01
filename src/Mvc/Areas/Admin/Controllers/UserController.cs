@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Mvc.Authentication;
 using Mvc.Clients.Interfaces;
+using Mvc.Exceptions;
 
 namespace Mvc.Areas.Admin.Controllers;
 
@@ -20,6 +21,52 @@ public class UserController : AdminControllerBase
     {
         var users = await _userClient.GetAllAsync();
         return View(users);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> CreateUserForMember()
+    {
+        var candidates = await _userClient.GetEligibleMembersAsync();
+        return View(nameof(CreateUserForMember), candidates);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateUserForMember(int id)
+    {
+        try
+        {
+            TempData["UserInviteIsSuccess"] = true;
+            TempData["UserInviteMessage"] = await _userClient.CreateUserForMemberAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex) when (TrySetInviteError(ex))
+        {
+            return RedirectToAction(nameof(CreateUserForMember));
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> CreateUserForEmployee()
+    {
+        var candidates = await _userClient.GetEligibleEmployeesAsync();
+        return View(nameof(CreateUserForEmployee), candidates);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateUserForEmployee(int id)
+    {
+        try
+        {
+            TempData["UserInviteIsSuccess"] = true;
+            TempData["UserInviteMessage"] = await _userClient.CreateUserForEmployeeAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex) when (TrySetInviteError(ex))
+        {
+            return RedirectToAction(nameof(CreateUserForEmployee));
+        }
     }
 
     [HttpGet]
@@ -52,5 +99,17 @@ public class UserController : AdminControllerBase
         {
             return RedirectToAction(nameof(Delete), new { id });
         }
+    }
+
+    private bool TrySetInviteError(Exception exception)
+    {
+        if (exception is not (KeyNotFoundException or BusinessRuleException or ApplicationException))
+        {
+            return false;
+        }
+
+        TempData["UserInviteIsSuccess"] = false;
+        TempData["UserInviteMessage"] = exception.Message;
+        return true;
     }
 }

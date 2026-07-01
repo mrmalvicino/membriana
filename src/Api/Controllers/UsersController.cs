@@ -65,6 +65,70 @@ public class UsersController : ControllerBase
         return Ok(await _userManagementService.GetAllAsync(organizationId));
     }
 
+    [HttpGet("eligible-members")]
+    [Authorize(Policy = "Admin")]
+    public async Task<ActionResult<IEnumerable<UserCandidateDto>>> GetEligibleMembers()
+    {
+        var organizationId = await _userService.GetOrganizationIdAsync();
+        return Ok(await _userManagementService.GetEligibleMembersAsync(organizationId));
+    }
+
+    [HttpGet("eligible-employees")]
+    [Authorize(Policy = "Admin")]
+    public async Task<ActionResult<IEnumerable<UserCandidateDto>>> GetEligibleEmployees()
+    {
+        var organizationId = await _userService.GetOrganizationIdAsync();
+        return Ok(await _userManagementService.GetEligibleEmployeesAsync(organizationId));
+    }
+
+    [HttpPost("members/{memberId}")]
+    [Authorize(Policy = "Admin")]
+    public async Task<ActionResult<RegisterResponseDto>> CreateForMember(int memberId)
+    {
+        var organizationId = await _userService.GetOrganizationIdAsync();
+
+        try
+        {
+            return Ok(await _userManagementService.CreateUserForMemberAsync(memberId, organizationId));
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ErrorResponseFactory.Create(ex.Message));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(ErrorResponseFactory.Create(ex.Message));
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ErrorResponseFactory.Create(ex.Message));
+        }
+    }
+
+    [HttpPost("employees/{employeeId}")]
+    [Authorize(Policy = "Admin")]
+    public async Task<ActionResult<RegisterResponseDto>> CreateForEmployee(int employeeId)
+    {
+        var organizationId = await _userService.GetOrganizationIdAsync();
+
+        try
+        {
+            return Ok(await _userManagementService.CreateUserForEmployeeAsync(employeeId, organizationId));
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ErrorResponseFactory.Create(ex.Message));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(ErrorResponseFactory.Create(ex.Message));
+        }
+        catch (ApplicationException ex)
+        {
+            return BadRequest(ErrorResponseFactory.Create(ex.Message));
+        }
+    }
+
     [HttpGet("{id}")]
     [Authorize(Policy = "Admin")]
     public async Task<ActionResult<UserReadDto>> GetById(string id)
