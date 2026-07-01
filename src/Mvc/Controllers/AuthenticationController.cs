@@ -3,6 +3,8 @@ using Mvc.Authentication;
 using Mvc.Clients.Interfaces;
 using Mvc.Exceptions;
 using Mvc.ViewModels;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Mvc.Controllers;
 
@@ -46,7 +48,16 @@ public class AuthenticationController : Controller
 
             _cookieService.SetJwtCookie(loginResponse.Token);
 
-            return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(loginResponse.Token);
+            
+            var isMember = token.Claims.Any(claim =>
+                claim.Type == ClaimTypes.Role &&
+                string.Equals(claim.Value, "Member", StringComparison.Ordinal)
+            );
+
+            return isMember
+                ? RedirectToAction("Index", "Dashboard", new { area = "Portal" })
+                : RedirectToAction("Index", "Dashboard", new { area = "Admin" });
         }
         catch (BusinessRuleException ex)
         {
