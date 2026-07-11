@@ -2,6 +2,7 @@
 using Application.Services;
 using Contracts.Dtos.Authentication;
 using Domain.Entities;
+using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +23,7 @@ public class UserService : IUserService
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IConfiguration _configuration;
     private readonly IOrganizationRepository _organizationRepository;
+    private readonly IAppUserRepository _appUserRepository;
 
     /// <summary>
     /// Constructor principal.
@@ -30,13 +32,15 @@ public class UserService : IUserService
         UserManager<AppUser> userManager,
         IHttpContextAccessor httpContextAccessor,
         IConfiguration configuration,
-        IOrganizationRepository organizationRepository
+        IOrganizationRepository organizationRepository,
+        IAppUserRepository appUserRepository
     )
     {
         _userManager = userManager;
         _httpContextAccessor = httpContextAccessor;
         _configuration = configuration;
         _organizationRepository = organizationRepository;
+        _appUserRepository = appUserRepository;
     }
 
     /// <summary>
@@ -44,7 +48,7 @@ public class UserService : IUserService
     /// </summary>
     public async Task<LoggedUserContextDto> GetLoggedUserContextAsync()
     {
-        AppUser appUser = await GetLoggedUserAsync();
+        AppUser appUser = await GetLoggedUserHydratedAsync();
         Organization organization = await GetLoggedOrganizationAsync();
 
         LoggedUserContextDto loggedUserContextDto = new();
@@ -53,7 +57,9 @@ public class UserService : IUserService
         loggedUserContextDto.UserEmail = appUser.Email ?? "";
         loggedUserContextDto.OrganizationId = organization.Id;
         loggedUserContextDto.OrganizationName = organization.Name;
-        
+        loggedUserContextDto.MemberId = appUser.Member?.Id;
+        loggedUserContextDto.EmployeeId = appUser.Employee?.Id;
+
         return loggedUserContextDto;
     }
 
@@ -86,14 +92,38 @@ public class UserService : IUserService
     /// </remarks>
     public async Task<AppUser> GetLoggedUserAsync()
     {
-        var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+        var appUser = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
 
-        if (user == null)
+        if (appUser == null)
         {
             throw new UnauthorizedAccessException("No hay usuario en sesión.");
         }
 
-        return user;
+        return appUser;
+    }
+
+    /// <summary>
+    /// Obtiene el usuario actualmente autenticado en el contexto HTTP actual.
+    /// </summary>
+    /// <remarks>
+    /// A diferencia de <see cref="GetLoggedUserAsync"/>, este método devuelve el usuario con todos
+    /// los atributos hidratados para escenarios de eager loading.
+    /// </remarks>
+    public async Task<AppUser> GetLoggedUserHydratedAsync()
+    {
+        AppUser appUser = await GetLoggedUserAsync();
+
+        var appUserHydrated = await _appUserRepository.GetByIdAsync(
+            appUser.Id,
+            appUser.OrganizationId
+        );
+
+        if (appUserHydrated == null)
+        {
+            throw new InvalidOperationException("No se encontró el usuario autenticado.");
+        }
+
+        return appUserHydrated;
     }
 
     /// <summary>

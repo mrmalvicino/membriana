@@ -6,4 +6,6 @@ public class LoggedUserContextDto
     public string UserEmail { get; set; } = null!;
     public int OrganizationId { get; set; }
     public string OrganizationName { get; set; } = null!;
+    public int? MemberId { get; set; }
+    public int? EmployeeId { get; set; }
 }
