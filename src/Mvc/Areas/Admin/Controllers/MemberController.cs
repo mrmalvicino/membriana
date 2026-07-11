@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Mvc.Areas.Admin.ViewModels;
 using Mvc.Authentication;
 using Mvc.Clients.Interfaces;
+using Mvc.Controllers;
 
 namespace Mvc.Areas.Admin.Controllers;
 
 [Area("Admin")]
 [JwtAuthorizationFilter]
-public class MemberController : AdminControllerBase
+public class MemberController : MvcControllerBase
 {
     private readonly IMemberClient _memberClient;
     private readonly IMembershipPlanClient _membershipPlanClient;

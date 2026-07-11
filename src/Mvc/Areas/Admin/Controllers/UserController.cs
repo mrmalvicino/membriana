@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Mvc.Authentication;
 using Mvc.Clients.Interfaces;
+using Mvc.Controllers;
 using Mvc.Exceptions;
 
 namespace Mvc.Areas.Admin.Controllers;
 
 [Area("Admin")]
 [JwtAuthorizationFilter]
-public class UserController : AdminControllerBase
+public class UserController : MvcControllerBase
 {
     private readonly IUserClient _userClient;
 

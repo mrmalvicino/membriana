@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Mvc.Exceptions;
 
-namespace Mvc.Areas.Admin.Controllers;
+namespace Mvc.Controllers;
 
-public abstract class AdminControllerBase : Controller
+public abstract class MvcControllerBase : Controller
 {
     protected bool TryAddModelError(Exception exception)
     {
