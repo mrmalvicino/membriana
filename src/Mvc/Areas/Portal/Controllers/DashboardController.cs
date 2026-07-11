@@ -30,11 +30,9 @@ public class DashboardController : Controller
             AdmissionDate = new DateTime(2025, 11, 3),
             Status = MemberStatus.Active,
 
-            LastPayment = new PaymentSummaryViewModel
-            {
-                Amount = 12500m,
-                PaidAt = new DateTime(2026, 2, 20)
-            }
+            LastPaymentAmount = 12500m,
+            LastPaymentDate = new DateTime(2026, 2, 20)
+            
         };
 
         return View(dashboard);

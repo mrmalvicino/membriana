@@ -15,11 +15,7 @@ public class DashboardViewModel
     public DateTime AdmissionDate { get; set; }
 
     public MemberStatus Status { get; set; }
-    public PaymentSummaryViewModel? LastPayment { get; set; }
-}
 
-public class PaymentSummaryViewModel
-{
-    public decimal Amount { get; set; }
-    public DateTime PaidAt { get; set; }
+    public decimal LastPaymentAmount { get; set; }
+    public DateTime LastPaymentDate { get; set; }
 }
