@@ -5,6 +5,7 @@ namespace Mvc.Clients.Interfaces;
 public interface IPaymentClient
 {
     Task<List<PaymentViewModel>> GetAllAsync(int organizationId);
+    Task<List<PaymentViewModel>> GetAllByMemberIdAsync(int memberId);
     Task<PaymentViewModel?> GetByIdAsync(int id);
     Task<PaymentViewModel?> CreateAsync(PaymentViewModel payment);
     Task<PaymentViewModel?> UpdateAsync(PaymentViewModel payment);

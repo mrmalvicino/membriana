@@ -32,6 +32,15 @@ public class PaymentClient : IPaymentClient
         return _mapper.Map<List<PaymentViewModel>>(readDtos);
     }
 
+    public async Task<List<PaymentViewModel>> GetAllByMemberIdAsync(int memberId)
+    {
+        var url = $"{_apiBaseUrl}api/members/{memberId}/payments";
+        var response = await _httpClient.GetAsync(url);
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener la lista de pagos del miembro.");
+        var readDtos = await response.Content.ReadFromJsonAsync<List<PaymentReadDto>>() ?? new();
+        return _mapper.Map<List<PaymentViewModel>>(readDtos);
+    }
+
     public async Task<PaymentViewModel?> GetByIdAsync(int id)
     {
         var url = $"{_apiBaseUrl}api/payments/{id}";
