@@ -16,6 +16,6 @@ public class DashboardViewModel
 
     public MemberStatus Status { get; set; }
 
-    public decimal LastPaymentAmount { get; set; }
-    public DateTime LastPaymentDate { get; set; }
+    public decimal? LastPaymentAmount { get; set; }
+    public DateTime? LastPaymentDate { get; set; }
 }

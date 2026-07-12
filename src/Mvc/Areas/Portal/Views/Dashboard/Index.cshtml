@@ -38,17 +38,17 @@
                     <div>
                         <div class="text-muted small">Último pago realizado</div>
 
-                        @if (Model.LastPayment is null)
+                        @if (Model.LastPaymentAmount is null)
                         {
                             <div class="text-muted">No hay pagos registrados.</div>
                         }
                         else
                         {
                             <div class="fs-5 fw-semibold">
-                                @Model.LastPayment.Amount.ToString("C")
+                                @Model.LastPaymentAmount!.Value.ToString("C")
                             </div>
                             <div class="text-muted small">
-                                @Model.LastPayment.PaidAt.ToString("dd/MM/yyyy")
+                                @Model.LastPaymentDate.Value.ToString("dd/MM/yyyy")
                             </div>
                         }
                     </div>
