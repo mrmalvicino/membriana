@@ -34,6 +34,15 @@ public interface IUserService
     Task<AppUser> GetLoggedUserAsync();
 
     /// <summary>
+    /// Obtiene el usuario actualmente autenticado en el contexto HTTP actual.
+    /// </summary>
+    /// <remarks>
+    /// A diferencia de <see cref="GetLoggedUserAsync"/>, este método devuelve el usuario con todos
+    /// los atributos hidratados para escenarios de eager loading.
+    /// </remarks>
+    Task<AppUser> GetLoggedUserHydratedAsync();
+
+    /// <summary>
     /// Obtiene el ID de la organización (tenant) del usuario autenticado en el request actual.
     /// </summary>
     /// <remarks>
