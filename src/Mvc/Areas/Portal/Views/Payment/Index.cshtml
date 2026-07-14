@@ -1,0 +1,61 @@
+@model IEnumerable<PaymentViewModel>
+
+@{
+    ViewData["Title"] = "Mis pagos";
+}
+
+<h1>Mis pagos</h1>
+<p>Consultá el historial de tus pagos.</p>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info" role="alert">
+        No hay pagos registrados por el momento.
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().ReferenceCode)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().DateTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().Amount)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.First().Member)
+                </th>
+                <th>
+                    Acciones
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ReferenceCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DateTime)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+                    <td>
+                        @(item.Member?.Name ?? "-")
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.Id">Detalles</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

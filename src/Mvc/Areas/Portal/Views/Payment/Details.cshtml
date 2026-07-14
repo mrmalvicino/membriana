@@ -1,0 +1,48 @@
+@model PaymentViewModel
+
+@{
+    ViewData["Title"] = "Detalles del pago";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h2>Detalles del pago</h2>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">
+                            @Html.DisplayNameFor(model => model.ReferenceCode)
+                        </dt>
+                        <dd class="col-sm-9">
+                            @Html.DisplayFor(model => model.ReferenceCode)
+                        </dd>
+                        <dt class="col-sm-3">
+                            @Html.DisplayNameFor(model => model.DateTime)
+                        </dt>
+                        <dd class="col-sm-9">
+                            @Html.DisplayFor(model => model.DateTime)
+                        </dd>
+                        <dt class="col-sm-3">
+                            @Html.DisplayNameFor(model => model.Amount)
+                        </dt>
+                        <dd class="col-sm-9">
+                            @Html.DisplayFor(model => model.Amount)
+                        </dd>
+                        <dt class="col-sm-3">
+                            @Html.DisplayNameFor(model => model.Member)
+                        </dt>
+                        <dd class="col-sm-9">
+                            @(Model.Member?.Name ?? "-")
+                        </dd>
+                    </dl>
+                </div>
+                <div class="card-footer text-center">
+                    <a asp-action="Index" class="btn btn-secondary btn-sm">Volver al listado</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
