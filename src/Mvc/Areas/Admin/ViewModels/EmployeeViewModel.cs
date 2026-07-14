@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+using Mvc.ViewModels;
+using System.ComponentModel.DataAnnotations;
 
 namespace Mvc.Areas.Admin.ViewModels;
 

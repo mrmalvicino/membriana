@@ -1,6 +1,6 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Contracts.Dtos.MembershipPlan;
-using Mvc.Areas.Admin.ViewModels;
+using Mvc.ViewModels;
 
 namespace Mvc.Profiles;
 
@@ -11,6 +11,5 @@ public class MembershipPlanProfile : Profile
         CreateMap<MembershipPlanCreateDto, MembershipPlanViewModel>().ReverseMap();
         CreateMap<MembershipPlanReadDto, MembershipPlanViewModel>().ReverseMap();
         CreateMap<MembershipPlanUpdateDto, MembershipPlanViewModel>().ReverseMap();
-
     }
 }

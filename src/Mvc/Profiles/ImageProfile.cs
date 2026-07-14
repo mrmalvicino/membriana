@@ -1,6 +1,6 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Contracts.Dtos.Image;
-using Mvc.Areas.Admin.ViewModels;
+using Mvc.ViewModels;
 
 namespace Mvc.Profiles;
 

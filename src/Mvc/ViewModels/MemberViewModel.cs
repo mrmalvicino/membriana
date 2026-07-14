@@ -1,7 +1,7 @@
-﻿using Contracts.Enums;
+using Contracts.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace Mvc.Areas.Admin.ViewModels;
+namespace Mvc.ViewModels;
 
 public class MemberViewModel : PersonViewModel
 {

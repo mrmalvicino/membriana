@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
-namespace Mvc.Areas.Admin.ViewModels;
+namespace Mvc.ViewModels;
 
 public class PaymentViewModel
 {
@@ -23,6 +23,7 @@ public class PaymentViewModel
     [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar un socio")]
     public int MemberId { get; set; }
 
+    [Display(Name = "Socio")]
     public virtual MemberViewModel? Member { get; set; }
 
     [Required]

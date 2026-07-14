@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
-namespace Mvc.Areas.Admin.ViewModels;
+namespace Mvc.ViewModels;
 
 public class PersonViewModel
 {

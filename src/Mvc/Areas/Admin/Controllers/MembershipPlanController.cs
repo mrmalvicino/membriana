@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Mvc.Areas.Admin.ViewModels;
 using Mvc.Authentication;
 using Mvc.Clients.Interfaces;
 using Mvc.Controllers;
+using Mvc.ViewModels;
 
 namespace Mvc.Areas.Admin.Controllers;
 

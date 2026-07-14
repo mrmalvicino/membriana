@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Contracts.Dtos.Payment;
-using Mvc.Areas.Admin.ViewModels;
 using Mvc.Clients.Helpers;
 using Mvc.Clients.Interfaces;
+using Mvc.ViewModels;
 
 namespace Mvc.Clients;
 

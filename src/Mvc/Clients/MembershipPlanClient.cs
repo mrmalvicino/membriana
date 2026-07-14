@@ -2,7 +2,7 @@ using AutoMapper;
 using Contracts.Dtos.MembershipPlan;
 using Mvc.Clients.Helpers;
 using Mvc.Clients.Interfaces;
-using Mvc.Areas.Admin.ViewModels;
+using Mvc.ViewModels;
 
 namespace Mvc.Clients;
 
