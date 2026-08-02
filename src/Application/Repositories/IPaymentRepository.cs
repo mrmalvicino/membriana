@@ -8,4 +8,5 @@ namespace Application.Repositories;
 public interface IPaymentRepository : IBaseRepository<Payment>
 {
     Task<decimal> GetMonthlyIncomeAsync(int organizationId, int year, int month);
+    Task<List<Payment>> GetAllByMemberIdAsync(int memberId);
 }

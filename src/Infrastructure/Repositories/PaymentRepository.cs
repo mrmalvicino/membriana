@@ -27,6 +27,13 @@ public class PaymentRepository : BaseRepository<Payment>, IPaymentRepository
             .SumAsync(payment => (decimal?)payment.Amount) ?? 0m;
     }
 
+    public async Task<List<Payment>> GetAllByMemberIdAsync(int memberId)
+    {
+        var query = _dbSet.Where(payment => payment.MemberId == memberId);
+        query = IncludeRelations(query);
+        return await query.ToListAsync();
+    }
+
     /// <inheritdoc />
     protected override IQueryable<Payment> IncludeRelations(IQueryable<Payment> query)
     {
