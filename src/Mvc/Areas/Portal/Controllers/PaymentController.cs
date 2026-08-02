@@ -24,17 +24,7 @@ public class PaymentController : MvcControllerBase
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var loggedUserContext = await _userClient.GetLoggedUserContextAsync();
-
-        if (!loggedUserContext.MemberId.HasValue)
-        {
-            return Forbid();
-        }
-
-        var payments = await _paymentClient.GetAllByMemberIdAsync(
-            loggedUserContext.MemberId.Value
-        );
-
+        var payments = await _paymentClient.GetAllForLoggedUser();
         return View(payments);
     }
 

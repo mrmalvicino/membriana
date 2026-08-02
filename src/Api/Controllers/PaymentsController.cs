@@ -36,9 +36,22 @@ public class PaymentsController : BaseController<
     }
 
     /// <summary>
+    /// Endpoint que obtiene todos los pagos de una organización específica.
+    /// </summary>
+    [HttpGet]
+    [Authorize(Policy = "Employee")]
+    [ServiceFilter(typeof(TenancyQueryFilter))]
+    public override async Task<ActionResult<IEnumerable<PaymentReadDto>>> GetAll(
+        [FromQuery] int organizationId
+    )
+    {
+        return await base.GetAll(organizationId);
+    }
+
+    /// <summary>
     /// Endpoint que obtiene un pago por su ID.
     /// </summary>
-    [Authorize(Policy = "Member")]
+    [Authorize(Policy = "Employee")]
     [ServiceFilter(typeof(TenancyRouteFilter<Payment, IPaymentRepository>))]
     public override async Task<ActionResult<PaymentReadDto>> Get(int id)
     {
@@ -50,13 +63,45 @@ public class PaymentsController : BaseController<
     /// </summary>
     [HttpGet("/api/members/{memberId:int}/payments")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [Authorize(Policy = "Member")] // TODO: Cambiar a Employee y hacer un endpoint dedicado que devuelva los pagos del usuario loggeado reutilizando la logica del servicio de pagos
+    [Authorize(Policy = "Employee")]
     [TypeFilter(typeof(TenancyRouteFilter<Member, IMemberRepository>), Arguments = new object[] {"memberId"})]
     public async Task<ActionResult<IEnumerable<PaymentReadDto>>> GetAllByMemberId(int memberId)
     {
         var payments = await _paymentService.GetAllByMemberIdAsync(memberId);
         var paymentReadDtos = _mapper.Map<IEnumerable<PaymentReadDto>>(payments);
         return Ok(paymentReadDtos);
+    }
+
+    /// <summary>
+    /// Endpoint que obtiene los pagos del socio en sesión.
+    /// </summary>
+    [HttpGet("/api/members/me/payments")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [Authorize(Policy = "Member")]
+    public async Task<ActionResult<IEnumerable<PaymentReadDto>>> GetAllForLoggedUser()
+    {
+        var loggedUserContext = await _userService.GetLoggedUserContextAsync();
+
+        if (!loggedUserContext.MemberId.HasValue)
+        {
+            return Forbid();
+        }
+
+        var payments = await _paymentService.GetAllByMemberIdAsync(loggedUserContext.MemberId.Value);
+        var paymentReadDtos = _mapper.Map<IEnumerable<PaymentReadDto>>(payments);
+        return Ok(paymentReadDtos);
+    }
+
+    /// <summary>
+    /// Endpoint que crea un nuevo pago.
+    /// </summary>
+    [HttpPost]
+    [Authorize(Policy = "Employee")]
+    public override async Task<ActionResult<PaymentReadDto>> Create(
+        [FromBody] PaymentCreateDto createDto
+    )
+    {
+        return await base.Create(createDto);
     }
 
     /// <summary>
