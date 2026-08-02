@@ -37,14 +37,16 @@ public class TenancyRouteFilter<T, R> : IAsyncActionFilter
 {
     private readonly IUserService _userService;
     private readonly R _repository;
+    private string _paramName;
 
     /// <summary>
     /// Constructor principal.
     /// </summary>
-    public TenancyRouteFilter(IUserService userService, R repository)
+    public TenancyRouteFilter(IUserService userService, R repository, string paramName = "id")
     {
         _userService = userService;
         _repository = repository;
+        _paramName = paramName;
     }
 
     /// <summary>
@@ -60,7 +62,7 @@ public class TenancyRouteFilter<T, R> : IAsyncActionFilter
     /// </param>
     public async Task OnActionExecutionAsync(ActionExecutingContext filterContext, ActionExecutionDelegate next)
     {
-        var urlId = filterContext.RouteData.Values["id"] as string;
+        var urlId = filterContext.RouteData.Values[_paramName] as string;
         int id;
         int.TryParse(urlId, out id);
 

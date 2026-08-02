@@ -12,7 +12,6 @@ namespace Api.Controllers;
 /// <summary>
 /// Controlador para la gestión de pagos.
 /// </summary>
-[Authorize(Policy = "Employee")]
 public class PaymentsController : BaseController<
     Payment,
     IPaymentRepository,
@@ -39,6 +38,7 @@ public class PaymentsController : BaseController<
     /// <summary>
     /// Endpoint que obtiene un pago por su ID.
     /// </summary>
+    [Authorize(Policy = "Member")]
     [ServiceFilter(typeof(TenancyRouteFilter<Payment, IPaymentRepository>))]
     public override async Task<ActionResult<PaymentReadDto>> Get(int id)
     {
@@ -46,8 +46,23 @@ public class PaymentsController : BaseController<
     }
 
     /// <summary>
+    /// Endpoint que obtiene los pagos de un socio a partir de su ID.
+    /// </summary>
+    [HttpGet("/api/members/{memberId:int}/payments")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [Authorize(Policy = "Member")] // TODO: Cambiar a Employee y hacer un endpoint dedicado que devuelva los pagos del usuario loggeado reutilizando la logica del servicio de pagos
+    [TypeFilter(typeof(TenancyRouteFilter<Member, IMemberRepository>), Arguments = new object[] {"memberId"})]
+    public async Task<ActionResult<IEnumerable<PaymentReadDto>>> GetAllByMemberId(int memberId)
+    {
+        var payments = await _paymentService.GetAllByMemberIdAsync(memberId);
+        var paymentReadDtos = _mapper.Map<IEnumerable<PaymentReadDto>>(payments);
+        return Ok(paymentReadDtos);
+    }
+
+    /// <summary>
     /// Endpoint que modifica un pago existente.
     /// </summary>
+    [Authorize(Policy = "Employee")]
     [ServiceFilter(typeof(TenancyRouteFilter<Payment, IPaymentRepository>))]
     public override async Task<ActionResult<PaymentReadDto>> Update(
         int id,
@@ -60,6 +75,7 @@ public class PaymentsController : BaseController<
     /// <summary>
     /// Endpoint que elimina un pago.
     /// </summary>
+    [Authorize(Policy = "Employee")]
     [ServiceFilter(typeof(TenancyRouteFilter<Payment, IPaymentRepository>))]
     public override async Task<IActionResult> Delete(int id)
     {
@@ -71,6 +87,7 @@ public class PaymentsController : BaseController<
     /// </summary>
     [HttpGet("get-monthly-income")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [Authorize(Policy = "Employee")]
     [ServiceFilter(typeof(TenancyQueryFilter))]
     public async Task<ActionResult<MonthlyIncomeResponseDto>> GetMonthlyIncome(
         [FromQuery] int organizationId,
@@ -78,7 +95,7 @@ public class PaymentsController : BaseController<
         [FromQuery] int month
     )
     {
-        var payments = await _paymentService.GetMonthlyIncomeAsync(organizationId, year, month);
-        return Ok(new MonthlyIncomeResponseDto(payments));
+        var amount = await _paymentService.GetMonthlyIncomeAsync(organizationId, year, month);
+        return Ok(new MonthlyIncomeResponseDto(amount));
     }
 }
