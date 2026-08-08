@@ -1,7 +1,7 @@
-using Contracts.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Mvc.Areas.Portal.ViewModels;
 using Mvc.Authentication;
+using Mvc.Clients.Interfaces;
 
 namespace Mvc.Areas.Portal.Controllers;
 
@@ -12,27 +12,59 @@ namespace Mvc.Areas.Portal.Controllers;
 [JwtAuthorizationFilter]
 public class DashboardController : Controller
 {
+    private readonly IPaymentClient _paymentClient;
+    private readonly IUserClient _userClient;
+    private readonly IMemberClient _memberClient;
+
+    public DashboardController(
+        IPaymentClient paymentClient,
+        IUserClient userClient,
+        IMemberClient memberClient
+    )
+    {
+        _paymentClient = paymentClient;
+        _userClient = userClient;
+        _memberClient = memberClient;
+    }
+
     /// <summary>
     /// Muestra el Dashboard.
     /// </summary>
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
+        var loggedUserContext = await _userClient.GetLoggedUserContextAsync();
+        var loggedMember = await _memberClient.GetForLoggedUserAsync();
+        var payments = await _paymentClient.GetAllForLoggedUser();
+
+        var lastPayment = payments
+            .OrderByDescending(payment => payment.DateTime)
+            .FirstOrDefault();
+
+        if (!loggedUserContext.MemberId.HasValue)
+        {
+            return Forbid();
+        }
+
+        if (loggedMember == null)
+        {
+            return NotFound();
+        }
+
         var dashboard = new DashboardViewModel
         {
-            MemberFullName = "Maximiliano Malvicino",
-            Document = "DNI 12.345.678",
-            Email = "maxi@email.com",
-            Phone = "+54 11 5555-5555",
+            MemberFullName = loggedMember.Name,
+            Document = loggedMember.Dni,
+            Email = loggedMember.Email,
+            Phone = loggedMember.Phone,
 
-            OrganizationName = "Ecodev Software",
-            MembershipPlanName = "Plan Mensual",
+            OrganizationName = loggedUserContext.OrganizationName,
+            MembershipPlanName = loggedMember.MembershipPlan?.Name ?? string.Empty,
 
-            AdmissionDate = new DateTime(2025, 11, 3),
-            Status = MemberStatus.Active,
+            AdmissionDate = loggedMember.AdmissionDate,
+            Status = loggedMember.MemberStatus,
 
-            LastPaymentAmount = 12500m,
-            LastPaymentDate = new DateTime(2026, 2, 20)
-            
+            LastPaymentAmount = lastPayment?.Amount,
+            LastPaymentDate = lastPayment?.DateTime
         };
 
         return View(dashboard);

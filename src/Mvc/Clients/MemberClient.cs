@@ -54,6 +54,28 @@ public class MemberClient : IMemberClient
         return _mapper.Map<MemberViewModel>(readDto);
     }
 
+    public async Task<MemberViewModel?> GetForLoggedUserAsync()
+    {
+        var url = $"{_apiBaseUrl}api/members/me";
+        var response = await _httpClient.GetAsync(url);
+
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener el socio autenticado.");
+
+        var readDto = await response.Content.ReadFromJsonAsync<MemberReadDto>();
+
+        if (readDto == null)
+        {
+            throw new InvalidOperationException("La API devolvió una respuesta vacía al obtener el socio autenticado.");
+        }
+
+        return _mapper.Map<MemberViewModel>(readDto);
+    }
+
     public async Task<MemberViewModel?> CreateAsync(MemberViewModel viewModel)
     {
         var createDto = _mapper.Map<MemberCreateDto>(viewModel);

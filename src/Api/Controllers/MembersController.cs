@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers;
 
-[Authorize(Policy = "Employee")]
 public class MembersController : BaseController<
     Member,
     IMemberRepository,
@@ -37,6 +36,49 @@ public class MembersController : BaseController<
         _memberService = memberService;
     }
 
+    [HttpGet]
+    [Authorize(Policy = "Employee")]
+    [ServiceFilter(typeof(TenancyQueryFilter))]
+    public override async Task<ActionResult<IEnumerable<MemberReadDto>>> GetAll(
+        [FromQuery] int organizationId
+    )
+    {
+        return await base.GetAll(organizationId);
+    }
+
+    [Authorize(Policy = "Employee")]
+    [ServiceFilter(typeof(TenancyRouteFilter<Member, IMemberRepository>))]
+    public override async Task<ActionResult<MemberReadDto>> Get(int id)
+    {
+        return await base.Get(id);
+    }
+
+    [HttpGet("me")]
+    [Authorize(Policy = "Member")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<MemberReadDto>> GetForLoggedUser()
+    {
+        var loggedUserContext = await _userService.GetLoggedUserContextAsync();
+
+        if (!loggedUserContext.MemberId.HasValue)
+        {
+            return Forbid();
+        }
+
+        var member = await _repository.GetByIdAsync(loggedUserContext.MemberId.Value);
+
+        if (member == null)
+        {
+            return NotFound(ErrorResponseFactory.Create("El recurso no existe."));
+        }
+
+        var readDto = _mapper.Map<MemberReadDto>(member);
+        return Ok(readDto);
+    }
+
+    [Authorize(Policy = "Employee")]
     public override async Task<ActionResult<MemberReadDto>> Create([FromBody] MemberCreateDto createDto)
     {
         int userOrgId = await _userService.GetOrganizationIdAsync();
@@ -64,12 +106,7 @@ public class MembersController : BaseController<
         }
     }
 
-    [ServiceFilter(typeof(TenancyRouteFilter<Member, IMemberRepository>))]
-    public override async Task<ActionResult<MemberReadDto>> Get(int id)
-    {
-        return await base.Get(id);
-    }
-
+    [Authorize(Policy = "Employee")]
     [ServiceFilter(typeof(TenancyRouteFilter<Member, IMemberRepository>))]
     public override async Task<ActionResult<MemberReadDto>> Update(
         int id,
@@ -103,6 +140,7 @@ public class MembersController : BaseController<
         }
     }
 
+    [Authorize(Policy = "Employee")]
     [ServiceFilter(typeof(TenancyRouteFilter<Member, IMemberRepository>))]
     public override async Task<IActionResult> Delete(int id)
     {

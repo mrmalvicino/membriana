@@ -6,6 +6,7 @@ public interface IMemberClient
 {
     Task<List<MemberViewModel>> GetAllAsync(int organizationId);
     Task<MemberViewModel?> GetByIdAsync(int id);
+    Task<MemberViewModel?> GetForLoggedUserAsync();
     Task<MemberViewModel?> CreateAsync(MemberViewModel member);
     Task<MemberViewModel?> UpdateAsync(MemberViewModel member);
     Task DeleteAsync(int id);
