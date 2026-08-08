@@ -7,6 +7,7 @@ public interface IPaymentClient
     Task<List<PaymentViewModel>> GetAllAsync(int organizationId);
     Task<List<PaymentViewModel>> GetAllByMemberIdAsync(int memberId);
     Task<List<PaymentViewModel>> GetAllForLoggedUser();
+    Task<PaymentViewModel?> GetByIdForLoggedUserAsync(int id);
     Task<PaymentViewModel?> GetByIdAsync(int id);
     Task<PaymentViewModel?> CreateAsync(PaymentViewModel payment);
     Task<PaymentViewModel?> UpdateAsync(PaymentViewModel payment);

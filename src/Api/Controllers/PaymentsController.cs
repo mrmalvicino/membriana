@@ -93,6 +93,33 @@ public class PaymentsController : BaseController<
     }
 
     /// <summary>
+    /// Endpoint que obtiene un pago del socio en sesión por el ID del pago.
+    /// </summary>
+    [HttpGet("/api/members/me/payments/{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(Policy = "Member")]
+    public async Task<ActionResult<PaymentReadDto>> GetForLoggedUser(int id)
+    {
+        var loggedUserContext = await _userService.GetLoggedUserContextAsync();
+
+        if (!loggedUserContext.MemberId.HasValue)
+        {
+            return Forbid();
+        }
+
+        var payment = await _paymentService.GetByIdAsync(id);
+
+        if (payment == null || payment.MemberId != loggedUserContext.MemberId.Value)
+        {
+            return NotFound(Api.Helpers.ErrorResponseFactory.Create("El recurso no existe."));
+        }
+
+        var paymentReadDto = _mapper.Map<PaymentReadDto>(payment);
+        return Ok(paymentReadDto);
+    }
+
+    /// <summary>
     /// Endpoint que crea un nuevo pago.
     /// </summary>
     [HttpPost]

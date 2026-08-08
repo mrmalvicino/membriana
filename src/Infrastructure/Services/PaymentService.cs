@@ -13,6 +13,11 @@ public class PaymentService : IPaymentService
         _paymentRepository = paymentRepository;
     }
 
+    public async Task<Payment?> GetByIdAsync(int paymentId)
+    {
+        return await _paymentRepository.GetByIdAsync(paymentId);
+    }
+
     public async Task<decimal> GetMonthlyIncomeAsync(int organizationId, int year, int month)
     {
         return await _paymentRepository.GetMonthlyIncomeAsync(organizationId, year, month);

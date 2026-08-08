@@ -50,6 +50,28 @@ public class PaymentClient : IPaymentClient
         return _mapper.Map<List<PaymentViewModel>>(readDtos);
     }
 
+    public async Task<PaymentViewModel?> GetByIdForLoggedUserAsync(int id)
+    {
+        var url = $"{_apiBaseUrl}api/members/me/payments/{id}";
+        var response = await _httpClient.GetAsync(url);
+
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener el pago del usuario actual.");
+
+        var readDto = await response.Content.ReadFromJsonAsync<PaymentReadDto>();
+
+        if (readDto == null)
+        {
+            throw new InvalidOperationException("La API devolvió una respuesta vacía al obtener el pago del usuario actual.");
+        }
+
+        return _mapper.Map<PaymentViewModel>(readDto);
+    }
+
     public async Task<PaymentViewModel?> GetByIdAsync(int id)
     {
         var url = $"{_apiBaseUrl}api/payments/{id}";

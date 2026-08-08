@@ -10,15 +10,10 @@ namespace Mvc.Areas.Portal.Controllers;
 public class PaymentController : MvcControllerBase
 {
     private readonly IPaymentClient _paymentClient;
-    private readonly IUserClient _userClient;
 
-    public PaymentController(
-        IPaymentClient paymentClient,
-        IUserClient userClient
-    )
+    public PaymentController(IPaymentClient paymentClient)
     {
         _paymentClient = paymentClient;
-        _userClient = userClient;
     }
 
     [HttpGet]
@@ -31,14 +26,9 @@ public class PaymentController : MvcControllerBase
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
-        var payment = await _paymentClient.GetByIdAsync(id);
+        var payment = await _paymentClient.GetByIdForLoggedUserAsync(id);
 
         if (payment == null)
-        {
-            return NotFound();
-        }
-
-        if (payment.OrganizationId != await _userClient.GetOrganizationIdAsync())
         {
             return NotFound();
         }
