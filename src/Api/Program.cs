@@ -15,7 +15,7 @@ using System.Text;
 namespace Api;
 
 /// <summary>
-/// Punto de entrada de la aplicaci�n y bootstrapper de la API.
+/// Punto de entrada de la aplicación y bootstrapper de la API.
 /// Configura el contenedor de dependencias (DI), middleware pipeline y endpoints.
 /// </summary>
 public class Program

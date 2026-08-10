@@ -1,20 +1,22 @@
 using Mvc.Authentication;
 using Mvc.Clients;
 using Mvc.Clients.Interfaces;
+using Mvc.ModelBinders;
+using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 
 namespace Mvc;
 
 /// <summary>
-/// Punto de entrada de la aplicaci�n y bootstrapper del frontend MVC.
+/// Punto de entrada de la aplicación y bootstrapper del frontend MVC.
 /// Configura el contenedor de dependencias (DI), middleware pipeline y rutas.
 /// </summary>
 public class Program
 {
     /// <summary>
-    /// M�todo principal que inicializa y ejecuta la aplicaci�n web.
+    /// Método principal que inicializa y ejecuta la aplicación web.
     /// </summary>
-    /// <param name="args">Argumentos de l�nea de comandos.</param>
+    /// <param name="args">Argumentos de línea de comandos.</param>
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
@@ -63,7 +65,19 @@ public class Program
 
         #region MVC
 
-        builder.Services.AddControllersWithViews();
+        var supportedCultures = new[] { new CultureInfo("es-AR") };
+
+        builder.Services.Configure<RequestLocalizationOptions>(options =>
+        {
+            options.DefaultRequestCulture = new RequestCulture("es-AR");
+            options.SupportedCultures = supportedCultures;
+            options.SupportedUICultures = supportedCultures;
+        });
+
+        builder.Services.AddControllersWithViews(options =>
+        {
+            options.ModelBinderProviders.Insert(0, new FlexibleDecimalModelBinderProvider());
+        });
         builder.Services.AddSession();
 
         #endregion
@@ -87,6 +101,7 @@ public class Program
         app.UseHttpsRedirection();
         app.UseStaticFiles();
         app.UseRouting();
+        app.UseRequestLocalization();
         app.UseSession();
         app.UseAuthentication();
         app.UseAuthorization();

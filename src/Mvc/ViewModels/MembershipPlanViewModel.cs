@@ -11,7 +11,7 @@ public class MembershipPlanViewModel
     public string Name { get; set; } = null!;
 
     [Required(ErrorMessage = "El monto de cuota es obligatorio.")]
-    [Range(0, double.MaxValue, ErrorMessage = "El monto debe ser un número positivo.")]
+    [Range(typeof(decimal), "0", "79228162514264337593543950335", ErrorMessage = "El monto debe ser un número positivo.")]
     [Display(Name = "Monto de cuota")]
     public decimal Amount { get; set; }
 
