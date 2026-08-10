@@ -33,8 +33,7 @@ public class MemberStatusClient : IMemberStatusClient
 
         await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener la cantidad de socios por estado.");
 
-        var amounts = await response.Content.ReadFromJsonAsync<List<AmountResponse>>();
-        var amount = amounts?.FirstOrDefault();
+        var amount = await response.Content.ReadFromJsonAsync<AmountResponse>();
 
         if (amount is null)
         {
@@ -57,8 +56,7 @@ public class MemberStatusClient : IMemberStatusClient
 
         await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener la cantidad de altas del período.");
 
-        var amounts = await response.Content.ReadFromJsonAsync<List<AmountResponse>>();
-        var amount = amounts?.FirstOrDefault();
+        var amount = await response.Content.ReadFromJsonAsync<AmountResponse>();
 
         if (amount is null)
         {
@@ -81,8 +79,7 @@ public class MemberStatusClient : IMemberStatusClient
 
         await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener la cantidad de bajas del período.");
 
-        var amounts = await response.Content.ReadFromJsonAsync<List<AmountResponse>>();
-        var amount = amounts?.FirstOrDefault();
+        var amount = await response.Content.ReadFromJsonAsync<AmountResponse>();
 
         if (amount is null)
         {
