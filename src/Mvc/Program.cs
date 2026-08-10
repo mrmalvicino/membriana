@@ -1,8 +1,6 @@
 using Mvc.Authentication;
 using Mvc.Clients;
 using Mvc.Clients.Interfaces;
-using Mvc.ModelBinders;
-using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 
 namespace Mvc;
@@ -65,19 +63,7 @@ public class Program
 
         #region MVC
 
-        var supportedCultures = new[] { new CultureInfo("es-AR") };
-
-        builder.Services.Configure<RequestLocalizationOptions>(options =>
-        {
-            options.DefaultRequestCulture = new RequestCulture("es-AR");
-            options.SupportedCultures = supportedCultures;
-            options.SupportedUICultures = supportedCultures;
-        });
-
-        builder.Services.AddControllersWithViews(options =>
-        {
-            options.ModelBinderProviders.Insert(0, new FlexibleDecimalModelBinderProvider());
-        });
+        builder.Services.AddControllersWithViews();
         builder.Services.AddSession();
 
         #endregion
@@ -101,7 +87,6 @@ public class Program
         app.UseHttpsRedirection();
         app.UseStaticFiles();
         app.UseRouting();
-        app.UseRequestLocalization();
         app.UseSession();
         app.UseAuthentication();
         app.UseAuthorization();
