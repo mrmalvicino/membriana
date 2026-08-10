@@ -26,6 +26,6 @@ public class PaymentViewModel
     [Display(Name = "Socio")]
     public virtual MemberViewModel? Member { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "La organización es obligatoria.")]
     public int OrganizationId { get; set; }
 }

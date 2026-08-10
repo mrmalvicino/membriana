@@ -1,2 +1,23 @@
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    $.extend($.validator.messages, {
+        required: "Este campo es obligatorio.",
+        remote: "Por favor, corrige este campo.",
+        email: "Ingresa un email válido.",
+        url: "Ingresa una URL válida.",
+        date: "Ingresa una fecha válida.",
+        dateISO: "Ingresa una fecha válida (ISO).",
+        number: "Ingresa un número válido.",
+        digits: "Ingresa solo dígitos.",
+        creditcard: "Ingresa un número de tarjeta válido.",
+        equalTo: "Ingresa el mismo valor nuevamente.",
+        extension: "Ingresa un valor con una extensión permitida.",
+        maxlength: $.validator.format("No ingreses más de {0} caracteres."),
+        minlength: $.validator.format("Ingresa al menos {0} caracteres."),
+        rangelength: $.validator.format("Ingresa un valor entre {0} y {1} caracteres."),
+        range: $.validator.format("Ingresa un valor entre {0} y {1}."),
+        max: $.validator.format("Ingresa un valor menor o igual a {0}."),
+        min: $.validator.format("Ingresa un valor mayor o igual a {0}.")
+    });
+</script>

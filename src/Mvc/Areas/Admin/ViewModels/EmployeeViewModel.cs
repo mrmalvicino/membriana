@@ -10,6 +10,6 @@ public class EmployeeViewModel : PersonViewModel
     [DataType(DataType.Date)]
     public DateTime AdmissionDate { get; set; } = DateTime.Now;
 
-    [Required]
+    [Required(ErrorMessage = "La organización es obligatoria.")]
     public int OrganizationId { get; set; }
 }

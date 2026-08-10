@@ -9,7 +9,7 @@ public class PersonViewModel
     [Display(Name = "Código")]
     public string ReferenceCode { get; set; } = string.Empty;
 
-    [Required]
+    [Required(ErrorMessage = "El estado es obligatorio.")]
     [Display(Name = "Estado")]
     public bool Active { get; set; } = true;
 

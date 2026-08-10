@@ -16,7 +16,7 @@ public class MemberViewModel : PersonViewModel
 
     public virtual MembershipPlanViewModel? MembershipPlan { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "La organización es obligatoria.")]
     public int OrganizationId { get; set; }
 
     [Required(ErrorMessage = "Debe seleccionar un estado.")]

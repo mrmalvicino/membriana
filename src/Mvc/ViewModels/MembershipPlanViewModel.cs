@@ -15,6 +15,6 @@ public class MembershipPlanViewModel
     [Display(Name = "Monto de cuota")]
     public decimal Amount { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "La organización es obligatoria.")]
     public int OrganizationId { get; set; }
 }
