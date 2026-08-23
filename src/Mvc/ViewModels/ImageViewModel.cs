@@ -6,7 +6,8 @@ public class ImageViewModel
 {
     public int Id { get; set; }
 
-    [Required(ErrorMessage = "La URL es obligatoria.")]
-    [Display(Name = "URL")]
-    public string Url { get; set; } = null!;
+	[Display(Name = "URL de la imagen")]
+	[Url(ErrorMessage = "La URL de la imagen no tiene un formato válido.")]
+	[StringLength(2048, ErrorMessage = "La URL de la imagen no puede superar los 2048 caracteres.")]
+	public string? Url { get; set; }
 }

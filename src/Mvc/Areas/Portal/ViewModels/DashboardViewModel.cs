@@ -4,8 +4,9 @@ namespace Mvc.Areas.Portal.ViewModels;
 
 public class DashboardViewModel
 {
-    public string MemberFullName { get; set; } = "";
-    public string? Document { get; set; }
+	public string MemberFullName { get; set; } = "";
+	public string? ProfileImageUrl { get; set; }
+	public string? Document { get; set; }
 
     public string? Email { get; set; }
     public string? Phone { get; set; }

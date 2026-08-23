@@ -50,10 +50,11 @@ public class DashboardController : Controller
             return NotFound();
         }
 
-        var dashboard = new DashboardViewModel
-        {
-            MemberFullName = loggedMember.Name,
-            Document = loggedMember.Dni,
+		var dashboard = new DashboardViewModel
+		{
+			MemberFullName = loggedMember.Name,
+			ProfileImageUrl = loggedMember.ProfileImage?.Url,
+			Document = loggedMember.Dni,
             Email = loggedMember.Email,
             Phone = loggedMember.Phone,
 

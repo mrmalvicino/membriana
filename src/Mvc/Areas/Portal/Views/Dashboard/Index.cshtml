@@ -1,8 +1,12 @@
 ﻿@model Mvc.Areas.Portal.ViewModels.DashboardViewModel
 
 @{
-    ViewData["Title"] = "Mi portal";
-    string statusText = Model.Status.ToString();
+	ViewData["Title"] = "Mi portal";
+	string statusText = Model.Status.ToString();
+
+	string memberInitial = string.IsNullOrWhiteSpace(Model.MemberFullName)
+		? "?"
+		: Model.MemberFullName.Trim()[0].ToString().ToUpperInvariant();
 
     string badgeClass = Model.Status switch
     {
@@ -58,11 +62,24 @@
 
         <!-- Datos del socio -->
         <div class="col-12 col-lg-6">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <div class="fw-semibold mb-2">Mis datos</div>
+			<div class="card shadow-sm h-100">
+				<div class="card-body">
+					<div class="fw-semibold mb-2">Mis datos</div>
 
-                    <div class="mb-2">
+					<div class="d-flex justify-content-center mb-3">
+						<div class="profile-image-avatar">
+							@if (string.IsNullOrWhiteSpace(Model.ProfileImageUrl))
+							{
+								<span aria-hidden="true">@memberInitial</span>
+							}
+							else
+							{
+								<img src="@Model.ProfileImageUrl" alt="Imagen de perfil de @Model.MemberFullName" />
+							}
+						</div>
+					</div>
+
+					<div class="mb-2">
                         <div class="text-muted small">Nombre</div>
                         <div class="fs-5 fw-semibold">@Model.MemberFullName</div>
                     </div>

@@ -12,10 +12,12 @@
                     <h2>Editar empleado</h2>
                 </div>
                 <div class="card-body">
-                    <form asp-action="Edit">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <input type="hidden" asp-for="Id" />
-                        <div class="form-group mb-3">
+					<form asp-action="Edit">
+						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+						<input type="hidden" asp-for="Id" />
+						<input type="hidden" asp-for="Active" />
+						<partial name="_ProfileImageEditor" model="Model" />
+						<div class="form-group mb-3">
                             <label asp-for="Name" class="control-label">Nombre y apellido</label>
                             <input asp-for="Name" placeholder="Apellido, Nombre" class="form-control" />
                             <span asp-validation-for="Name" class="text-danger"></span>

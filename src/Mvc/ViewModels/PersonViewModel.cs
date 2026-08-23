@@ -31,6 +31,5 @@ public class PersonViewModel
     [DataType(DataType.Date)]
     public DateTime BirthDate { get; set; }
 
-    public int? ProfileImageId { get; set; }
-    public virtual ImageViewModel? ProfileImage { get; set; }
+	public virtual ImageViewModel? ProfileImage { get; set; }
 }

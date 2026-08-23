@@ -1,0 +1,25 @@
+@model PersonViewModel
+
+<div class="image-url-editor mb-4" data-image-url-editor>
+	<div class="image-preview-frame" aria-live="polite">
+		<img
+			class="image-preview"
+			alt="Previsualización de la imagen de perfil"
+			data-image-preview
+			hidden
+		/>
+		<span class="image-preview-placeholder" data-image-placeholder>Sin imagen</span>
+	</div>
+	<div class="image-url-field">
+		<label asp-for="ProfileImage!.Url" class="control-label"></label>
+		<input
+			asp-for="ProfileImage!.Url"
+			class="form-control"
+			type="url"
+			placeholder="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSS5DKzdprfHmIYRpEfNNPVRYPDfh0Bvjjw_Ud_yRIwSw&s=10"
+			data-image-url-input
+		/>
+		<span asp-validation-for="ProfileImage!.Url" class="text-danger"></span>
+		<div class="form-text">Dejá el campo vacío para quitar la imagen actual.</div>
+	</div>
+</div>
