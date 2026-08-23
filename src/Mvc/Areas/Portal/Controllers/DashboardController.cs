@@ -54,9 +54,6 @@ public class DashboardController : Controller
 		{
 			MemberFullName = loggedMember.Name,
 			ProfileImageUrl = loggedMember.ProfileImage?.Url,
-			Document = loggedMember.Dni,
-            Email = loggedMember.Email,
-            Phone = loggedMember.Phone,
 
             OrganizationName = loggedUserContext.OrganizationName,
             MembershipPlanName = loggedMember.MembershipPlan?.Name ?? string.Empty,

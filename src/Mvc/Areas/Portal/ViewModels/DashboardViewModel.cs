@@ -6,10 +6,6 @@ public class DashboardViewModel
 {
 	public string MemberFullName { get; set; } = "";
 	public string? ProfileImageUrl { get; set; }
-	public string? Document { get; set; }
-
-    public string? Email { get; set; }
-    public string? Phone { get; set; }
 
     public string OrganizationName { get; set; } = "";
     public string MembershipPlanName { get; set; } = "";

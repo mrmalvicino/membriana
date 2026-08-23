@@ -46,6 +46,70 @@ body {
 	object-fit: cover;
 }
 
+.portal-dashboard {
+	max-width: 58rem;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+.membership-card {
+	border: 1px solid #dfe6ee;
+	border-radius: 1rem;
+}
+
+.membership-card__identity {
+	background-color: #f4f8fc;
+}
+
+.membership-card__identity .profile-image-avatar {
+	border-color: #c7d5e3;
+	background-color: #fff;
+	box-shadow: 0 0.5rem 1.5rem rgba(24, 97, 172, 0.12);
+}
+
+.membership-card__organization {
+	color: #486581;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+}
+
+.membership-card__status {
+	min-width: 7rem;
+}
+
+.membership-card__section + .membership-card__section {
+	border-top: 1px solid #e6ebf0;
+}
+
+.membership-card__section-title {
+	color: #334e68;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.membership-card__details {
+	display: grid;
+	gap: 1.25rem;
+}
+
+.membership-card__details dt {
+	margin-bottom: 0.25rem;
+	color: #6c757d;
+	font-size: 0.875rem;
+	font-weight: 400;
+}
+
+.membership-card__details dd {
+	margin-bottom: 0;
+	font-size: 1.05rem;
+	font-weight: 600;
+}
+
+.membership-card__details .membership-card__payment-amount {
+	font-size: 1.5rem;
+}
+
 .image-url-editor {
 	display: flex;
 	align-items: center;
@@ -87,5 +151,12 @@ body {
 	.image-url-editor {
 		align-items: flex-start;
 		flex-direction: column;
+	}
+}
+
+@media (min-width: 768px) {
+	.membership-card__section + .membership-card__section {
+		border-top: 0;
+		border-left: 1px solid #e6ebf0;
 	}
 }

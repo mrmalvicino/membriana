@@ -1,137 +1,106 @@
-﻿@model Mvc.Areas.Portal.ViewModels.DashboardViewModel
+@model Mvc.Areas.Portal.ViewModels.DashboardViewModel
 
 @{
 	ViewData["Title"] = "Mi portal";
-	string statusText = Model.Status.ToString();
 
 	string memberInitial = string.IsNullOrWhiteSpace(Model.MemberFullName)
 		? "?"
 		: Model.MemberFullName.Trim()[0].ToString().ToUpperInvariant();
 
-    string badgeClass = Model.Status switch
-    {
-        Contracts.Enums.MemberStatus.Active => "bg-success",
-        Contracts.Enums.MemberStatus.Debtor => "bg-warning text-dark",
-        Contracts.Enums.MemberStatus.Inactive => "bg-secondary",
-        _ => "bg-light text-dark"
-    };
+	string statusText = Model.Status switch
+	{
+		Contracts.Enums.MemberStatus.Active => "Activo",
+		Contracts.Enums.MemberStatus.Debtor => "Deudor",
+		Contracts.Enums.MemberStatus.Inactive => "Inactivo",
+		_ => "Sin información"
+	};
+
+	string badgeClass = Model.Status switch
+	{
+		Contracts.Enums.MemberStatus.Active => "bg-success",
+		Contracts.Enums.MemberStatus.Debtor => "bg-warning text-dark",
+		Contracts.Enums.MemberStatus.Inactive => "bg-secondary",
+		_ => "bg-light text-dark"
+	};
 }
 
-<div class="container py-3">
+<div class="portal-dashboard py-3 py-md-4">
+	<article class="membership-card card shadow-sm overflow-hidden">
+		<div class="membership-card__identity card-body p-4 p-lg-5">
+			<div class="d-flex flex-column flex-md-row align-items-center gap-4">
+				<div class="profile-image-avatar">
+					@if (string.IsNullOrWhiteSpace(Model.ProfileImageUrl))
+					{
+						<span aria-hidden="true">@memberInitial</span>
+					}
+					else
+					{
+						<img src="@Model.ProfileImageUrl" alt="Imagen de perfil de @Model.MemberFullName" />
+					}
+				</div>
 
-    <div class="mb-4">
-        <h1 class="h4 mb-1">Mi portal</h1>
-        <div class="text-muted">Resumen de tu membresía y pagos</div>
-    </div>
-
-    <div class="row g-3">
-
-        <!-- Estado -->
-        <div class="col-12 col-lg-6">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <div class="fw-semibold mb-2">Estado</div>
-
-                    <div class="mb-3">
-                        <div class="text-muted small">Condición de socio</div>
-                        <div class="fs-5">
-                            <span class="badge @badgeClass">@statusText</span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="text-muted small">Último pago realizado</div>
-
-                        @if (Model.LastPaymentAmount is null)
-                        {
-                            <div class="text-muted">No hay pagos registrados.</div>
-                        }
-                        else
-                        {
-                            <div class="fs-5 fw-semibold">
-                                @Model.LastPaymentAmount!.Value.ToString("C")
-                            </div>
-                            <div class="text-muted small">
-                                @Model.LastPaymentDate.Value.ToString("dd/MM/yyyy")
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Datos del socio -->
-        <div class="col-12 col-lg-6">
-			<div class="card shadow-sm h-100">
-				<div class="card-body">
-					<div class="fw-semibold mb-2">Mis datos</div>
-
-					<div class="d-flex justify-content-center mb-3">
-						<div class="profile-image-avatar">
-							@if (string.IsNullOrWhiteSpace(Model.ProfileImageUrl))
-							{
-								<span aria-hidden="true">@memberInitial</span>
-							}
-							else
-							{
-								<img src="@Model.ProfileImageUrl" alt="Imagen de perfil de @Model.MemberFullName" />
-							}
-						</div>
+				<div class="flex-grow-1 text-center text-md-start">
+					<div class="membership-card__organization small text-uppercase mb-1">
+						@Model.OrganizationName
 					</div>
+					<h1 class="h4 mb-0">@Model.MemberFullName</h1>
+				</div>
 
-					<div class="mb-2">
-                        <div class="text-muted small">Nombre</div>
-                        <div class="fs-5 fw-semibold">@Model.MemberFullName</div>
-                    </div>
+				<div class="membership-card__status d-flex justify-content-center">
+					<span class="badge rounded-pill px-3 py-2 @badgeClass">@statusText</span>
+				</div>
+			</div>
+		</div>
 
-                    @if (!string.IsNullOrWhiteSpace(Model.Document))
-                    {
-                        <div class="mb-2">
-                            <div class="text-muted small">Documento</div>
-                            <div>@Model.Document</div>
-                        </div>
-                    }
+		<div class="card-body p-0">
+			<div class="row g-0">
+				<section class="membership-card__section col-12 col-md-6 p-4" aria-labelledby="membership-details-title">
+					<h2 id="membership-details-title" class="membership-card__section-title h6 mb-4">
+						Membresía
+					</h2>
 
-                    <div class="row g-2 mt-1">
-                        @if (!string.IsNullOrWhiteSpace(Model.Email))
-                        {
-                            <div class="col-12 col-sm-6">
-                                <div class="text-muted small">Email</div>
-                                <div>@Model.Email</div>
-                            </div>
-                        }
+					<dl class="membership-card__details mb-0">
+						<div>
+							<dt>Plan</dt>
+							<dd>@Model.MembershipPlanName</dd>
+						</div>
 
-                        @if (!string.IsNullOrWhiteSpace(Model.Phone))
-                        {
-                            <div class="col-12 col-sm-6">
-                                <div class="text-muted small">Teléfono</div>
-                                <div>@Model.Phone</div>
-                            </div>
-                        }
-                    </div>
+						<div>
+							<dt>Miembro desde</dt>
+							<dd>@Model.AdmissionDate.ToString("dd/MM/yyyy")</dd>
+						</div>
+					</dl>
+				</section>
 
-                    <hr class="my-3" />
+				<section class="membership-card__section col-12 col-md-6 p-4" aria-labelledby="last-payment-title">
+					<h2 id="last-payment-title" class="membership-card__section-title h6 mb-4">
+						Último pago
+					</h2>
 
-                    <div class="row g-2">
-                        <div class="col-12 col-sm-6">
-                            <div class="text-muted small">Organización</div>
-                            <div>@Model.OrganizationName</div>
-                        </div>
+					@if (Model.LastPaymentAmount is null)
+					{
+						<p class="text-muted mb-0">No hay pagos registrados.</p>
+					}
+					else
+					{
+						<dl class="membership-card__details mb-0">
+							<div>
+								<dt>Monto</dt>
+								<dd class="membership-card__payment-amount">
+									@Model.LastPaymentAmount.Value.ToString("C")
+								</dd>
+							</div>
 
-                        <div class="col-12 col-sm-6">
-                            <div class="text-muted small">Plan</div>
-                            <div>@Model.MembershipPlanName</div>
-                        </div>
-
-                        <div class="col-12">
-                            <div class="text-muted small">Fecha de admisión</div>
-                            <div>@Model.AdmissionDate.ToString("dd/MM/yyyy")</div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-    </div>
+							<div>
+								<dt>Fecha</dt>
+								<dd>
+									@(Model.LastPaymentDate?.ToString("dd/MM/yyyy") ?? "No disponible")
+								</dd>
+							</div>
+						</dl>
+					}
+				</section>
+			</div>
+		</div>
+	</article>
 </div>
