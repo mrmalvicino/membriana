@@ -11,5 +11,5 @@ public class PersonUpdateDto : IIdentifiable
     public string? Phone { get; set; }
     public string? Dni { get; set; }
     public DateTime BirthDate { get; set; }
-    public int? ProfileImageId { get; set; }
+	public string? ProfileImageUrl { get; set; }
 }

@@ -19,9 +19,10 @@ public class MemberProfile : PersonProfile
         CreateMap<Member, MemberReadDto>()
             .IncludeBase<Person, PersonReadDto>();
 
-        CreateMap<MemberUpdateDto, Member>()
-            .IncludeBase<PersonUpdateDto, Person>()
-            .ForMember(
+		CreateMap<MemberUpdateDto, Member>()
+			.IncludeBase<PersonUpdateDto, Person>()
+			.ForMember(dest => dest.OrganizationId, opt => opt.Ignore())
+			.ForMember(
                 dest => dest.MembershipPlanId,
                 opt => opt.MapFrom(src => src.MembershipPlanId)
             )

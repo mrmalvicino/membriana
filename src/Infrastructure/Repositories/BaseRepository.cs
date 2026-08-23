@@ -87,10 +87,15 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : class, II
             incomingReferenceable.ReferenceCode = existingReferenceable.ReferenceCode;
         }
 
-        _dbContext.Entry(existingEntity).CurrentValues.SetValues(entity);
-        _dbContext.Entry(existingEntity).State = EntityState.Modified;
+		if (!ReferenceEquals(existingEntity, entity))
+		{
+			_dbContext.Entry(existingEntity).CurrentValues.SetValues(entity);
+		}
 
-        await _dbContext.SaveChangesAsync();
+		_dbContext.Entry(existingEntity).State = EntityState.Modified;
+		_dbContext.ChangeTracker.DetectChanges();
+
+		await _dbContext.SaveChangesAsync();
         return await GetByIdAsync(entity.Id) ?? entity;
     }
 

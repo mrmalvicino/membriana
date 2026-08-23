@@ -19,21 +19,24 @@ public class MembersController : BaseController<
     MemberUpdateDto
 >
 {
-    private readonly IMemberRepository _repository;
-    private readonly IMemberService _memberService;
+	private readonly IMemberRepository _repository;
+	private readonly IImageService _imageService;
+	private readonly IMemberService _memberService;
 
     /// <summary>
     /// Constructor principal.
     /// </summary>
-    public MembersController(
-        IMemberRepository repository,
-        IMemberService memberService,
+	public MembersController(
+		IMemberRepository repository,
+		IImageService imageService,
+		IMemberService memberService,
         IUserService userService,
         IMapper mapper
     ) : base(repository, userService, mapper)
-    {
-        _repository = repository;
-        _memberService = memberService;
+	{
+		_repository = repository;
+		_imageService = imageService;
+		_memberService = memberService;
     }
 
     [HttpGet]
@@ -125,9 +128,10 @@ public class MembersController : BaseController<
             return NotFound(ErrorResponseFactory.Create("El recurso no existe."));
         }
 
-        _mapper.Map(updateDto, entity);
+		_mapper.Map(updateDto, entity);
+		_imageService.ApplyProfileImage(entity, updateDto.ProfileImageUrl);
 
-        try
+		try
         {
             var updated = await _memberService.UpdateAsync(entity);
             var readDto = _mapper.Map<MemberReadDto>(updated);
@@ -142,8 +146,16 @@ public class MembersController : BaseController<
 
     [Authorize(Policy = "Employee")]
     [ServiceFilter(typeof(TenancyRouteFilter<Member, IMemberRepository>))]
-    public override async Task<IActionResult> Delete(int id)
-    {
-        return await base.Delete(id);
-    }
+	public override async Task<IActionResult> Delete(int id)
+	{
+		var entity = await _repository.GetByIdAsync(id);
+
+		if (entity == null)
+		{
+			return NotFound(ErrorResponseFactory.Create("El recurso no existe."));
+		}
+
+		_imageService.RemoveProfileImage(entity);
+		return await base.Delete(id);
+	}
 }

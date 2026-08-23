@@ -12,8 +12,10 @@ public class Image : IIdentifiable
     public int Id { get; set; }
     #endregion
 
-    #region Url
-    [Required]
-    public string Url { get; set; } = null!;
-    #endregion
+	#region Url
+	[Required]
+	[Url]
+	[StringLength(2048)]
+	public string Url { get; set; } = null!;
+	#endregion
 }

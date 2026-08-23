@@ -14,7 +14,8 @@ public class EmployeeProfile : PersonProfile
         CreateMap<Employee, EmployeeReadDto>()
             .IncludeBase<Person, PersonReadDto>();
 
-        CreateMap<EmployeeUpdateDto, Employee>()
-            .IncludeBase<PersonUpdateDto, Person>();
+		CreateMap<EmployeeUpdateDto, Employee>()
+			.IncludeBase<PersonUpdateDto, Person>()
+			.ForMember(dest => dest.OrganizationId, opt => opt.Ignore());
     }
 }

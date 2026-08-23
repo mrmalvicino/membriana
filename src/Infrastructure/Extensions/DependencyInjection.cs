@@ -1,4 +1,5 @@
-﻿using Application.Repositories;
+﻿using Application.Persistence;
+using Application.Repositories;
 using Application.Services;
 using Infrastructure.Persistence;
 using Infrastructure.Repositories;
@@ -43,9 +44,10 @@ public static class DependencyInjection
             options => options.UseSqlServer(connectionString)
         );
 
-        services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-        services.AddScoped<IAppUserRepository, AppUserRepository>();
-        services.AddScoped<IMemberRepository, MemberRepository>();
+		services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+		services.AddScoped<IAppUserRepository, AppUserRepository>();
+		services.AddScoped<IImagePersistence, ImagePersistence>();
+		services.AddScoped<IMemberRepository, MemberRepository>();
         services.AddScoped<IMembershipPlanRepository, MembershipPlanRepository>();
         services.AddScoped<IMemberStatusEventRepository, MemberStatusEventRepository>();
         services.AddScoped<IOrganizationRepository, OrganizationRepository>();
@@ -53,9 +55,10 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IBusinessLogger, BusinessLogger>();
-        services.AddScoped<IEmailService, EmailService>();
-        services.AddScoped<IIdentityService, IdentityService>();
-        services.AddScoped<IMemberService, MemberService>();
+		services.AddScoped<IEmailService, EmailService>();
+		services.AddScoped<IIdentityService, IdentityService>();
+		services.AddScoped<IImageService, ImageService>();
+		services.AddScoped<IMemberService, MemberService>();
         services.AddScoped<IMemberStatusService, MemberStatusService>();
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IUserService, UserService>();
