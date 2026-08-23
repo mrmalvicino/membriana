@@ -1,0 +1,91 @@
+html {
+	font-size: 14px;
+}
+
+@media (min-width: 768px) {
+	html {
+		font-size: 16px;
+	}
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+	box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+	position: relative;
+	min-height: 100%;
+}
+
+body {
+	margin-bottom: 60px;
+}
+
+.profile-image-avatar {
+	display: grid;
+	flex: 0 0 8rem;
+	width: 8rem;
+	height: 8rem;
+	place-items: center;
+	overflow: hidden;
+	border: 1px solid #ced4da;
+	border-radius: 50%;
+	background: #f1f3f5;
+	color: #6c757d;
+	font-size: 2rem;
+	font-weight: 600;
+}
+
+.profile-image-avatar img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.image-url-editor {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+.image-preview-frame {
+	display: grid;
+	flex: 0 0 6rem;
+	width: 6rem;
+	height: 6rem;
+	place-items: center;
+	overflow: hidden;
+	border: 1px solid #ced4da;
+	border-radius: 50%;
+	background: #f8f9fa;
+}
+
+.image-preview {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.image-preview-placeholder {
+	padding: 0.75rem;
+	color: #6c757d;
+	font-size: 0.75rem;
+	line-height: 1.1;
+	text-align: center;
+}
+
+.image-url-field {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+@media (max-width: 575.98px) {
+	.image-url-editor {
+		align-items: flex-start;
+		flex-direction: column;
+	}
+}
