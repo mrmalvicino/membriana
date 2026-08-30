@@ -1,4 +1,5 @@
 ﻿using Contracts.Dtos.Authentication;
+using Contracts.Dtos.User;
 using Domain.Entities;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -14,6 +15,11 @@ public interface IUserService
     /// Obtiene un DTO con información relevante del usuario autenticado.
     /// </summary>
     Task<LoggedUserContextDto> GetLoggedUserContextAsync();
+
+	/// <summary>
+	/// Actualiza los datos personales del usuario autenticado.
+	/// </summary>
+	Task UpdateProfileAsync(UserProfileUpdateDto profileUpdateDto);
 
     /// <summary>
     /// Obtiene la organización a la que pertenece el usuario autenticado en el contexto HTTP actual.

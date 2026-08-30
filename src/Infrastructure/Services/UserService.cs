@@ -1,6 +1,7 @@
 ﻿using Application.Repositories;
 using Application.Services;
 using Contracts.Dtos.Authentication;
+using Contracts.Dtos.User;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -23,6 +24,8 @@ public class UserService : IUserService
     private readonly IConfiguration _configuration;
     private readonly IOrganizationRepository _organizationRepository;
     private readonly IAppUserRepository _appUserRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IImageService _imageService;
 
     /// <summary>
     /// Constructor principal.
@@ -32,7 +35,9 @@ public class UserService : IUserService
         IHttpContextAccessor httpContextAccessor,
         IConfiguration configuration,
         IOrganizationRepository organizationRepository,
-        IAppUserRepository appUserRepository
+        IAppUserRepository appUserRepository,
+        IUnitOfWork unitOfWork,
+        IImageService imageService
     )
     {
         _userManager = userManager;
@@ -40,6 +45,8 @@ public class UserService : IUserService
         _configuration = configuration;
         _organizationRepository = organizationRepository;
         _appUserRepository = appUserRepository;
+        _unitOfWork = unitOfWork;
+        _imageService = imageService;
     }
 
     /// <summary>
@@ -182,5 +189,108 @@ public class UserService : IUserService
         );
 
         return token;
+    }
+
+    /// <summary>
+    /// Actualiza los datos personales del usuario autenticado.
+    /// </summary>
+    public async Task UpdateProfileAsync(
+        UserProfileUpdateDto profileUpdateDto
+    )
+    {
+        if (string.IsNullOrWhiteSpace(profileUpdateDto.UserEmail))
+        {
+            throw new ArgumentException("El email es obligatorio.");
+        }
+
+        if (string.IsNullOrWhiteSpace(profileUpdateDto.Name))
+        {
+            throw new ArgumentException("El nombre es obligatorio.");
+        }
+
+        if (!profileUpdateDto.BirthDate.HasValue)
+        {
+            throw new ArgumentException("La fecha de nacimiento es obligatoria.");
+        }
+
+        if (profileUpdateDto.BirthDate.Value.Date > DateTime.Today)
+        {
+            throw new ArgumentException("La fecha de nacimiento no puede ser futura.");
+        }
+
+        AppUser appUser = await GetLoggedUserHydratedAsync();
+
+        if (appUser.Employee != null && appUser.Member != null)
+        {
+            throw new InvalidOperationException(
+                "El usuario tiene más de una persona asociada."
+            );
+        }
+
+        Person? person = null;
+
+        if (appUser.Employee != null)
+        {
+            if (appUser.Employee.OrganizationId != appUser.OrganizationId)
+            {
+                throw new KeyNotFoundException("No se encontró el perfil del usuario.");
+            }
+
+            person = appUser.Employee;
+        }
+
+        if (appUser.Member != null)
+        {
+            if (appUser.Member.OrganizationId != appUser.OrganizationId)
+            {
+                throw new KeyNotFoundException("No se encontró el perfil del usuario.");
+            }
+
+            person = appUser.Member;
+        }
+
+        if (person == null)
+        {
+            throw new InvalidOperationException(
+                "El usuario no tiene una persona asociada para actualizar."
+            );
+        }
+
+        await _unitOfWork.BeginTransactionAsync();
+
+        try
+        {
+            person.Name = profileUpdateDto.Name.Trim();
+            person.Email = profileUpdateDto.UserEmail.Trim();
+
+            person.Phone =
+                string.IsNullOrWhiteSpace(profileUpdateDto.Phone) ?
+                null : profileUpdateDto.Phone.Trim();
+
+            person.Dni =
+                string.IsNullOrWhiteSpace(profileUpdateDto.Dni) ?
+                null : profileUpdateDto.Dni.Trim();
+
+            person.BirthDate = profileUpdateDto.BirthDate!.Value.Date;
+
+            _imageService.ApplyProfileImage(person, profileUpdateDto.ProfileImageUrl);
+
+            if (appUser.Employee != null)
+            {
+                await _unitOfWork.EmployeeRepository.UpdateAsync((Employee)person);
+            }
+
+            if (appUser.Member != null)
+            {
+                await _unitOfWork.MemberRepository.UpdateAsync((Member)person);
+            }
+
+            await _unitOfWork.CommitAsync();
+        }
+        catch
+        {
+            await _unitOfWork.RollbackAsync();
+            throw;
+        }
     }
 }

@@ -15,10 +15,41 @@ public class UsersController : ControllerBase
     private readonly IUserManagementService _userManagementService;
     private readonly IUserService _userService;
 
-    public UsersController(IUserService userService, IUserManagementService userManagementService)
+    public UsersController(
+        IUserService userService,
+        IUserManagementService userManagementService
+    )
     {
         _userService = userService;
         _userManagementService = userManagementService;
+    }
+
+    [HttpPut("me/profile")]
+    public async Task<ActionResult> UpdateProfile(
+        UserProfileUpdateDto profileUpdateDto
+    )
+    {
+        try
+        {
+            await _userService.UpdateProfileAsync(profileUpdateDto);
+            return Ok();
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(ErrorResponseFactory.Create(ex.Message));
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ErrorResponseFactory.Create(ex.Message));
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ErrorResponseFactory.Create(ex.Message));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(ErrorResponseFactory.Create(ex.Message));
+        }
     }
 
     [HttpGet("me")]
@@ -32,6 +63,10 @@ public class UsersController : ControllerBase
         catch (UnauthorizedAccessException ex)
         {
             return Unauthorized(ErrorResponseFactory.Create(ex.Message));
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ErrorResponseFactory.Create(ex.Message));
         }
         catch (InvalidOperationException ex)
         {

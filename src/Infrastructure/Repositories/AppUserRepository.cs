@@ -28,7 +28,9 @@ public class AppUserRepository : IAppUserRepository
     {
         return await _dbContext.Users
             .Include(user => user.Employee)
+                .ThenInclude(employee => employee.ProfileImage)
             .Include(user => user.Member)
+                .ThenInclude(member => member.ProfileImage)
             .FirstOrDefaultAsync(user => user.OrganizationId == organizationId && user.Id == id);
     }
 }
