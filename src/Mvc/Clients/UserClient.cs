@@ -8,16 +8,20 @@ namespace Mvc.Clients;
 
 public class UserClient : IUserClient
 {
+	private const string UserProfileCacheKey = "Mvc.UserProfile";
     private readonly string _apiBaseUrl;
     private readonly HttpClient _httpClient;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public UserClient(
         IConfiguration configuration,
-        HttpClient httpClient
+        HttpClient httpClient,
+        IHttpContextAccessor httpContextAccessor
     )
     {
         _apiBaseUrl = configuration.GetValue<string>("ApiBaseUrl");
         _httpClient = httpClient;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<LoggedUserContextDto> GetLoggedUserContextAsync()
@@ -34,6 +38,61 @@ public class UserClient : IUserClient
             throw new InvalidOperationException($"Respuesta vacía de {url}");
         }
         
+        return dto;
+    }
+
+	public async Task<UserProfileReadDto> GetUserProfileAsync()
+	{
+		var requestItems = _httpContextAccessor.HttpContext?.Items;
+
+		if (requestItems?[UserProfileCacheKey] is UserProfileReadDto cachedProfile)
+		{
+			return cachedProfile;
+		}
+
+		var url = $"{_apiBaseUrl}api/users/me/profile";
+		var response = await _httpClient.GetAsync(url);
+
+		await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo obtener el perfil.");
+
+		var dto = await response.Content.ReadFromJsonAsync<UserProfileReadDto>();
+
+		if (dto is null)
+		{
+			throw new InvalidOperationException($"Respuesta vacía de {url}");
+		}
+
+		if (requestItems != null)
+		{
+			requestItems[UserProfileCacheKey] = dto;
+		}
+
+		return dto;
+	}
+
+    public async Task<UserProfileReadDto> UpdateUserProfileAsync(
+        UserProfileUpdateDto profileUpdateDto
+    )
+    {
+        var url = $"{_apiBaseUrl}api/users/me/profile";
+        var response = await _httpClient.PutAsJsonAsync(url, profileUpdateDto);
+
+        await ApiErrorResponseHandler.EnsureSuccessAsync(response, "No se pudo actualizar el perfil.");
+
+        var dto = await response.Content.ReadFromJsonAsync<UserProfileReadDto>();
+
+        if (dto is null)
+        {
+            throw new InvalidOperationException($"Respuesta vacía de {url}");
+        }
+
+		var requestItems = _httpContextAccessor.HttpContext?.Items;
+
+		if (requestItems != null)
+		{
+			requestItems[UserProfileCacheKey] = dto;
+		}
+
         return dto;
     }
 

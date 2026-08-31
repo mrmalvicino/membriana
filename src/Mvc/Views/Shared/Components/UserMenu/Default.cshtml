@@ -1,0 +1,55 @@
+@model UserMenuViewModel
+
+<li class="nav-item dropdown user-menu ms-sm-auto">
+	<button
+		type="button"
+		class="nav-link btn btn-link dropdown-toggle user-menu__toggle"
+		id="user-menu-toggle"
+		data-bs-toggle="dropdown"
+		data-bs-auto-close="true"
+		aria-expanded="false"
+		aria-label="Abrir menú de usuario"
+	>
+		<span class="user-avatar" data-user-avatar aria-hidden="true">
+			<span class="user-avatar__initials">@Model.Initials</span>
+			@if (!string.IsNullOrWhiteSpace(Model.ProfileImageUrl))
+			{
+				<img
+					class="user-avatar__image"
+					src="@Model.ProfileImageUrl"
+					alt=""
+					referrerpolicy="no-referrer"
+					data-avatar-image
+				/>
+			}
+		</span>
+	</button>
+
+	<ul class="dropdown-menu dropdown-menu-end user-menu__dropdown" aria-labelledby="user-menu-toggle">
+		<li class="px-3 py-2 user-menu__identity">
+			<strong class="d-block text-truncate">@Model.Name</strong>
+			@if (Model.LoadFailed)
+			{
+				<span class="small text-danger" role="status">No se pudo cargar la identidad</span>
+			}
+			else
+			{
+				<span class="small text-muted d-block text-truncate">@Model.Email</span>
+			}
+		</li>
+		<li><hr class="dropdown-divider" /></li>
+		@if (!Model.LoadFailed)
+		{
+			<li>
+				<a class="dropdown-item" asp-area="" asp-controller="Profile" asp-action="Index">
+					Mi perfil
+				</a>
+			</li>
+		}
+		<li>
+			<form asp-area="" asp-controller="Authentication" asp-action="Logout" method="post">
+				<button type="submit" class="dropdown-item">Cerrar sesión</button>
+			</form>
+		</li>
+	</ul>
+</li>

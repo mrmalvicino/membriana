@@ -72,6 +72,7 @@ public class AuthenticationController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult Logout()
     {
         _cookieService.DeleteJwtCookie();

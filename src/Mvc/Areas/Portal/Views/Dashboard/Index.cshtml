@@ -29,13 +29,14 @@
 		<div class="membership-card__identity card-body p-4 p-lg-5">
 			<div class="d-flex flex-column flex-md-row align-items-center gap-4">
 				<div class="profile-image-avatar">
-					@if (string.IsNullOrWhiteSpace(Model.ProfileImageUrl))
+					<span aria-hidden="true">@memberInitial</span>
+					@if (!string.IsNullOrWhiteSpace(Model.ProfileImageUrl))
 					{
-						<span aria-hidden="true">@memberInitial</span>
-					}
-					else
-					{
-						<img src="@Model.ProfileImageUrl" alt="Imagen de perfil de @Model.MemberFullName" />
+						<img
+							src="@Model.ProfileImageUrl"
+							alt="Imagen de perfil de @Model.MemberFullName"
+							data-avatar-image
+						/>
 					}
 				</div>
 

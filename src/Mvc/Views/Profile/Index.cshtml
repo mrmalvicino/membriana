@@ -1,0 +1,135 @@
+@model ProfileViewModel
+
+@{
+	ViewData["Title"] = "Mi perfil";
+
+	Layout = Model.LoadFailed
+		? "~/Views/Shared/_Layout.cshtml"
+		: Model.Role == "Member"
+			? "~/Areas/Portal/Views/Shared/_Layout.cshtml"
+			: "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+	var profileArea = Model.Role == "Member" ? "Portal" : "Admin";
+}
+
+<div class="container">
+	<div class="row justify-content-center">
+		<div class="col-md-8">
+			<div class="card">
+				<div class="card-header text-center">
+					<h2>Mi perfil</h2>
+				</div>
+				<div class="card-body">
+					@if (Model.LoadFailed)
+					{
+						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+						<div class="form-group mt-4 text-center">
+							<a asp-action="Index" class="btn btn-secondary">Reintentar</a>
+						</div>
+					}
+					else
+					{
+						@if (TempData["ProfileSuccess"] is string successMessage)
+						{
+							<div class="alert alert-success" role="status">@successMessage</div>
+						}
+
+						@if (!Model.HasAssociatedPerson && ViewData.ModelState.IsValid)
+						{
+							<div class="alert alert-info" role="status">
+								Tu cuenta no tiene una persona asociada. El perfil está disponible en modo
+								de consulta hasta que se complete la asociación.
+							</div>
+						}
+
+						<form asp-action="Edit" method="post" data-profile-form>
+							<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+							<fieldset disabled="@(!Model.HasAssociatedPerson)">
+								<legend class="visually-hidden">Datos personales</legend>
+
+								<div class="image-url-editor mb-4" data-image-url-editor>
+									<div class="image-preview-frame" aria-live="polite">
+										<img
+											class="image-preview"
+											src="@Model.ProfileImageUrl"
+											alt="Previsualización de la imagen de perfil"
+											data-image-preview
+											hidden
+										/>
+										<span class="image-preview-placeholder" data-image-placeholder>Sin imagen</span>
+									</div>
+									<div class="image-url-field">
+										<label asp-for="ProfileImageUrl" class="control-label"></label>
+										<input
+											asp-for="ProfileImageUrl"
+											class="form-control"
+											type="url"
+											placeholder="https://ejemplo.com/mi-foto.jpg"
+											data-image-url-input
+										/>
+										<span asp-validation-for="ProfileImageUrl" class="text-danger"></span>
+										<div class="form-text">Dejá el campo vacío para quitar la imagen actual.</div>
+									</div>
+								</div>
+
+								<div class="form-group mb-3">
+									<label asp-for="Name" class="control-label">Nombre y apellido</label>
+									<input asp-for="Name" placeholder="Apellido, Nombre" class="form-control" autocomplete="name" />
+									<span asp-validation-for="Name" class="text-danger"></span>
+								</div>
+								<div class="form-group mb-3">
+									<label asp-for="UserEmail" class="control-label">Email</label>
+									<input asp-for="UserEmail" placeholder="socio@mail.com" class="form-control" autocomplete="email" />
+									<span asp-validation-for="UserEmail" class="text-danger"></span>
+								</div>
+								<div class="form-group mb-3">
+									<label asp-for="Phone" class="control-label"></label>
+									<input asp-for="Phone" placeholder="+54 9 11 1234-5678" class="form-control" autocomplete="tel" />
+									<span asp-validation-for="Phone" class="text-danger"></span>
+								</div>
+								<div class="form-group mb-3">
+									<label asp-for="Dni" class="control-label"></label>
+									<input asp-for="Dni" placeholder="12.345.678" class="form-control" />
+									<span asp-validation-for="Dni" class="text-danger"></span>
+								</div>
+								<div class="form-group mb-3">
+									<label asp-for="BirthDate" class="control-label"></label>
+									<input asp-for="BirthDate" class="form-control" />
+									<span asp-validation-for="BirthDate" class="text-danger"></span>
+								</div>
+							</fieldset>
+
+							@if (Model.HasAssociatedPerson)
+							{
+								<div class="form-group mt-4 text-center">
+									<button type="submit" class="btn btn-success" data-profile-submit>
+										<span class="spinner-border spinner-border-sm me-2" role="status" hidden></span>
+										<span data-profile-submit-label>Guardar cambios</span>
+									</button>
+								</div>
+							}
+						</form>
+					}
+				</div>
+				@if (!Model.LoadFailed)
+				{
+					<div class="card-footer text-center">
+						<a
+							asp-area="@profileArea"
+							asp-controller="Dashboard"
+							asp-action="Index"
+							class="btn btn-secondary btn-sm"
+						>
+							Volver al inicio
+						</a>
+					</div>
+				}
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}
