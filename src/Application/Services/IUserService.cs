@@ -17,9 +17,14 @@ public interface IUserService
     Task<LoggedUserContextDto> GetLoggedUserContextAsync();
 
 	/// <summary>
+	/// Obtiene los datos personales del usuario autenticado.
+	/// </summary>
+	Task<UserProfileReadDto> GetUserProfileAsync();
+
+	/// <summary>
 	/// Actualiza los datos personales del usuario autenticado.
 	/// </summary>
-	Task UpdateProfileAsync(UserProfileUpdateDto profileUpdateDto);
+	Task<UserProfileReadDto> UpdateUserProfileAsync(UserProfileUpdateDto profileUpdateDto);
 
     /// <summary>
     /// Obtiene la organización a la que pertenece el usuario autenticado en el contexto HTTP actual.

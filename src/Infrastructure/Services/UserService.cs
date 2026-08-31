@@ -192,9 +192,20 @@ public class UserService : IUserService
     }
 
     /// <summary>
+	/// Obtiene los datos personales del usuario autenticado.
+	/// </summary>
+	public async Task<UserProfileReadDto> GetUserProfileAsync()
+    {
+        AppUser appUser = await GetLoggedUserHydratedAsync();
+        Person? person = GetAssociatedPerson(appUser);
+
+        return MapProfile(appUser, person);
+    }
+
+    /// <summary>
     /// Actualiza los datos personales del usuario autenticado.
     /// </summary>
-    public async Task UpdateProfileAsync(
+    public async Task<UserProfileReadDto> UpdateUserProfileAsync(
         UserProfileUpdateDto profileUpdateDto
     )
     {
@@ -220,34 +231,7 @@ public class UserService : IUserService
 
         AppUser appUser = await GetLoggedUserHydratedAsync();
 
-        if (appUser.Employee != null && appUser.Member != null)
-        {
-            throw new InvalidOperationException(
-                "El usuario tiene más de una persona asociada."
-            );
-        }
-
-        Person? person = null;
-
-        if (appUser.Employee != null)
-        {
-            if (appUser.Employee.OrganizationId != appUser.OrganizationId)
-            {
-                throw new KeyNotFoundException("No se encontró el perfil del usuario.");
-            }
-
-            person = appUser.Employee;
-        }
-
-        if (appUser.Member != null)
-        {
-            if (appUser.Member.OrganizationId != appUser.OrganizationId)
-            {
-                throw new KeyNotFoundException("No se encontró el perfil del usuario.");
-            }
-
-            person = appUser.Member;
-        }
+        Person? person = GetAssociatedPerson(appUser);
 
         if (person == null)
         {
@@ -275,17 +259,18 @@ public class UserService : IUserService
 
             _imageService.ApplyProfileImage(person, profileUpdateDto.ProfileImageUrl);
 
-            if (appUser.Employee != null)
+            if (person is Employee employee)
             {
-                await _unitOfWork.EmployeeRepository.UpdateAsync((Employee)person);
+                await _unitOfWork.EmployeeRepository.UpdateAsync(employee);
             }
-
-            if (appUser.Member != null)
+            else if (person is Member member)
             {
-                await _unitOfWork.MemberRepository.UpdateAsync((Member)person);
+                await _unitOfWork.MemberRepository.UpdateAsync(member);
             }
 
             await _unitOfWork.CommitAsync();
+
+			return MapProfile(appUser, person);
         }
         catch
         {
@@ -293,4 +278,50 @@ public class UserService : IUserService
             throw;
         }
     }
+
+	private static Person? GetAssociatedPerson(AppUser appUser)
+	{
+		if (appUser.Employee != null && appUser.Member != null)
+		{
+			throw new InvalidOperationException(
+				"El usuario tiene más de una persona asociada."
+			);
+		}
+
+		if (appUser.Employee != null)
+		{
+			if (appUser.Employee.OrganizationId != appUser.OrganizationId)
+			{
+				throw new KeyNotFoundException("No se encontró el perfil del usuario.");
+			}
+
+			return appUser.Employee;
+		}
+
+		if (appUser.Member != null)
+		{
+			if (appUser.Member.OrganizationId != appUser.OrganizationId)
+			{
+				throw new KeyNotFoundException("No se encontró el perfil del usuario.");
+			}
+
+			return appUser.Member;
+		}
+
+		return null;
+	}
+
+	private static UserProfileReadDto MapProfile(AppUser appUser, Person? person)
+	{
+		return new UserProfileReadDto
+		{
+			Name = person?.Name,
+			Email = person?.Email ?? appUser.Email ?? string.Empty,
+			Phone = person?.Phone,
+			Dni = person?.Dni,
+			BirthDate = person?.BirthDate,
+			ProfileImageUrl = person?.ProfileImage?.Url,
+			HasAssociatedPerson = person != null
+		};
+	}
 }

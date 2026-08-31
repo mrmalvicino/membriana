@@ -24,15 +24,35 @@ public class UsersController : ControllerBase
         _userManagementService = userManagementService;
     }
 
+    [HttpGet("me/profile")]
+    public async Task<ActionResult<UserProfileReadDto>> GetUserProfile()
+    {
+        try
+        {
+            return Ok(await _userService.GetUserProfileAsync());
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(ErrorResponseFactory.Create(ex.Message));
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ErrorResponseFactory.Create(ex.Message));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(ErrorResponseFactory.Create(ex.Message));
+        }
+    }
+
     [HttpPut("me/profile")]
-    public async Task<ActionResult> UpdateProfile(
+    public async Task<ActionResult<UserProfileReadDto>> UpdateUserProfile(
         UserProfileUpdateDto profileUpdateDto
     )
     {
         try
         {
-            await _userService.UpdateProfileAsync(profileUpdateDto);
-            return Ok();
+            return Ok(await _userService.UpdateUserProfileAsync(profileUpdateDto));
         }
         catch (UnauthorizedAccessException ex)
         {
